@@ -1,7 +1,7 @@
 from .users import UsersCacheStorage
-from .symbols import SymbolsCacheStorage
+from .symbols_price import SymbolsPriceCacheStorage
 
 __all__ = (
     "UsersCacheStorage",
-    "SymbolsCacheStorage",
+    "SymbolsPriceCacheStorage",
 )

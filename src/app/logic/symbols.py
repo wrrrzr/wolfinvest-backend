@@ -1,10 +1,10 @@
 from typing import Optional
 
-from .abstract import SymbolsStorage
+from .abstract import SymbolsPriceStorage
 
 
 class GetSymbol:
-    def __init__(self, symbols: SymbolsStorage) -> None:
+    def __init__(self, symbols: SymbolsPriceStorage) -> None:
         self.symbols = symbols
 
     async def __call__(self, symbol: str) -> Optional[float]:
