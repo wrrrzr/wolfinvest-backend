@@ -16,9 +16,8 @@ from app.logic.symbols import GetSymbol
 from app.logic.users import GetMe
 from app.adapters.sqlalchemy.db import async_session_maker
 from app.adapters.sqlalchemy.users import SQLAlchemyUsersStorage
-from app.adapters.users_cache import UsersCacheStorage
+from app.adapters.cache import UsersCacheStorage, SymbolsCacheStorage
 from app.adapters.yahoo_symbols import YahooSymbolsStorage
-from app.adapters.symbols_cache import SymbolsCacheStorage
 
 
 class AdaptersProvider(Provider):
