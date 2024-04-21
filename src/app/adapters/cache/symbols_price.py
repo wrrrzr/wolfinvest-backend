@@ -24,7 +24,7 @@ class SymbolsPriceCacheStorage(SymbolsPriceStorage):
     async def get_price_or_none(self, symbol: str) -> Optional[float]:
         if (
             symbol not in _memory
-            or _memory[symbol].time_exp_cache > get_current_time()
+            or _memory[symbol].time_exp_cache < get_current_time()
         ):
             price = await self._inner.get_price_or_none(symbol)
             _memory[symbol] = CachedSymbolPrice(
