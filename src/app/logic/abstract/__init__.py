@@ -1,4 +1,7 @@
 from .users_storage import UsersStorage
-from .symbols_price_storage import SymbolsPriceStorage
+from .symbols_getter import SymbolsGetter
 
-__all__ = ("UsersStorage", "SymbolsPriceStorage")
+__all__ = (
+    "UsersStorage",
+    "SymbolsGetter",
+)

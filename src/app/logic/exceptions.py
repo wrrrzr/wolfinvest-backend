@@ -2,6 +2,10 @@ class LogicError(Exception):
     pass
 
 
+class UnfoundSymbolError(LogicError):
+    pass
+
+
 class UsernameAlreadyTakenError(LogicError):
     pass
 

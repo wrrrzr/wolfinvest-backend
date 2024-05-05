@@ -10,14 +10,14 @@ from dishka import (
     make_async_container,
 )
 
-from app.logic.abstract import UsersStorage, SymbolsPriceStorage
+from app.logic.abstract import UsersStorage, SymbolsGetter
 from app.logic.auth import RegisterUser, AuthUser
 from app.logic.symbols import GetSymbol
 from app.logic.users import GetMe
 from app.adapters.sqlalchemy.db import async_session_maker
 from app.adapters.sqlalchemy.users import SQLAlchemyUsersStorage
-from app.adapters.cache import UsersCacheStorage, SymbolsPriceCacheStorage
-from app.adapters.yahoo_symbols_price import YahooSymbolsPriceStorage
+from app.adapters.cache import UsersCacheStorage, SymbolsGetterCache
+from app.adapters.symbols_getter import YahooSymbolsGetter
 
 
 class AdaptersProvider(Provider):
@@ -32,17 +32,15 @@ class AdaptersProvider(Provider):
             yield session
 
     users = provide(SQLAlchemyUsersStorage, provides=UsersStorage)
-    symbols = provide(YahooSymbolsPriceStorage, provides=SymbolsPriceStorage)
+    symbols = provide(YahooSymbolsGetter, provides=SymbolsGetter)
 
     @decorate
     def get_users_cache(self, inner: UsersStorage) -> UsersStorage:
         return UsersCacheStorage(inner)
 
     @decorate
-    def get_symbols_cache(
-        self, inner: SymbolsPriceStorage
-    ) -> SymbolsPriceStorage:
-        return SymbolsPriceCacheStorage(inner)
+    def get_symbols_cache(self, inner: SymbolsGetter) -> SymbolsGetter:
+        return SymbolsGetterCache(inner)
 
 
 class LogicProvider(Provider):

@@ -6,6 +6,7 @@ from .abstract import UsersStorage
 @dataclass
 class UserGetMeDTO:
     id: int
+    balance: int
     username: str
 
 
@@ -15,4 +16,6 @@ class GetMe:
 
     async def __call__(self, user_id: int) -> UserGetMeDTO:
         res = await self._users.select_one_by_id(user_id)
-        return UserGetMeDTO(id=res.id, username=res.username)
+        return UserGetMeDTO(
+            id=res.id, balance=res.balance, username=res.username
+        )
