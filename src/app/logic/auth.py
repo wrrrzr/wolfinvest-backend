@@ -7,6 +7,8 @@ from .exceptions import (
     IncorrectPasswordError,
 )
 
+DEFAULT_BALANCE = 0
+
 
 class RegisterUser:
     def __init__(self, users: UsersStorage) -> None:
@@ -19,7 +21,12 @@ class RegisterUser:
         pass_hash = hash_password(password)
         new_id = await self._users.get_new_user_id()
         await self._users.insert(
-            User(id=new_id, username=username, password=pass_hash)
+            User(
+                id=new_id,
+                balance=DEFAULT_BALANCE,
+                username=username,
+                password=pass_hash,
+            )
         )
 
 

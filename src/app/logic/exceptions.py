@@ -6,6 +6,10 @@ class UnfoundSymbolError(LogicError):
     pass
 
 
+class NotEnoughBalanceError(LogicError):
+    pass
+
+
 class UsernameAlreadyTakenError(LogicError):
     pass
 

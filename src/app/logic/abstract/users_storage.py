@@ -9,6 +9,10 @@ class UsersStorage(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    async def remove_balance(self, user_id: int, balance: int) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
     async def select_one_by_id(self, user_id: int) -> User:
         raise NotImplementedError
 

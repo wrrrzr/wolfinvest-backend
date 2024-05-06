@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import insert, select, exists
+from sqlalchemy import insert, update, select, exists
 from sqlalchemy.sql.expression import func
 
 from app.logic.abstract import UsersStorage
@@ -21,17 +21,33 @@ class SQLAlchemyUsersStorage(UsersStorage):
         await self._session.commit()
         return
 
+    async def remove_balance(self, user_id: int, balance: int) -> None:
+        stmt = update(UserModel).values(balance=UserModel.balance - balance)
+        await self._session.execute(stmt)
+        await self._session.commit()
+        return
+
     async def select_one_by_id(self, user_id: int) -> User:
         stmt = select(UserModel).where(UserModel.id == user_id)
         res = await self._session.execute(stmt)
         res = res.scalar_one()
-        return User(id=res.id, username=res.username, password=res.password)
+        return User(
+            id=res.id,
+            balance=res.balance,
+            username=res.username,
+            password=res.password,
+        )
 
     async def select_one_by_username(self, username: str) -> User:
         stmt = select(UserModel).where(UserModel.username == username)
         res = await self._session.execute(stmt)
         res = res.scalar_one()
-        return User(id=res.id, username=res.username, password=res.password)
+        return User(
+            id=res.id,
+            balance=res.balance,
+            username=res.username,
+            password=res.password,
+        )
 
     async def exists_by_username(self, username: str) -> bool:
         stmt = exists(UserModel).where(UserModel.username == username).select()

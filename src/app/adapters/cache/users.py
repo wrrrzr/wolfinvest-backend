@@ -3,7 +3,6 @@ from app.logic.models import User
 
 _memory: dict[int, User] = {}
 _memory_usernames: dict[str, User] = {}
-_memory_ids: dict[int, User] = {}
 _memory_exists_usernames: dict[str, bool] = {}
 
 
@@ -18,10 +17,16 @@ class UsersCacheStorage(UsersStorage):
         _memory_exists_usernames[user.username] = True
         await self._inner.insert(user)
 
+    async def remove_balance(self, user_id: int, balance: int) -> None:
+        if user_id not in _memory:
+            _memory[user_id] = await self._inner.select_one_by_id(user_id)
+        await self._inner.remove_balance(user_id, balance)
+        _memory[user_id].balance -= balance
+
     async def select_one_by_id(self, user_id: int) -> User:
-        if user_id not in _memory_ids:
-            _memory_ids[user_id] = await self._inner.select_one_by_id(user_id)
-        return _memory_ids[user_id]
+        if user_id not in _memory:
+            _memory[user_id] = await self._inner.select_one_by_id(user_id)
+        return _memory[user_id]
 
     async def select_one_by_username(self, username: str) -> User:
         if username not in _memory_usernames:
