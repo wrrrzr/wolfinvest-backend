@@ -1,5 +1,5 @@
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import Column, ForeignKey, BigInteger, Float, String
+from sqlalchemy import Column, ForeignKey, BigInteger, DateTime, Float, String
 
 
 class Base(DeclarativeBase):
@@ -22,3 +22,12 @@ class SymbolModel(Base):
     owner_id = Column(BigInteger, ForeignKey(UserModel.id), nullable=False)
     code = Column(String, nullable=False)
     amount = Column(BigInteger, nullable=False)
+
+
+class RefillModel(Base):
+    __tablename__ = "refills"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    user_id = Column(BigInteger, ForeignKey(UserModel.id), nullable=False)
+    amount = Column(BigInteger, nullable=False)
+    created_at = Column(DateTime, nullable=False)
