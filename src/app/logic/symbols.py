@@ -45,7 +45,11 @@ class GetMySymbols:
 
     async def __call__(self, user_id: int) -> list[MySymbolDTO]:
         symbols = await self._symbols.get_all_user_symbols(user_id)
-        return [object_to_dataclass(i, MySymbolDTO) for i in symbols]
+        return [
+            object_to_dataclass(i, MySymbolDTO)
+            for i in symbols
+            if i.amount > 0
+        ]
 
 
 class SellSymbol:
