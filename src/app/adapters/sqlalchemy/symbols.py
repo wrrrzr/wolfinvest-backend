@@ -19,10 +19,27 @@ class SQLAlchemSymbolsStorage(SymbolsStorage):
             return
         await self._insert(owner_id, code, amount)
 
+    async def get_amount(self, owner_id: int, code: str) -> int:
+        stmt = select(SymbolModel.amount).where(
+            SymbolModel.owner_id == owner_id, SymbolModel.code == code
+        )
+        res = await self._session.execute(stmt)
+        return res.scalar_one()
+
     async def get_all_user_symbols(self, user_id: int) -> list[Symbol]:
         stmt = select(SymbolModel).where(SymbolModel.owner_id == user_id)
         res = await self._session.execute(stmt)
         return [object_to_dataclass(i, Symbol) for i in res.scalars().all()]
+
+    async def remove(self, owner_id: int, code: str, amount: int) -> None:
+        stmt = (
+            update(SymbolModel)
+            .values(amount=SymbolModel.amount - amount)
+            .where(SymbolModel.owner_id == owner_id, SymbolModel.code == code)
+        )
+        await self._session.execute(stmt)
+        await self._session.commit()
+        return
 
     async def _insert(self, owner_id: int, code: str, amount: int) -> None:
         stmt = insert(SymbolModel).values(

@@ -17,6 +17,12 @@ class UsersCacheStorage(UsersStorage):
         _memory_exists_usernames[user.username] = True
         await self._inner.insert(user)
 
+    async def add_balance(self, user_id: int, balance: int) -> None:
+        if user_id not in _memory:
+            _memory[user_id] = await self._inner.select_one_by_id(user_id)
+        await self._inner.remove_balance(user_id, balance)
+        _memory[user_id].balance += balance
+
     async def remove_balance(self, user_id: int, balance: int) -> None:
         if user_id not in _memory:
             _memory[user_id] = await self._inner.select_one_by_id(user_id)

@@ -10,6 +10,10 @@ class NotEnoughBalanceError(LogicError):
     pass
 
 
+class NotEnoughSymbolsError(LogicError):
+    pass
+
+
 class UsernameAlreadyTakenError(LogicError):
     pass
 

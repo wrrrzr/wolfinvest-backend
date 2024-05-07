@@ -1,8 +1,18 @@
 from dishka.integrations.fastapi import FromDishka, inject
 from fastapi import APIRouter, HTTPException, Depends
 
-from app.logic.symbols import GetSymbol, BuySymbol, GetMySymbols, MySymbolDTO
-from app.logic.exceptions import UnfoundSymbolError, NotEnoughBalanceError
+from app.logic.symbols import (
+    GetSymbol,
+    BuySymbol,
+    GetMySymbols,
+    SellSymbol,
+    MySymbolDTO,
+)
+from app.logic.exceptions import (
+    UnfoundSymbolError,
+    NotEnoughBalanceError,
+    NotEnoughSymbolsError,
+)
 from ..depends import get_user_id
 
 router = APIRouter(prefix="/symbols", tags=["symbols"])
@@ -44,3 +54,22 @@ async def get_my_symbols(
     use_case: FromDishka[GetMySymbols], user_id: int = Depends(get_user_id)
 ) -> list[MySymbolDTO]:
     return await use_case(user_id)
+
+
+@router.post("/sell-symbol")
+@inject
+async def sell_symbol(
+    use_case: FromDishka[SellSymbol],
+    symbol: str,
+    amount: int,
+    user_id: int = Depends(get_user_id),
+) -> float:
+    try:
+        res = await use_case(user_id, symbol, amount)
+    except NotEnoughSymbolsError:
+        raise HTTPException(status_code=400, detail="not enough symbol")
+    except UnfoundSymbolError:
+        raise HTTPException(
+            status_code=404, detail=f"Symbol named {symbol} not found"
+        )
+    return res
