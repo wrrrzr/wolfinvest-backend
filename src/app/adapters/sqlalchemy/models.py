@@ -1,5 +1,5 @@
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import Column, ForeignKey, BigInteger, String
+from sqlalchemy import Column, ForeignKey, BigInteger, Float, String
 
 
 class Base(DeclarativeBase):
@@ -10,7 +10,7 @@ class UserModel(Base):
     __tablename__ = "users"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    balance = Column(BigInteger, default=0, nullable=False)
+    balance = Column(Float, default=0.0, nullable=False)
     username = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
 

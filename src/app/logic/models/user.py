@@ -4,6 +4,6 @@ from dataclasses import dataclass
 @dataclass
 class User:
     id: int
-    balance: int
+    balance: float
     username: str
     password: str

@@ -1,13 +1,14 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import NoResultFound
 from sqlalchemy import insert, update, exists, select
 
 from app.logic.abstract import SymbolsStorage
-from app.logic.models import Symbol
+from app.logic.models.symbol import Symbol, DEFAULT_AMOUNT
 from app.utils.dataclasses import object_to_dataclass
 from .models import SymbolModel
 
 
-class SQLAlchemSymbolsStorage(SymbolsStorage):
+class SQLAlchemySymbolsStorage(SymbolsStorage):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
@@ -23,8 +24,11 @@ class SQLAlchemSymbolsStorage(SymbolsStorage):
         stmt = select(SymbolModel.amount).where(
             SymbolModel.owner_id == owner_id, SymbolModel.code == code
         )
-        res = await self._session.execute(stmt)
-        return res.scalar_one()
+        try:
+            res = (await self._session.execute(stmt)).scalar_one()
+        except NoResultFound:
+            res = DEFAULT_AMOUNT
+        return res
 
     async def get_all_user_symbols(self, user_id: int) -> list[Symbol]:
         stmt = select(SymbolModel).where(SymbolModel.owner_id == user_id)

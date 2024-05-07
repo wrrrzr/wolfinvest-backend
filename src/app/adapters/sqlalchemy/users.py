@@ -21,13 +21,13 @@ class SQLAlchemyUsersStorage(UsersStorage):
         await self._session.commit()
         return
 
-    async def add_balance(self, user_id: int, balance: int) -> None:
+    async def add_balance(self, user_id: int, balance: float) -> None:
         stmt = update(UserModel).values(balance=UserModel.balance + balance)
         await self._session.execute(stmt)
         await self._session.commit()
         return
 
-    async def remove_balance(self, user_id: int, balance: int) -> None:
+    async def remove_balance(self, user_id: int, balance: float) -> None:
         stmt = update(UserModel).values(balance=UserModel.balance - balance)
         await self._session.execute(stmt)
         await self._session.commit()

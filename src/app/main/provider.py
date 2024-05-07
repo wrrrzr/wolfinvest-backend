@@ -16,8 +16,12 @@ from app.logic.symbols import GetSymbol, BuySymbol, GetMySymbols, SellSymbol
 from app.logic.users import GetMe
 from app.adapters.sqlalchemy.db import async_session_maker
 from app.adapters.sqlalchemy.users import SQLAlchemyUsersStorage
-from app.adapters.sqlalchemy.symbols import SQLAlchemSymbolsStorage
-from app.adapters.cache import UsersCacheStorage, SymbolsGetterCache
+from app.adapters.sqlalchemy.symbols import SQLAlchemySymbolsStorage
+from app.adapters.cache import (
+    UsersCacheStorage,
+    SymbolsCacheStorage,
+    SymbolsGetterCache,
+)
 from app.adapters.symbols_getter import YahooSymbolsGetter
 
 
@@ -33,12 +37,16 @@ class AdaptersProvider(Provider):
             yield session
 
     users = provide(SQLAlchemyUsersStorage, provides=UsersStorage)
-    symbols = provide(SQLAlchemSymbolsStorage, provides=SymbolsStorage)
+    symbols = provide(SQLAlchemySymbolsStorage, provides=SymbolsStorage)
     symbols_getter = provide(YahooSymbolsGetter, provides=SymbolsGetter)
 
     @decorate
     def get_users_cache(self, inner: UsersStorage) -> UsersStorage:
         return UsersCacheStorage(inner)
+
+    @decorate
+    def get_symbols_cache(self, inner: SymbolsStorage) -> SymbolsStorage:
+        return SymbolsCacheStorage(inner)
 
     @decorate
     def get_symbols_getter_cache(self, inner: SymbolsGetter) -> SymbolsGetter:

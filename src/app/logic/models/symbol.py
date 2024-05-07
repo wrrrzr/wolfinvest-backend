@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+DEFAULT_AMOUNT = 0
+
 
 @dataclass
 class Symbol:

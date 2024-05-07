@@ -6,7 +6,7 @@ from .abstract import UsersStorage
 @dataclass
 class UserGetMeDTO:
     id: int
-    balance: int
+    balance: float
     username: str
 
 
