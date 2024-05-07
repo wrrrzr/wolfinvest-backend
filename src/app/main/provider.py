@@ -12,7 +12,7 @@ from dishka import (
 
 from app.logic.abstract import UsersStorage, SymbolsStorage, SymbolsGetter
 from app.logic.auth import RegisterUser, AuthUser
-from app.logic.symbols import GetSymbol, BuySymbol
+from app.logic.symbols import GetSymbol, BuySymbol, GetMySymbols
 from app.logic.users import GetMe
 from app.adapters.sqlalchemy.db import async_session_maker
 from app.adapters.sqlalchemy.users import SQLAlchemyUsersStorage
@@ -56,6 +56,7 @@ class LogicProvider(Provider):
     auth_user = provide(AuthUser)
     get_me = provide(GetMe)
     buy_symbol = provide(BuySymbol)
+    get_my_symbols = provide(GetMySymbols)
 
 
 def create_async_container() -> AsyncContainer:

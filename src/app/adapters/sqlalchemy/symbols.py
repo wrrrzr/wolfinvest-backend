@@ -1,7 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import insert, update, exists
+from sqlalchemy import insert, update, exists, select
 
 from app.logic.abstract import SymbolsStorage
+from app.logic.models import Symbol
+from app.utils.dataclasses import object_to_dataclass
 from .models import SymbolModel
 
 
@@ -12,10 +14,15 @@ class SQLAlchemSymbolsStorage(SymbolsStorage):
     async def insert_or_add(
         self, owner_id: int, code: str, amount: int
     ) -> None:
-        if await self._exists_by_owner_id(owner_id):
+        if await self._exists(owner_id, code):
             await self._add(owner_id, code, amount)
             return
         await self._insert(owner_id, code, amount)
+
+    async def get_all_user_symbols(self, user_id: int) -> list[Symbol]:
+        stmt = select(SymbolModel).where(SymbolModel.owner_id == user_id)
+        res = await self._session.execute(stmt)
+        return [object_to_dataclass(i, Symbol) for i in res.scalars().all()]
 
     async def _insert(self, owner_id: int, code: str, amount: int) -> None:
         stmt = insert(SymbolModel).values(
@@ -35,10 +42,10 @@ class SQLAlchemSymbolsStorage(SymbolsStorage):
         await self._session.commit()
         return
 
-    async def _exists_by_owner_id(self, owner_id: int) -> bool:
+    async def _exists(self, owner_id: int, code: str) -> bool:
         stmt = (
             exists(SymbolModel)
-            .where(SymbolModel.owner_id == owner_id)
+            .where(SymbolModel.owner_id == owner_id, SymbolModel.code == code)
             .select()
         )
         res = await self._session.execute(stmt)
