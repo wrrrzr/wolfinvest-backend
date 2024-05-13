@@ -25,7 +25,7 @@ async def reg(info: UserAuthInfo, use_case: FromDishka[RegisterUser]) -> str:
         await use_case(info.username, info.password)
     except UsernameAlreadyTakenError:
         raise HTTPException(
-            status_code=401, detail="This username already taken"
+            status_code=400, detail="This username already taken"
         )
     return "ok"
 
@@ -39,7 +39,6 @@ async def auth(
         token = await use_case(info.username, info.password)
     except (IncorrectUsernameError, IncorrectPasswordError):
         raise HTTPException(
-            status_code=401, detail="Incorrect username or password"
+            status_code=400, detail="Incorrect username or password"
         )
-    response.set_cookie("token", token)
-    return "ok"
+    return token
