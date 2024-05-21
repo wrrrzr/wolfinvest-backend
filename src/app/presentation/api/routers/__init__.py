@@ -15,4 +15,4 @@ routers = (
 
 def register_routers(app: FastAPI) -> None:
     for router in routers:
-        app.include_router(router)
+        app.include_router(router, prefix="/api")
