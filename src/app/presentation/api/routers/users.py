@@ -1,8 +1,8 @@
 from dishka.integrations.fastapi import FromDishka, inject
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 
 from app.logic.users import GetMe, UserGetMeDTO
-from ..depends import get_user_id
+from ..di import UserId
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -11,6 +11,6 @@ router = APIRouter(prefix="/users", tags=["users"])
 @inject
 async def me(
     use_case: FromDishka[GetMe],
-    user_id: int = Depends(get_user_id),
+    user_id: FromDishka[UserId],
 ) -> UserGetMeDTO:
     return await use_case(user_id)

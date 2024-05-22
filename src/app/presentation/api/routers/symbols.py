@@ -13,7 +13,7 @@ from app.logic.exceptions import (
     NotEnoughBalanceError,
     NotEnoughSymbolsError,
 )
-from ..depends import get_user_id
+from ..di import UserId
 
 router = APIRouter(prefix="/symbols", tags=["symbols"])
 
@@ -35,7 +35,7 @@ async def buy_symbol(
     use_case: FromDishka[BuySymbol],
     symbol: str,
     amount: int,
-    user_id: int = Depends(get_user_id),
+    user_id: FromDishka[UserId],
 ) -> str:
     try:
         await use_case(user_id, symbol, amount)
@@ -51,7 +51,7 @@ async def buy_symbol(
 @router.get("/get-my-symbols")
 @inject
 async def get_my_symbols(
-    use_case: FromDishka[GetMySymbols], user_id: int = Depends(get_user_id)
+    use_case: FromDishka[GetMySymbols], user_id: FromDishka[UserId]
 ) -> list[MySymbolDTO]:
     return await use_case(user_id)
 
@@ -62,7 +62,7 @@ async def sell_symbol(
     use_case: FromDishka[SellSymbol],
     symbol: str,
     amount: int,
-    user_id: int = Depends(get_user_id),
+    user_id: int = FromDishka[UserId],
 ) -> float:
     try:
         res = await use_case(user_id, symbol, amount)

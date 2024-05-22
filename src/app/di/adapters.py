@@ -4,10 +4,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from dishka import (
     Provider,
     Scope,
-    AsyncContainer,
     provide,
     decorate,
-    make_async_container,
 )
 
 from app.logic.abstract import (
@@ -15,11 +13,8 @@ from app.logic.abstract import (
     SymbolsStorage,
     RefillsStorage,
     SymbolsGetter,
+    AuthManager,
 )
-from app.logic.auth import RegisterUser, AuthUser
-from app.logic.symbols import GetSymbol, BuySymbol, GetMySymbols, SellSymbol
-from app.logic.users import GetMe
-from app.logic.refills import TakeRefill, GetMyRefills
 from app.adapters.sqlalchemy.db import async_session_maker
 from app.adapters.sqlalchemy.users import SQLAlchemyUsersStorage
 from app.adapters.sqlalchemy.symbols import SQLAlchemySymbolsStorage
@@ -31,6 +26,7 @@ from app.adapters.cache import (
     SymbolsGetterCache,
 )
 from app.adapters.symbols_getter import YahooSymbolsGetter
+from app.adapters.auth import JWTAuthManager
 
 
 class AdaptersProvider(Provider):
@@ -48,6 +44,7 @@ class AdaptersProvider(Provider):
     symbols = provide(SQLAlchemySymbolsStorage, provides=SymbolsStorage)
     refills = provide(SQLAlchemyRefillsStorage, provides=RefillsStorage)
     symbols_getter = provide(YahooSymbolsGetter, provides=SymbolsGetter)
+    auth_manager = provide(JWTAuthManager, provides=AuthManager)
 
     @decorate
     def get_users_cache(self, inner: UsersStorage) -> UsersStorage:
@@ -64,24 +61,3 @@ class AdaptersProvider(Provider):
     @decorate
     def get_symbols_getter_cache(self, inner: SymbolsGetter) -> SymbolsGetter:
         return SymbolsGetterCache(inner)
-
-
-class LogicProvider(Provider):
-    scope = Scope.REQUEST
-
-    def __init__(self) -> None:
-        super().__init__()
-
-    get_symbol = provide(GetSymbol)
-    register_user = provide(RegisterUser)
-    auth_user = provide(AuthUser)
-    get_me = provide(GetMe)
-    buy_symbol = provide(BuySymbol)
-    get_my_symbols = provide(GetMySymbols)
-    sell_symbol = provide(SellSymbol)
-    take_refill = provide(TakeRefill)
-    get_my_refills = provide(GetMyRefills)
-
-
-def create_async_container() -> AsyncContainer:
-    return make_async_container(AdaptersProvider(), LogicProvider())

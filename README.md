@@ -14,5 +14,5 @@ AUTH_SECRET_KEY=secret_key
 
 Run
 ```bash
-uvicorn app.main.api:app
+uvicorn app.presentation.api:app
 ```

@@ -13,7 +13,7 @@ class SQLAlchemyConfig:
 
 
 @dataclass
-class CommonConfig:
+class JWTConfig:
     auth_secret_key: str
 
 
@@ -24,9 +24,9 @@ def getenv(key: str) -> str:
     return val
 
 
-def load_common_config() -> CommonConfig:
+def load_jwt_config() -> JWTConfig:
     auth_secret_key = getenv("AUTH_SECRET_KEY")
-    return CommonConfig(auth_secret_key=auth_secret_key)
+    return JWTConfig(auth_secret_key=auth_secret_key)
 
 
 def load_sqlalchemy_config() -> SQLAlchemyConfig:

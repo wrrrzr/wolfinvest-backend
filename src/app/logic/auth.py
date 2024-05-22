@@ -1,5 +1,4 @@
-from app.utils.jwt import hash_password, verify_password, create_jwt_token
-from .abstract import UsersStorage
+from .abstract import UsersStorage, AuthManager
 from .models import User
 from .exceptions import (
     UsernameAlreadyTakenError,
@@ -11,14 +10,15 @@ DEFAULT_BALANCE = 0
 
 
 class RegisterUser:
-    def __init__(self, users: UsersStorage) -> None:
+    def __init__(self, users: UsersStorage, auth_manager: AuthManager) -> None:
         self._users = users
+        self._auth_manager = auth_manager
 
     async def __call__(self, username: str, password: str) -> None:
         if await self._users.exists_by_username(username):
             raise UsernameAlreadyTakenError()
 
-        pass_hash = hash_password(password)
+        pass_hash = await self._auth_manager.hash_password(password)
         new_id = await self._users.get_new_user_id()
         await self._users.insert(
             User(
@@ -31,8 +31,9 @@ class RegisterUser:
 
 
 class AuthUser:
-    def __init__(self, users: UsersStorage) -> None:
+    def __init__(self, users: UsersStorage, auth_manager: AuthManager) -> None:
         self._users = users
+        self._auth_manager = auth_manager
 
     async def __call__(self, username: str, password: str) -> str:
         if not await self._users.exists_by_username(username):
@@ -40,7 +41,9 @@ class AuthUser:
 
         user = await self._users.select_one_by_username(username)
 
-        if not verify_password(password, user.password):
+        if not await self._auth_manager.verify_password(
+            password, user.password
+        ):
             raise IncorrectPasswordError()
 
-        return create_jwt_token({"id": user.id})
+        return await self._auth_manager.create_token({"id": user.id})
