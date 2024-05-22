@@ -2,6 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import insert, update, select, exists
 from sqlalchemy.sql.expression import func
 
+from app.utils.dataclasses import object_to_dataclass
 from app.logic.abstract import UsersStorage
 from app.logic.models import User
 from .models import UserModel
@@ -22,13 +23,21 @@ class SQLAlchemyUsersStorage(UsersStorage):
         return
 
     async def add_balance(self, user_id: int, balance: float) -> None:
-        stmt = update(UserModel).values(balance=UserModel.balance + balance)
+        stmt = (
+            update(UserModel)
+            .values(balance=UserModel.balance + balance)
+            .where(UserModel.id == user_id)
+        )
         await self._session.execute(stmt)
         await self._session.commit()
         return
 
     async def remove_balance(self, user_id: int, balance: float) -> None:
-        stmt = update(UserModel).values(balance=UserModel.balance - balance)
+        stmt = (
+            update(UserModel)
+            .values(balance=UserModel.balance - balance)
+            .where(UserModel.id == user_id)
+        )
         await self._session.execute(stmt)
         await self._session.commit()
         return
@@ -37,23 +46,13 @@ class SQLAlchemyUsersStorage(UsersStorage):
         stmt = select(UserModel).where(UserModel.id == user_id)
         res = await self._session.execute(stmt)
         res = res.scalar_one()
-        return User(
-            id=res.id,
-            balance=res.balance,
-            username=res.username,
-            password=res.password,
-        )
+        return object_to_dataclass(res, User)
 
     async def select_one_by_username(self, username: str) -> User:
         stmt = select(UserModel).where(UserModel.username == username)
         res = await self._session.execute(stmt)
         res = res.scalar_one()
-        return User(
-            id=res.id,
-            balance=res.balance,
-            username=res.username,
-            password=res.password,
-        )
+        return object_to_dataclass(res, User)
 
     async def exists_by_username(self, username: str) -> bool:
         stmt = exists(UserModel).where(UserModel.username == username).select()
