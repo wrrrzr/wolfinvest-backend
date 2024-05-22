@@ -15,12 +15,19 @@ class MockUsersStorage(UsersStorage):
     async def exists_by_username() -> None:
         pass
 
+    async def add_balance() -> None:
+        pass
+
+    async def remove_balance() -> None:
+        pass
+
     async def get_new_user_id() -> None:
         pass
 
     async def select_one_by_id(self, user_id: int) -> User:
         return User(
             id=user_id,
+            balance=0,
             username=f"user{user_id}",
             password=f"{user_id}password",
         )

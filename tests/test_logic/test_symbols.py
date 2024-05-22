@@ -1,20 +1,21 @@
-from typing import Optional
-
 import pytest
 
-from app.logic.abstract import SymbolsStorage
+from app.logic.abstract import SymbolsGetter
 from app.logic.symbols import GetSymbol
 
 
-class MockSymbolsStorage(SymbolsStorage):
-    def __init__(self, value: Optional[float]) -> None:
-        self._value = value
+class MockSymbolsStorage(SymbolsGetter):
+    def __init__(self, values: dict[str, float]) -> None:
+        self._values = values
 
-    async def get_price_or_none(self, symbol: str) -> Optional[float]:
-        return self._value
+    async def get_price(self, symbol: str) -> float:
+        return self._values[symbol]
 
 
-@pytest.mark.parametrize("value", [5.0, None, 123.50])
-async def test_get_symbol(value: Optional[float]) -> None:
-    use_case = GetSymbol(MockSymbolsStorage(value))
-    assert await use_case("FOO") == value
+@pytest.mark.parametrize(
+    "foo, bar", [[5.0, 121.0], [135.0, 135.0], [123.50, 0.0]]
+)
+async def test_get_symbol(foo: float, bar: float) -> None:
+    use_case = GetSymbol(MockSymbolsStorage({"FOO": foo, "BAR": bar}))
+    assert await use_case("FOO") == foo
+    assert await use_case("BAR") == bar
