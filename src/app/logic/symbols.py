@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-from app.utils.dataclasses import object_to_dataclass
 from .abstract import SymbolsGetter, UsersStorage, SymbolsStorage
 from .exceptions import NotEnoughBalanceError, NotEnoughSymbolsError
 
@@ -37,16 +36,24 @@ class BuySymbol:
 class MySymbolDTO:
     code: str
     amount: int
+    price: float
 
 
 class GetMySymbols:
-    def __init__(self, symbols: SymbolsStorage) -> None:
+    def __init__(
+        self, symbols: SymbolsStorage, symbols_getter: SymbolsGetter
+    ) -> None:
         self._symbols = symbols
+        self._symbols_getter = symbols_getter
 
     async def __call__(self, user_id: int) -> list[MySymbolDTO]:
         symbols = await self._symbols.get_all_user_symbols(user_id)
         return [
-            object_to_dataclass(i, MySymbolDTO)
+            MySymbolDTO(
+                code=i.code,
+                amount=i.amount,
+                price=await self._symbols_getter.get_price(i.code),
+            )
             for i in symbols
             if i.amount > 0
         ]

@@ -1,5 +1,5 @@
 from dishka.integrations.fastapi import FromDishka, inject
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException
 
 from app.logic.symbols import (
     GetSymbol,
@@ -62,7 +62,7 @@ async def sell_symbol(
     use_case: FromDishka[SellSymbol],
     symbol: str,
     amount: int,
-    user_id: int = FromDishka[UserId],
+    user_id: FromDishka[UserId],
 ) -> float:
     try:
         res = await use_case(user_id, symbol, amount)
