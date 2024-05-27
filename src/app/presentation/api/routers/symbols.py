@@ -7,12 +7,14 @@ from app.logic.symbols import (
     GetMySymbols,
     SellSymbol,
     MySymbolDTO,
+    GetListSymbols,
 )
 from app.logic.exceptions import (
     UnfoundSymbolError,
     NotEnoughBalanceError,
     NotEnoughSymbolsError,
 )
+from app.logic.models import SymbolInList
 from ..di import UserId
 
 router = APIRouter(prefix="/symbols", tags=["symbols"])
@@ -73,3 +75,11 @@ async def sell_symbol(
             status_code=404, detail=f"Symbol named {symbol} not found"
         )
     return res
+
+
+@router.get("/get-list-symbols")
+@inject
+async def get_list_symbols(
+    use_case: FromDishka[GetListSymbols],
+) -> list[SymbolInList]:
+    return await use_case()

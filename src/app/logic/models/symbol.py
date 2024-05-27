@@ -9,3 +9,9 @@ class Symbol:
     owner_id: int
     code: str
     amount: int
+
+
+@dataclass
+class SymbolInList:
+    code: str
+    name: str

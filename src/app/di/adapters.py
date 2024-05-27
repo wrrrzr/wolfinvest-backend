@@ -14,6 +14,7 @@ from app.logic.abstract import (
     RefillsStorage,
     SymbolsGetter,
     AuthManager,
+    SymbolsList,
 )
 from app.adapters.sqlalchemy.db import async_session_maker
 from app.adapters.sqlalchemy.users import SQLAlchemyUsersStorage
@@ -27,6 +28,7 @@ from app.adapters.cache import (
 )
 from app.adapters.symbols_getter import YahooSymbolsGetter
 from app.adapters.auth import JWTAuthManager
+from app.adapters.symbols_list import StaticSymbolsList
 
 
 class AdaptersProvider(Provider):
@@ -45,6 +47,7 @@ class AdaptersProvider(Provider):
     refills = provide(SQLAlchemyRefillsStorage, provides=RefillsStorage)
     symbols_getter = provide(YahooSymbolsGetter, provides=SymbolsGetter)
     auth_manager = provide(JWTAuthManager, provides=AuthManager)
+    symbols_list = provide(StaticSymbolsList, provides=SymbolsList)
 
     @decorate
     def get_users_cache(self, inner: UsersStorage) -> UsersStorage:

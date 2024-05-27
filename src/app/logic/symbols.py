@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from .abstract import SymbolsGetter, UsersStorage, SymbolsStorage
+from .abstract import SymbolsGetter, UsersStorage, SymbolsStorage, SymbolsList
 from .exceptions import NotEnoughBalanceError, NotEnoughSymbolsError
 
 
@@ -78,3 +78,11 @@ class SellSymbol:
         await self._users.add_balance(user_id, price * amount)
         await self._symbols.remove(user_id, symbol, amount)
         return price * amount
+
+
+class GetListSymbols:
+    def __init__(self, symbols_list: SymbolsList) -> None:
+        self._symbols_list = symbols_list
+
+    async def __call__(self) -> list[str]:
+        return await self._symbols_list.get_all()
