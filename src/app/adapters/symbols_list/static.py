@@ -13,7 +13,6 @@ class StaticSymbolsList(SymbolsList):
             SymbolInList(code="META", name="Meta"),
             SymbolInList(code="TSLA", name="Tesla"),
             SymbolInList(code="V", name="Visa"),
-            SymbolInList(code="OCRL", name="Oracle"),
             SymbolInList(code="NFLX", name="Netflix"),
             SymbolInList(code="OR", name="L'Oreal"),
             SymbolInList(code="MCD", name="McDonal's"),

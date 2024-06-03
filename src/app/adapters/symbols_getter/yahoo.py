@@ -15,7 +15,6 @@ class YahooSymbolsGetter(SymbolsGetter):
                         "interval": "5m",
                         "history": "1d",
                     },
-                    ssl=False,
                 ) as resp:
                     return (await resp.json())["chart"]["result"][0][
                         "indicators"
