@@ -15,3 +15,4 @@ class Symbol:
 class SymbolInList:
     code: str
     name: str
+    price: float
