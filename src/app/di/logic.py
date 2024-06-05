@@ -7,6 +7,7 @@ from dishka import (
 from app.logic.auth import RegisterUser, AuthUser
 from app.logic.symbols import (
     GetSymbol,
+    GetDailySymbolHistory,
     BuySymbol,
     GetMySymbols,
     SellSymbol,
@@ -23,6 +24,7 @@ class LogicProvider(Provider):
         super().__init__()
 
     get_symbol = provide(GetSymbol)
+    get_daily_symbol_history = provide(GetDailySymbolHistory)
     register_user = provide(RegisterUser)
     auth_user = provide(AuthUser)
     get_me = provide(GetMe)
