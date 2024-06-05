@@ -8,6 +8,9 @@ class MockSymbolsGetter(SymbolsGetter):
     async def get_price(self, symbol: str) -> float:
         return MOCK_PRICE
 
+    async def get_daily_history(self, symbol: str) -> list[float]:
+        pass
+
 
 async def test_get_price() -> None:
     symbols_list = StaticSymbolsList(MockSymbolsGetter())
