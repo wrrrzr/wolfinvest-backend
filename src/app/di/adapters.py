@@ -22,13 +22,23 @@ from app.adapters.sqlalchemy.symbols import SQLAlchemySymbolsStorage
 from app.adapters.sqlalchemy.refills import SQLAlchemyRefillsStorage
 from app.adapters.cache import (
     UsersCacheStorage,
+    create_users_memory,
     SymbolsCacheStorage,
+    create_symbols_memory,
     RefillsCacheStorage,
+    create_refills_memory,
     SymbolsGetterCache,
+    create_symbols_getter_memory,
 )
 from app.adapters.symbols_getter import YahooSymbolsGetter
 from app.adapters.auth import JWTAuthManager
 from app.adapters.symbols_list import StaticSymbolsList
+
+
+_memory_users = create_users_memory()
+_memory_symbols = create_symbols_memory()
+_memory_refills = create_refills_memory()
+_memory_symbols_getter = create_symbols_getter_memory()
 
 
 class AdaptersProvider(Provider):
@@ -51,16 +61,16 @@ class AdaptersProvider(Provider):
 
     @decorate
     def get_users_cache(self, inner: UsersStorage) -> UsersStorage:
-        return UsersCacheStorage(inner)
+        return UsersCacheStorage(inner, _memory_users)
 
     @decorate
     def get_symbols_cache(self, inner: SymbolsStorage) -> SymbolsStorage:
-        return SymbolsCacheStorage(inner)
+        return SymbolsCacheStorage(inner, _memory_symbols)
 
     @decorate
     def get_refills_cache(self, inner: RefillsStorage) -> RefillsStorage:
-        return RefillsCacheStorage(inner)
+        return RefillsCacheStorage(inner, _memory_refills)
 
     @decorate
     def get_symbols_getter_cache(self, inner: SymbolsGetter) -> SymbolsGetter:
-        return SymbolsGetterCache(inner)
+        return SymbolsGetterCache(inner, _memory_symbols_getter)

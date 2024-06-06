@@ -22,38 +22,50 @@ class CachedSymbolDailyHistory:
     time_exp_cache: timedelta
 
 
-_memory: dict[str, CachedSymbolPrice] = {}
-_memory_daily_history: dict[str, CachedSymbolDailyHistory] = {}
+@dataclass
+class MemorySymbolsGetter:
+    price: dict[str, CachedSymbolPrice]
+    daily_history: dict[str, CachedSymbolDailyHistory]
+
+
+def create_symbols_getter_memory() -> MemorySymbolsGetter:
+    return MemorySymbolsGetter({}, {})
 
 
 class SymbolsGetterCache(SymbolsGetter):
-    def __init__(self, inner: SymbolsGetter) -> None:
+    def __init__(
+        self, inner: SymbolsGetter, memory: MemorySymbolsGetter
+    ) -> None:
         self._inner = inner
+        self._memory = memory
 
     async def get_price(self, symbol: str) -> float:
-        if symbol not in _memory:
+        if symbol not in self._memory.price:
             await self._set_price(symbol)
-        if _memory[symbol].price is None:
+        if self._memory.price[symbol].price is None:
             raise UnfoundSymbolError()
-        if _memory[symbol].time_exp_cache < get_current_time():
+        if self._memory.price[symbol].time_exp_cache < get_current_time():
             await self._set_price(symbol)
-        return _memory[symbol].price
+        return self._memory.price[symbol].price
 
     async def get_daily_history(self, symbol: str) -> list[float]:
-        if symbol not in _memory_daily_history:
+        if symbol not in self._memory.daily_history:
             await self._set_daily_history(symbol)
-        if _memory_daily_history[symbol].history is None:
+        if self._memory.daily_history[symbol].history is None:
             raise UnfoundSymbolError()
-        if _memory_daily_history[symbol].time_exp_cache < get_current_time():
+        if (
+            self._memory.daily_history[symbol].time_exp_cache
+            < get_current_time()
+        ):
             await self._set_daily_history(symbol)
-        return _memory_daily_history[symbol].history
+        return self._memory.daily_history[symbol].history
 
     async def _set_price(self, symbol: str) -> None:
         try:
             price = await self._inner.get_price(symbol)
         except UnfoundSymbolError:
             price = None
-        _memory[symbol] = CachedSymbolPrice(
+        self._memory.price[symbol] = CachedSymbolPrice(
             price, get_current_time() + TIME_EXP_PRICE
         )
 
@@ -62,6 +74,6 @@ class SymbolsGetterCache(SymbolsGetter):
             history = await self._inner.get_daily_history(symbol)
         except UnfoundSymbolError:
             history = None
-        _memory_daily_history[symbol] = CachedSymbolDailyHistory(
+        self._memory.daily_history[symbol] = CachedSymbolDailyHistory(
             history, get_current_time() + TIME_EXP_DAILY_HISTORY
         )

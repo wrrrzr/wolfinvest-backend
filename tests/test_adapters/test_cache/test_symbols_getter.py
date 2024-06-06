@@ -1,5 +1,5 @@
 from app.logic.abstract import SymbolsGetter
-from app.adapters.cache import SymbolsGetterCache
+from app.adapters.cache import SymbolsGetterCache, create_symbols_getter_memory
 
 MOCK_SYMBOL_PRICE = 1.2
 MOCK_SYMBOL_HISTORY = [1.2, 1.1, 1.1, 1.0, 1.1, 0.9]
@@ -20,13 +20,15 @@ class CounterSymbolsGetter(SymbolsGetter):
 
 
 async def test_get_price() -> None:
-    getter = SymbolsGetterCache(CounterSymbolsGetter())
+    getter = SymbolsGetterCache(
+        CounterSymbolsGetter(), create_symbols_getter_memory()
+    )
     assert await getter.get_price("AAPL") == MOCK_SYMBOL_PRICE
 
 
 async def test_get_price_caching() -> None:
     counter = CounterSymbolsGetter()
-    getter = SymbolsGetterCache(counter)
+    getter = SymbolsGetterCache(counter, create_symbols_getter_memory())
     await getter.get_price("AAPL")
     await getter.get_price("AAPL")
     await getter.get_price("AAPL")
@@ -35,7 +37,7 @@ async def test_get_price_caching() -> None:
 
 async def test_get_price_caching_many() -> None:
     counter = CounterSymbolsGetter()
-    getter = SymbolsGetterCache(counter)
+    getter = SymbolsGetterCache(counter, create_symbols_getter_memory())
     await getter.get_price("AAPL")
     await getter.get_price("MSFT")
     await getter.get_price("AAPL")
@@ -43,13 +45,15 @@ async def test_get_price_caching_many() -> None:
 
 
 async def test_get_daily_history() -> None:
-    getter = SymbolsGetterCache(CounterSymbolsGetter())
+    getter = SymbolsGetterCache(
+        CounterSymbolsGetter(), create_symbols_getter_memory()
+    )
     assert await getter.get_daily_history("AAPL") == MOCK_SYMBOL_HISTORY
 
 
 async def test_get_daily_history_caching() -> None:
     counter = CounterSymbolsGetter()
-    getter = SymbolsGetterCache(counter)
+    getter = SymbolsGetterCache(counter, create_symbols_getter_memory())
     await getter.get_daily_history("AAPL")
     await getter.get_daily_history("AAPL")
     assert counter.count_daily_history == 1
@@ -57,7 +61,7 @@ async def test_get_daily_history_caching() -> None:
 
 async def test_get_daily_history_caching_many() -> None:
     counter = CounterSymbolsGetter()
-    getter = SymbolsGetterCache(counter)
+    getter = SymbolsGetterCache(counter, create_symbols_getter_memory())
     await getter.get_daily_history("AAPL")
     await getter.get_daily_history("MSFT")
     await getter.get_daily_history("AAPL")
