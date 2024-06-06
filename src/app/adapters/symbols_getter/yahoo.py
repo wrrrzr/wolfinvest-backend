@@ -22,5 +22,5 @@ class YahooSymbolsGetter(SymbolsGetter):
                     return (await resp.json())["chart"]["result"][0][
                         "indicators"
                     ]["quote"][-1]["close"]
-        except TypeError:
+        except (TypeError, KeyError):
             raise UnfoundSymbolError()
