@@ -19,7 +19,7 @@ class UsersCacheStorage(UsersStorage):
         self._memory = memory
 
     async def insert(self, user: User) -> None:
-        if user.id in self.self._memory.data.data:
+        if user.id in self._memory.data.data:
             return
         self._memory.data.append(user)
         await self._inner.insert(user)
