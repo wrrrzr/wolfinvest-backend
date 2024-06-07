@@ -9,7 +9,7 @@ from app.config import load_jwt_config
 from app.logic.abstract import AuthManager
 
 ALGORITHM = "HS256"
-EXPIRATION_TIME = timedelta(minutes=30)
+EXPIRATION_TIME = timedelta(hours=6)
 AUTH_SECRET_KEY = load_jwt_config().auth_secret_key
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
