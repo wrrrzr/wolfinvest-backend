@@ -15,7 +15,7 @@ from app.logic.exceptions import (
     NotEnoughBalanceError,
     NotEnoughSymbolsError,
 )
-from app.logic.models import SymbolInList
+from app.logic.models import SymbolInList, SymbolHistory
 from ..di import UserId
 
 router = APIRouter(prefix="/symbols", tags=["symbols"])
@@ -36,7 +36,7 @@ async def get_price(symbol: str, use_case: FromDishka[GetSymbol]) -> float:
 @inject
 async def get_daily_history(
     symbol: str, use_case: FromDishka[GetDailySymbolHistory]
-) -> list[float]:
+) -> list[SymbolHistory]:
     try:
         return await use_case(symbol)
     except UnfoundSymbolError:

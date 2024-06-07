@@ -4,6 +4,7 @@ from dataclasses import dataclass
 
 from app.logic.abstract import SymbolsGetter
 from app.logic.exceptions import UnfoundSymbolError
+from app.logic.models import SymbolHistory
 from app.utils.funcs import get_current_time
 
 TIME_EXP_PRICE = timedelta(minutes=10)
@@ -18,7 +19,7 @@ class CachedSymbolPrice:
 
 @dataclass
 class CachedSymbolDailyHistory:
-    history: Optional[list[float]]
+    history: Optional[list[SymbolHistory]]
     time_exp_cache: timedelta
 
 
@@ -48,7 +49,7 @@ class SymbolsGetterCache(SymbolsGetter):
             await self._set_price(symbol)
         return self._memory.price[symbol].price
 
-    async def get_daily_history(self, symbol: str) -> list[float]:
+    async def get_daily_history(self, symbol: str) -> list[SymbolHistory]:
         if symbol not in self._memory.daily_history:
             await self._set_daily_history(symbol)
         if self._memory.daily_history[symbol].history is None:

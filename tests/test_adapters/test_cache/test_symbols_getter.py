@@ -1,8 +1,17 @@
 from app.logic.abstract import SymbolsGetter
+from app.logic.models import SymbolHistory
 from app.adapters.cache import SymbolsGetterCache, create_symbols_getter_memory
+from app.utils.funcs import get_current_time
 
 MOCK_SYMBOL_PRICE = 1.2
-MOCK_SYMBOL_HISTORY = [1.2, 1.1, 1.1, 1.0, 1.1, 0.9]
+MOCK_SYMBOL_HISTORY = [
+    SymbolHistory(1.2, get_current_time()),
+    SymbolHistory(1.1, get_current_time()),
+    SymbolHistory(1.1, get_current_time()),
+    SymbolHistory(1.0, get_current_time()),
+    SymbolHistory(1.1, get_current_time()),
+    SymbolHistory(0.9, get_current_time()),
+]
 
 
 class CounterSymbolsGetter(SymbolsGetter):
@@ -14,7 +23,7 @@ class CounterSymbolsGetter(SymbolsGetter):
         self.count_price += 1
         return MOCK_SYMBOL_PRICE
 
-    async def get_daily_history(self, symbol: str) -> list[float]:
+    async def get_daily_history(self, symbol: str) -> list[SymbolHistory]:
         self.count_daily_history += 1
         return MOCK_SYMBOL_HISTORY
 

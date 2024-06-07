@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from .abstract import SymbolsGetter, UsersStorage, SymbolsStorage, SymbolsList
 from .exceptions import NotEnoughBalanceError, NotEnoughSymbolsError
+from .models import SymbolHistory
 
 
 class GetSymbol:
@@ -16,7 +17,7 @@ class GetDailySymbolHistory:
     def __init__(self, symbols_getter: SymbolsGetter) -> None:
         self._symbols_getter = symbols_getter
 
-    async def __call__(self, symbol: str) -> list[float]:
+    async def __call__(self, symbol: str) -> list[SymbolHistory]:
         return await self._symbols_getter.get_daily_history(symbol)
 
 
