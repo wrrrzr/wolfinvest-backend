@@ -38,6 +38,13 @@ class UsersCacheStorage(UsersStorage):
             0
         ].balance -= balance
 
+    async def change_password(self, user_id: int, password: str) -> None:
+        await self._check_user_and_update(user_id)
+        await self._inner.change_password(user_id, password)
+        list(filter(lambda x: x.id == user_id, self._memory.data))[
+            0
+        ].password = password
+
     async def select_one_by_id(self, user_id: int) -> User:
         await self._check_user_and_update(user_id)
         return list(filter(lambda x: x.id == user_id, self._memory.data))[0]

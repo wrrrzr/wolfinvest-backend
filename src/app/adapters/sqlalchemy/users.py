@@ -42,6 +42,16 @@ class SQLAlchemyUsersStorage(UsersStorage):
         await self._session.commit()
         return
 
+    async def change_password(self, user_id: int, password: str) -> None:
+        stmt = (
+            update(UserModel)
+            .values(password=UserModel.password)
+            .where(UserModel.id == user_id)
+        )
+        await self._session.execute(stmt)
+        await self._session.commit()
+        return
+
     async def select_one_by_id(self, user_id: int) -> User:
         stmt = select(UserModel).where(UserModel.id == user_id)
         res = await self._session.execute(stmt)

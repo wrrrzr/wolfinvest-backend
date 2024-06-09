@@ -17,6 +17,10 @@ class UsersStorage(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    async def change_password(self, user_id: int, password: str) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
     async def select_one_by_id(self, user_id: int) -> User:
         raise NotImplementedError
 

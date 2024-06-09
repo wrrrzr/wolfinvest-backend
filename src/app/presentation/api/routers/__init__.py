@@ -4,12 +4,14 @@ from . import symbols
 from . import auth
 from . import users
 from . import refills
+from . import settings
 
 routers = (
     symbols.router,
     auth.router,
     users.router,
     refills.router,
+    settings.router,
 )
 
 

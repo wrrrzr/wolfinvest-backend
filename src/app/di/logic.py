@@ -15,6 +15,7 @@ from app.logic.symbols import (
 )
 from app.logic.users import GetMe
 from app.logic.refills import TakeRefill, GetMyRefills
+from app.logic.settings import ChangePassword
 
 
 class LogicProvider(Provider):
@@ -34,3 +35,4 @@ class LogicProvider(Provider):
     take_refill = provide(TakeRefill)
     get_my_refills = provide(GetMyRefills)
     get_list_symbols = provide(GetListSymbols)
+    change_password = provide(ChangePassword)
