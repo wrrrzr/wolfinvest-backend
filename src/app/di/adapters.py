@@ -29,6 +29,8 @@ from app.adapters.cache import (
     create_refills_memory,
     SymbolsGetterCache,
     create_symbols_getter_memory,
+    SymbolsListCache,
+    create_symbols_list_memory,
 )
 from app.adapters.symbols_getter import YahooSymbolsGetter
 from app.adapters.auth import JWTAuthManager
@@ -39,6 +41,7 @@ _memory_users = create_users_memory()
 _memory_symbols = create_symbols_memory()
 _memory_refills = create_refills_memory()
 _memory_symbols_getter = create_symbols_getter_memory()
+_memory_symbols_list = create_symbols_list_memory()
 
 
 class AdaptersProvider(Provider):
@@ -74,3 +77,7 @@ class AdaptersProvider(Provider):
     @decorate
     def get_symbols_getter_cache(self, inner: SymbolsGetter) -> SymbolsGetter:
         return SymbolsGetterCache(inner, _memory_symbols_getter)
+
+    @decorate
+    def get_symbols_list_cache(self, inner: SymbolsList) -> SymbolsList:
+        return SymbolsListCache(inner, _memory_symbols_list)

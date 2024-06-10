@@ -12,6 +12,9 @@ class MockUsersStorage(UsersStorage):
     async def select_one_by_username() -> None:
         pass
 
+    async def change_password() -> None:
+        pass
+
     async def exists_by_username() -> None:
         pass
 
