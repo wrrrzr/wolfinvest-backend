@@ -21,3 +21,7 @@ class SymbolsStorage(ABC):
     @abstractmethod
     async def remove(self, owner_id: int, code: str, amount: int) -> None:
         raise NotImplementedError
+
+    @abstractmethod
+    async def delete_all_user_symbols(self, user_id: int) -> None:
+        raise NotImplementedError

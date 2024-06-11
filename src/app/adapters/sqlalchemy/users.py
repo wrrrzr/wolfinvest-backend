@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import insert, update, select, exists
+from sqlalchemy import insert, update, select, exists, delete
 from sqlalchemy.sql.expression import func
 
 from app.utils.dataclasses import object_to_dataclass
@@ -42,6 +42,16 @@ class SQLAlchemyUsersStorage(UsersStorage):
         await self._session.commit()
         return
 
+    async def set_balance(self, user_id: int, balance: float) -> None:
+        stmt = (
+            update(UserModel)
+            .values(balance=balance)
+            .where(UserModel.id == user_id)
+        )
+        await self._session.execute(stmt)
+        await self._session.commit()
+        return
+
     async def change_password(self, user_id: int, password: str) -> None:
         stmt = (
             update(UserModel)
@@ -64,10 +74,22 @@ class SQLAlchemyUsersStorage(UsersStorage):
         res = res.scalar_one()
         return object_to_dataclass(res, User)
 
+    async def select_all(self) -> list[User]:
+        stmt = select(UserModel)
+        res = await self._session.execute(stmt)
+        res = res.scalars().all()
+        return [object_to_dataclass(i, User) for i in res]
+
     async def exists_by_username(self, username: str) -> bool:
         stmt = exists(UserModel).where(UserModel.username == username).select()
         res = await self._session.execute(stmt)
         return res.scalar_one()
+
+    async def delete_user(self, user_id: int) -> None:
+        stmt = delete(UserModel).where(UserModel.id == user_id)
+        await self._session.execute(stmt)
+        await self._session.commit()
+        return
 
     async def get_new_user_id(self) -> int:
         stmt = select(func.max(UserModel.id))

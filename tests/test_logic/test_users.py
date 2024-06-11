@@ -1,7 +1,7 @@
 import pytest
 
 from app.logic.abstract import UsersStorage
-from app.logic.models import User
+from app.logic.models import User, USER_DEFAULT_ROLE
 from app.logic.users import GetMe, UserGetMeDTO
 
 
@@ -10,6 +10,9 @@ class MockUsersStorage(UsersStorage):
         pass
 
     async def select_one_by_username() -> None:
+        pass
+
+    async def select_all() -> None:
         pass
 
     async def change_password() -> None:
@@ -24,6 +27,12 @@ class MockUsersStorage(UsersStorage):
     async def remove_balance() -> None:
         pass
 
+    async def set_balance() -> None:
+        pass
+
+    async def delete_user() -> None:
+        pass
+
     async def get_new_user_id() -> None:
         pass
 
@@ -33,6 +42,7 @@ class MockUsersStorage(UsersStorage):
             balance=0,
             username=f"user{user_id}",
             password=f"{user_id}password",
+            role=USER_DEFAULT_ROLE,
         )
 
 

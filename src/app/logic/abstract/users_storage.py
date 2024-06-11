@@ -17,6 +17,10 @@ class UsersStorage(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    async def set_balance(self, user_id: int, balance: float) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
     async def change_password(self, user_id: int, password: str) -> None:
         raise NotImplementedError
 
@@ -29,8 +33,16 @@ class UsersStorage(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    async def select_all(self) -> list[User]:
+        raise NotImplementedError
+
+    @abstractmethod
     async def exists_by_username(self, username: str) -> bool:
         raise NotImplementedError
+
+    @abstractmethod
+    async def delete_user(self, user_id: int) -> None:
+        pass
 
     @abstractmethod
     async def get_new_user_id(self) -> int:

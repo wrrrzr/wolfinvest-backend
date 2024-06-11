@@ -16,6 +16,12 @@ from app.logic.symbols import (
 from app.logic.users import GetMe
 from app.logic.refills import TakeRefill, GetMyRefills
 from app.logic.settings import ChangePassword
+from app.logic.admin import (
+    GetAllUsers,
+    DeleteUser,
+    ChangeUserPassword,
+    SetUserBalance,
+)
 
 
 class LogicProvider(Provider):
@@ -36,3 +42,7 @@ class LogicProvider(Provider):
     get_my_refills = provide(GetMyRefills)
     get_list_symbols = provide(GetListSymbols)
     change_password = provide(ChangePassword)
+    get_all_users = provide(GetAllUsers)
+    delete_user = provide(DeleteUser)
+    change_user_password = provide(ChangeUserPassword)
+    set_user_balance = provide(SetUserBalance)

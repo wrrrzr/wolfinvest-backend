@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, delete
 
 from app.utils.dataclasses import object_to_dataclass
 from app.logic.abstract import RefillsStorage
@@ -27,3 +27,9 @@ class SQLAlchemyRefillsStorage(RefillsStorage):
         stmt = select(RefillModel).where(RefillModel.user_id == user_id)
         res = await self._session.execute(stmt)
         return [object_to_dataclass(i, Refill) for i in res.scalars().all()]
+
+    async def delete_all_user_refills(self, user_id: int) -> None:
+        stmt = delete(RefillModel).where(RefillModel.user_id == user_id)
+        await self._session.execute(stmt)
+        await self._session.commit()
+        return

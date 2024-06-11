@@ -5,6 +5,7 @@ from . import auth
 from . import users
 from . import refills
 from . import settings
+from . import admin
 
 routers = (
     symbols.router,
@@ -12,6 +13,7 @@ routers = (
     users.router,
     refills.router,
     settings.router,
+    admin.router,
 )
 
 

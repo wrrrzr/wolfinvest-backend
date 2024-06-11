@@ -1,5 +1,13 @@
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import Column, ForeignKey, BigInteger, DateTime, Float, String
+from sqlalchemy import (
+    Column,
+    ForeignKey,
+    Integer,
+    BigInteger,
+    DateTime,
+    Float,
+    String,
+)
 
 
 class Base(DeclarativeBase):
@@ -13,6 +21,7 @@ class UserModel(Base):
     balance = Column(Float, default=0.0, nullable=False)
     username = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
+    role = Column(Integer, nullable=False)
 
 
 class SymbolModel(Base):

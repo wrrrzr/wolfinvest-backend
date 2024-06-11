@@ -21,7 +21,7 @@ async def change_password(
     use_case: FromDishka[ChangePassword],
     info: ChangePasswordInfo,
     user_id: FromDishka[UserId],
-) -> None:
+) -> str:
     try:
         await use_case(user_id, info.old_password, info.new_password)
     except IncorrectPasswordError:

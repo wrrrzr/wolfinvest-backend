@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import NoResultFound
-from sqlalchemy import insert, update, exists, select
+from sqlalchemy import insert, update, exists, select, delete
 
 from app.logic.abstract import SymbolsStorage
 from app.logic.models.symbol import Symbol, DEFAULT_AMOUNT
@@ -41,6 +41,12 @@ class SQLAlchemySymbolsStorage(SymbolsStorage):
             .values(amount=SymbolModel.amount - amount)
             .where(SymbolModel.owner_id == owner_id, SymbolModel.code == code)
         )
+        await self._session.execute(stmt)
+        await self._session.commit()
+        return
+
+    async def delete_all_user_symbols(self, user_id: int) -> None:
+        stmt = delete(SymbolModel).where(SymbolModel.owner_id == user_id)
         await self._session.execute(stmt)
         await self._session.commit()
         return

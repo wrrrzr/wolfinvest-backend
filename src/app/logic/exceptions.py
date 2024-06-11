@@ -24,3 +24,7 @@ class IncorrectUsernameError(LogicError):
 
 class IncorrectPasswordError(LogicError):
     pass
+
+
+class PermissionDenied(LogicError):
+    pass

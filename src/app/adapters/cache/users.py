@@ -38,6 +38,13 @@ class UsersCacheStorage(UsersStorage):
             0
         ].balance -= balance
 
+    async def set_balance(self, user_id: int, balance: float) -> None:
+        await self._check_user_and_update(user_id)
+        await self._inner.remove_balance(user_id, balance)
+        list(filter(lambda x: x.id == user_id, self._memory.data))[
+            0
+        ].balance = balance
+
     async def change_password(self, user_id: int, password: str) -> None:
         await self._check_user_and_update(user_id)
         await self._inner.change_password(user_id, password)
@@ -58,8 +65,14 @@ class UsersCacheStorage(UsersStorage):
             filter(lambda x: x.username == username, self._memory.data)
         )[0]
 
+    async def select_all(self) -> User:
+        return await self._inner.select_all()
+
     async def exists_by_username(self, username: str) -> bool:
         return await self._inner.exists_by_username(username)
+
+    async def delete_user(self, user_id: int) -> None:
+        await self._inner.delete_user(user_id)
 
     async def get_new_user_id(self) -> int:
         return await self._inner.get_new_user_id()

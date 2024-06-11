@@ -14,3 +14,7 @@ class RefillsStorage(ABC):
     @abstractmethod
     async def get_all_user_refills(self, user_id: int) -> list[Refill]:
         raise NotImplementedError
+
+    @abstractmethod
+    async def delete_all_user_refills(self, user_id: int) -> None:
+        raise NotImplementedError

@@ -1,5 +1,5 @@
 from .abstract import UsersStorage, AuthManager
-from .models import User
+from .models import User, USER_DEFAULT_ROLE
 from .exceptions import (
     UsernameAlreadyTakenError,
     IncorrectUsernameError,
@@ -26,6 +26,7 @@ class RegisterUser:
                 balance=DEFAULT_BALANCE,
                 username=username,
                 password=pass_hash,
+                role=USER_DEFAULT_ROLE,
             )
         )
 

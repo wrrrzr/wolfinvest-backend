@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from app.utils.dataclasses import object_to_dataclass
 from .abstract import UsersStorage
 
 
@@ -8,6 +9,7 @@ class UserGetMeDTO:
     id: int
     balance: float
     username: str
+    role: int
 
 
 class GetMe:
@@ -16,6 +18,4 @@ class GetMe:
 
     async def __call__(self, user_id: int) -> UserGetMeDTO:
         res = await self._users.select_one_by_id(user_id)
-        return UserGetMeDTO(
-            id=res.id, balance=res.balance, username=res.username
-        )
+        return object_to_dataclass(res, UserGetMeDTO)

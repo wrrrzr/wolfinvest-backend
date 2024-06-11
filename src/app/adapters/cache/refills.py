@@ -33,3 +33,9 @@ class RefillsCacheStorage(RefillsStorage):
                 await self._inner.get_all_user_refills(user_id)
             )
         return self._memory.users_refills[user_id]
+
+    async def delete_all_user_refills(self, user_id: int) -> None:
+        await self._inner.delete_all_user_refills(user_id)
+        if user_id not in self._memory.users_refills:
+            return
+        del self._memory.users_refills[user_id]

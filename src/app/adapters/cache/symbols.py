@@ -50,6 +50,9 @@ class SymbolsCacheStorage(SymbolsStorage):
         await self._update_owner(owner_id)
         self._memory.amount[owner_id][code] -= amount
 
+    async def delete_all_user_symbols(self, user_id: int) -> None:
+        await self._inner.delete_all_user_symbols(user_id)
+
     async def _check_exists_or_update(self, owner_id: int) -> None:
         if owner_id not in self._memory.owner:
             await self._update_owner(owner_id)
