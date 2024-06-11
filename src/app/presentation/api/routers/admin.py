@@ -21,7 +21,7 @@ class ChangeUserPasswordInfo(BaseModel):
 router = APIRouter(prefix="/admin", tags=["admin"])
 
 
-@router.post("/get-all-users")
+@router.get("/get-all-users")
 @inject
 async def get_all_users(
     use_case: FromDishka[GetAllUsers],

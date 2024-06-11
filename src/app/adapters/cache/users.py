@@ -40,7 +40,7 @@ class UsersCacheStorage(UsersStorage):
 
     async def set_balance(self, user_id: int, balance: float) -> None:
         await self._check_user_and_update(user_id)
-        await self._inner.remove_balance(user_id, balance)
+        await self._inner.set_balance(user_id, balance)
         list(filter(lambda x: x.id == user_id, self._memory.data))[
             0
         ].balance = balance
