@@ -10,6 +10,7 @@ class GetSymbol:
         self._symbols_getter = symbols_getter
 
     async def __call__(self, symbol: str) -> float:
+        symbol = symbol.upper()
         return await self._symbols_getter.get_price(symbol)
 
 
@@ -18,6 +19,7 @@ class GetDailySymbolHistory:
         self._symbols_getter = symbols_getter
 
     async def __call__(self, symbol: str) -> list[SymbolHistory]:
+        symbol = symbol.upper()
         return await self._symbols_getter.get_daily_history(symbol)
 
 
@@ -33,6 +35,7 @@ class BuySymbol:
         self._users = users
 
     async def __call__(self, user_id: int, symbol: str, amount: int) -> None:
+        symbol = symbol.upper()
         price = await self._symbols_getter.get_price(symbol)
         user = await self._users.select_one_by_id(user_id)
         if user.balance < price * amount:
@@ -80,6 +83,7 @@ class SellSymbol:
         self._users = users
 
     async def __call__(self, user_id: int, symbol: str, amount: int) -> float:
+        symbol = symbol.upper()
         user_amount = await self._symbols.get_amount(user_id, symbol)
         if user_amount < amount:
             raise NotEnoughSymbolsError()
