@@ -5,6 +5,12 @@ DEFAULT_AMOUNT = 0
 
 
 @dataclass
+class SymbolPrice:
+    buy: float
+    sell: float
+
+
+@dataclass
 class Symbol:
     id: int
     owner_id: int
@@ -16,10 +22,10 @@ class Symbol:
 class SymbolInList:
     code: str
     name: str
-    price: float
+    price: SymbolPrice
 
 
 @dataclass
 class SymbolHistory:
-    price: float
+    price: SymbolPrice
     timestamp: datetime

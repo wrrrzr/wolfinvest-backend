@@ -2,14 +2,14 @@ from dataclasses import dataclass
 
 from .abstract import SymbolsGetter, UsersStorage, SymbolsStorage, SymbolsList
 from .exceptions import NotEnoughBalanceError, NotEnoughSymbolsError
-from .models import SymbolHistory
+from .models import SymbolHistory, SymbolPrice
 
 
 class GetSymbol:
     def __init__(self, symbols_getter: SymbolsGetter) -> None:
         self._symbols_getter = symbols_getter
 
-    async def __call__(self, symbol: str) -> float:
+    async def __call__(self, symbol: str) -> SymbolPrice:
         symbol = symbol.upper()
         return await self._symbols_getter.get_price(symbol)
 
@@ -34,14 +34,15 @@ class BuySymbol:
         self._symbols = symbols
         self._users = users
 
-    async def __call__(self, user_id: int, symbol: str, amount: int) -> None:
+    async def __call__(self, user_id: int, symbol: str, amount: int) -> float:
         symbol = symbol.upper()
-        price = await self._symbols_getter.get_price(symbol)
+        price = (await self._symbols_getter.get_price(symbol)).buy
         user = await self._users.select_one_by_id(user_id)
         if user.balance < price * amount:
             raise NotEnoughBalanceError()
         await self._users.remove_balance(user_id, price * amount)
         await self._symbols.insert_or_add(user_id, symbol, amount)
+        return price * amount
 
 
 @dataclass
@@ -87,7 +88,7 @@ class SellSymbol:
         user_amount = await self._symbols.get_amount(user_id, symbol)
         if user_amount < amount:
             raise NotEnoughSymbolsError()
-        price = await self._symbols_getter.get_price(symbol)
+        price = (await self._symbols_getter.get_price(symbol)).sell
         await self._users.add_balance(user_id, price * amount)
         await self._symbols.remove(user_id, symbol, amount)
         return price * amount

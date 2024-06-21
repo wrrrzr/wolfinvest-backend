@@ -15,7 +15,7 @@ from app.logic.exceptions import (
     NotEnoughBalanceError,
     NotEnoughSymbolsError,
 )
-from app.logic.models import SymbolInList, SymbolHistory
+from app.logic.models import SymbolInList, SymbolHistory, SymbolPrice
 from ..di import UserId
 
 router = APIRouter(prefix="/symbols", tags=["symbols"])
@@ -23,7 +23,9 @@ router = APIRouter(prefix="/symbols", tags=["symbols"])
 
 @router.get("/get-price")
 @inject
-async def get_price(symbol: str, use_case: FromDishka[GetSymbol]) -> float:
+async def get_price(
+    symbol: str, use_case: FromDishka[GetSymbol]
+) -> SymbolPrice:
     try:
         return await use_case(symbol)
     except UnfoundSymbolError:
@@ -52,10 +54,9 @@ async def buy_symbol(
     symbol: str,
     amount: int,
     user_id: FromDishka[UserId],
-) -> str:
+) -> float:
     try:
-        await use_case(user_id, symbol, amount)
-        return "ok"
+        return await use_case(user_id, symbol, amount)
     except NotEnoughBalanceError:
         raise HTTPException(status_code=400, detail="not enough balance")
     except UnfoundSymbolError:
@@ -81,14 +82,13 @@ async def sell_symbol(
     user_id: FromDishka[UserId],
 ) -> float:
     try:
-        res = await use_case(user_id, symbol, amount)
+        return await use_case(user_id, symbol, amount)
     except NotEnoughSymbolsError:
         raise HTTPException(status_code=400, detail="not enough symbol")
     except UnfoundSymbolError:
         raise HTTPException(
             status_code=404, detail=f"Symbol named {symbol} not found"
         )
-    return res
 
 
 @router.get("/get-list-symbols")
