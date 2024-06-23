@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 
-from app.logic.models import SymbolHistory
+from app.logic.models import SymbolHistory, SymbolPrice
 
 
 class SymbolsGetter(ABC):
     @abstractmethod
-    async def get_price(self, symbol: str) -> float:
+    async def get_price(self, symbol: str) -> SymbolPrice:
         raise NotImplementedError
 
     @abstractmethod
