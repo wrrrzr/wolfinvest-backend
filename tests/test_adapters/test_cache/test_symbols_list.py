@@ -1,11 +1,13 @@
 from app.logic.abstract import SymbolsList
-from app.logic.models import SymbolInList
+from app.logic.models import SymbolInList, SymbolPrice
 from app.adapters.cache import SymbolsListCache, create_symbols_list_memory
 
 
 MOCK_SYMBOLS_LIST = [
-    SymbolInList(code="MSFT", name="Microsoft", price=100.0),
-    SymbolInList(code="AAPL", name="Apple", price=212.5),
+    SymbolInList(
+        code="MSFT", name="Microsoft", price=SymbolPrice(100.0, 99.9)
+    ),
+    SymbolInList(code="AAPL", name="Apple", price=SymbolPrice(212.5, 212.0)),
 ]
 
 

@@ -1,5 +1,5 @@
-from datetime import datetime
+from datetime import datetime, UTC
 
 
 def get_current_time() -> datetime:
-    return datetime.utcnow()
+    return datetime.now(UTC)
