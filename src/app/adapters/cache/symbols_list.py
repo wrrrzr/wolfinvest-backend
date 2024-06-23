@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from app.logic.abstract import SymbolsList
 from app.logic.models import SymbolInList
@@ -11,7 +11,7 @@ TIME_EXP_CACHE = timedelta(minutes=10)
 @dataclass
 class MemorySymbolsList:
     data: list[SymbolInList]
-    time_exp_cache: timedelta
+    time_exp_cache: datetime
 
 
 def create_symbols_list_memory() -> MemorySymbolsList:

@@ -64,20 +64,17 @@ class SQLAlchemyUsersStorage(UsersStorage):
 
     async def select_one_by_id(self, user_id: int) -> User:
         stmt = select(UserModel).where(UserModel.id == user_id)
-        res = await self._session.execute(stmt)
-        res = res.scalar_one()
+        res = (await self._session.execute(stmt)).scalar_one()
         return object_to_dataclass(res, User)
 
     async def select_one_by_username(self, username: str) -> User:
         stmt = select(UserModel).where(UserModel.username == username)
-        res = await self._session.execute(stmt)
-        res = res.scalar_one()
+        res = (await self._session.execute(stmt)).scalar_one()
         return object_to_dataclass(res, User)
 
     async def select_all(self) -> list[User]:
         stmt = select(UserModel)
-        res = await self._session.execute(stmt)
-        res = res.scalars().all()
+        res = (await self._session.execute(stmt)).scalars().all()
         return [object_to_dataclass(i, User) for i in res]
 
     async def exists_by_username(self, username: str) -> bool:

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from .abstract import SymbolsGetter, UsersStorage, SymbolsStorage, SymbolsList
 from .exceptions import NotEnoughBalanceError, NotEnoughSymbolsError
-from .models import SymbolHistory, SymbolPrice
+from .models import SymbolHistory, SymbolPrice, SymbolInList
 
 
 class GetSymbol:
@@ -49,7 +49,7 @@ class BuySymbol:
 class MySymbolDTO:
     code: str
     amount: int
-    price: float
+    price: SymbolPrice
 
 
 class GetMySymbols:
@@ -98,5 +98,5 @@ class GetListSymbols:
     def __init__(self, symbols_list: SymbolsList) -> None:
         self._symbols_list = symbols_list
 
-    async def __call__(self) -> list[str]:
+    async def __call__(self) -> list[SymbolInList]:
         return await self._symbols_list.get_all()

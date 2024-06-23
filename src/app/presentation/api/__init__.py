@@ -7,7 +7,7 @@ from app.presentation.api.di import AuthProvider
 from app.di import all_providers
 
 
-def create_app() -> None:
+def create_app() -> FastAPI:
     app = FastAPI(title="wolfinvest")
     container = make_async_container(*all_providers(), AuthProvider())
     register_routers(app)

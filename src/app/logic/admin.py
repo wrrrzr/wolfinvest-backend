@@ -42,7 +42,7 @@ class ChangeUserPassword:
         self._auth_manager = auth_manager
 
     async def __call__(
-        self, user_id: int, target: int, new_password: int
+        self, user_id: int, target: int, new_password: str
     ) -> None:
         await check_permissions(self._users, user_id)
         new_password_hash = await self._auth_manager.hash_password(

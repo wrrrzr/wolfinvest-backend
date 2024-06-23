@@ -65,7 +65,7 @@ class UsersCacheStorage(UsersStorage):
             filter(lambda x: x.username == username, self._memory.data)
         )[0]
 
-    async def select_all(self) -> User:
+    async def select_all(self) -> list[User]:
         return await self._inner.select_all()
 
     async def exists_by_username(self, username: str) -> bool:

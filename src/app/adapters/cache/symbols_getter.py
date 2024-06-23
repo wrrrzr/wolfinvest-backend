@@ -1,10 +1,10 @@
 from typing import Optional
-from datetime import timedelta
+from datetime import timedelta, datetime
 from dataclasses import dataclass
 
 from app.logic.abstract import SymbolsGetter
 from app.logic.exceptions import UnfoundSymbolError
-from app.logic.models import SymbolHistory
+from app.logic.models import SymbolHistory, SymbolPrice
 from app.utils.funcs import get_current_time
 
 TIME_EXP_PRICE = timedelta(minutes=10)
@@ -13,14 +13,14 @@ TIME_EXP_DAILY_HISTORY = timedelta(minutes=30)
 
 @dataclass
 class CachedSymbolPrice:
-    price: Optional[float]
-    time_exp_cache: timedelta
+    price: Optional[SymbolPrice]
+    time_exp_cache: datetime
 
 
 @dataclass
 class CachedSymbolDailyHistory:
     history: Optional[list[SymbolHistory]]
-    time_exp_cache: timedelta
+    time_exp_cache: datetime
 
 
 @dataclass
@@ -40,7 +40,7 @@ class SymbolsGetterCache(SymbolsGetter):
         self._inner = inner
         self._memory = memory
 
-    async def get_price(self, symbol: str) -> float:
+    async def get_price(self, symbol: str) -> SymbolPrice:
         if symbol not in self._memory.price:
             await self._set_price(symbol)
         if self._memory.price[symbol].price is None:
