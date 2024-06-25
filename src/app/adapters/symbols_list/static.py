@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from app.logic.abstract import SymbolsGetter, SymbolsList
-from app.logic.models import SymbolInList
+from app.logic.models import SymbolInList, SymbolPrice
 
 
 @dataclass
@@ -35,7 +35,7 @@ class StaticSymbolsList(SymbolsList):
             SymbolInList(
                 code=i.code,
                 name=i.name,
-                price=await self._symbols_getter.get_price(i.code),
+                price=SymbolPrice(0.0, 0.0),
             )
             for i in _data
         ]

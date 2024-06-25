@@ -1,8 +1,14 @@
 from dataclasses import dataclass
 
-from .abstract import SymbolsGetter, UsersStorage, SymbolsStorage, SymbolsList
+from .abstract import (
+    SymbolsGetter,
+    UsersStorage,
+    SymbolsStorage,
+    SymbolsList,
+    TickerFinder,
+)
 from .exceptions import NotEnoughBalanceError, NotEnoughSymbolsError
-from .models import SymbolHistory, SymbolPrice, SymbolInList
+from .models import SymbolHistory, SymbolPrice, SymbolInList, SymbolTicker
 
 
 class GetSymbol:
@@ -100,3 +106,11 @@ class GetListSymbols:
 
     async def __call__(self) -> list[SymbolInList]:
         return await self._symbols_list.get_all()
+
+
+class FindTicker:
+    def __init__(self, ticker_finder: TickerFinder) -> None:
+        self._ticker_finder = ticker_finder
+
+    async def __call__(self, name: str) -> list[SymbolTicker]:
+        return await self._ticker_finder.find_ticker(name)

@@ -15,6 +15,7 @@ from app.logic.abstract import (
     SymbolsGetter,
     AuthManager,
     SymbolsList,
+    TickerFinder,
 )
 from app.adapters.sqlalchemy.db import async_session_maker
 from app.adapters.sqlalchemy.users import SQLAlchemyUsersStorage
@@ -35,7 +36,7 @@ from app.adapters.cache import (
 from app.adapters.symbols_getter import YahooSymbolsGetter
 from app.adapters.auth import JWTAuthManager
 from app.adapters.symbols_list import StaticSymbolsList
-
+from app.adapters.ticker_finder import MemoryTickerFinder
 
 _memory_users = create_users_memory()
 _memory_symbols = create_symbols_memory()
@@ -61,6 +62,7 @@ class AdaptersProvider(Provider):
     symbols_getter = provide(YahooSymbolsGetter, provides=SymbolsGetter)
     auth_manager = provide(JWTAuthManager, provides=AuthManager)
     symbols_list = provide(StaticSymbolsList, provides=SymbolsList)
+    ticker_finder = provide(MemoryTickerFinder, provides=TickerFinder)
 
     @decorate
     def get_users_cache(self, inner: UsersStorage) -> UsersStorage:

@@ -29,3 +29,9 @@ class SymbolInList:
 class SymbolHistory:
     price: SymbolPrice
     timestamp: datetime
+
+
+@dataclass
+class SymbolTicker:
+    name: str
+    ticker: str

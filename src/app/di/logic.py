@@ -12,6 +12,7 @@ from app.logic.symbols import (
     GetMySymbols,
     SellSymbol,
     GetListSymbols,
+    FindTicker,
 )
 from app.logic.users import GetMe
 from app.logic.refills import TakeRefill, GetMyRefills
@@ -46,3 +47,4 @@ class LogicProvider(Provider):
     delete_user = provide(DeleteUser)
     change_user_password = provide(ChangeUserPassword)
     set_user_balance = provide(SetUserBalance)
+    find_ticker = provide(FindTicker)
