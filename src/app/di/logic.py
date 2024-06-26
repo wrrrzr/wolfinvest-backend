@@ -4,8 +4,8 @@ from dishka import (
     provide,
 )
 
-from app.logic.auth import RegisterUser, AuthUser
-from app.logic.symbols import (
+from app.logic.use_cases.auth import RegisterUser, AuthUser
+from app.logic.use_cases.symbols import (
     GetSymbol,
     GetDailySymbolHistory,
     BuySymbol,
@@ -13,10 +13,10 @@ from app.logic.symbols import (
     SellSymbol,
     FindTicker,
 )
-from app.logic.users import GetMe
-from app.logic.refills import TakeRefill, GetMyRefills
-from app.logic.settings import ChangePassword
-from app.logic.admin import (
+from app.logic.use_cases.users import GetMe
+from app.logic.use_cases.refills import TakeRefill, GetMyRefills
+from app.logic.use_cases.settings import ChangePassword
+from app.logic.use_cases.admin import (
     GetAllUsers,
     DeleteUser,
     ChangeUserPassword,
@@ -26,9 +26,6 @@ from app.logic.admin import (
 
 class LogicProvider(Provider):
     scope = Scope.REQUEST
-
-    def __init__(self) -> None:
-        super().__init__()
 
     get_symbol = provide(GetSymbol)
     get_daily_symbol_history = provide(GetDailySymbolHistory)

@@ -1,6 +1,6 @@
-from .abstract import UsersStorage, AuthManager
-from .models import User, USER_DEFAULT_ROLE
-from .exceptions import (
+from app.logic.abstract import UsersStorage, AuthManager
+from app.logic.models import User, USER_DEFAULT_ROLE
+from app.logic.exceptions import (
     UsernameAlreadyTakenError,
     IncorrectUsernameError,
     IncorrectPasswordError,

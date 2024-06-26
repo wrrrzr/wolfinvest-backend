@@ -1,7 +1,7 @@
 from dishka.integrations.fastapi import FromDishka, inject
 from fastapi import APIRouter
 
-from app.logic.refills import TakeRefill, GetMyRefills, MyRefillDTO
+from app.logic.use_cases.refills import TakeRefill, GetMyRefills, MyRefillDTO
 from ..di import UserId
 
 router = APIRouter(prefix="/refills", tags=["refills"])

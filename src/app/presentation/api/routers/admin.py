@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from app.logic.models import User
-from app.logic.admin import (
+from app.logic.use_cases.admin import (
     GetAllUsers,
     DeleteUser,
     ChangeUserPassword,

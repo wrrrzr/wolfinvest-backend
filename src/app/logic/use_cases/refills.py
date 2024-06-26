@@ -3,7 +3,7 @@ from datetime import datetime
 
 from app.utils.funcs import get_current_time
 from app.utils.dataclasses import object_to_dataclass
-from .abstract import UsersStorage, RefillsStorage
+from app.logic.abstract import UsersStorage, RefillsStorage
 
 
 class TakeRefill:

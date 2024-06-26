@@ -1,13 +1,13 @@
 from dataclasses import dataclass
 
-from .abstract import (
+from app.logic.abstract import (
     SymbolsGetter,
     UsersStorage,
     SymbolsStorage,
     TickerFinder,
 )
-from .exceptions import NotEnoughBalanceError, NotEnoughSymbolsError
-from .models import SymbolHistory, SymbolPrice, SymbolTicker
+from app.logic.exceptions import NotEnoughBalanceError, NotEnoughSymbolsError
+from app.logic.models import SymbolHistory, SymbolPrice, SymbolTicker
 
 
 class GetSymbol:

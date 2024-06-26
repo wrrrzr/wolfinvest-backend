@@ -1,7 +1,7 @@
 from dishka.integrations.fastapi import FromDishka, inject
 from fastapi import APIRouter, HTTPException
 
-from app.logic.symbols import (
+from app.logic.use_cases.symbols import (
     GetSymbol,
     GetDailySymbolHistory,
     BuySymbol,

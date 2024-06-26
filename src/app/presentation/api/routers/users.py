@@ -1,7 +1,7 @@
 from dishka.integrations.fastapi import FromDishka, inject
 from fastapi import APIRouter
 
-from app.logic.users import GetMe, UserGetMeDTO
+from app.logic.use_cases.users import GetMe, UserGetMeDTO
 from ..di import UserId
 
 router = APIRouter(prefix="/users", tags=["users"])

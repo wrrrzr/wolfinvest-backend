@@ -1,5 +1,5 @@
-from .abstract import UsersStorage, AuthManager
-from .exceptions import IncorrectPasswordError
+from app.logic.abstract import UsersStorage, AuthManager
+from app.logic.exceptions import IncorrectPasswordError
 
 
 class ChangePassword:

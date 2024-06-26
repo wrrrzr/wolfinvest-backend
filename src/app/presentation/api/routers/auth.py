@@ -2,7 +2,7 @@ from dishka.integrations.fastapi import FromDishka, inject
 from fastapi import APIRouter, Response, HTTPException
 from pydantic import BaseModel
 
-from app.logic.auth import RegisterUser, AuthUser
+from app.logic.use_cases.auth import RegisterUser, AuthUser
 from app.logic.exceptions import (
     UsernameAlreadyTakenError,
     IncorrectUsernameError,

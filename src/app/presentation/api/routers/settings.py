@@ -2,7 +2,7 @@ from dishka.integrations.fastapi import FromDishka, inject
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from app.logic.settings import ChangePassword
+from app.logic.use_cases.settings import ChangePassword
 from app.logic.exceptions import IncorrectPasswordError
 from ..di import UserId
 
