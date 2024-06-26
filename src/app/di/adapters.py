@@ -29,6 +29,8 @@ from app.adapters.cache import (
     create_refills_memory,
     SymbolsGetterCache,
     create_symbols_getter_memory,
+    TickerFinderCache,
+    create_ticker_finder_memory,
 )
 from app.adapters.symbols_getter import YahooSymbolsGetter
 from app.adapters.auth import JWTAuthManager
@@ -38,6 +40,7 @@ _memory_users = create_users_memory()
 _memory_symbols = create_symbols_memory()
 _memory_refills = create_refills_memory()
 _memory_symbols_getter = create_symbols_getter_memory()
+_memory_ticker_finder = create_ticker_finder_memory()
 
 
 class AdaptersProvider(Provider):
@@ -73,3 +76,7 @@ class AdaptersProvider(Provider):
     @decorate
     def get_symbols_getter_cache(self, inner: SymbolsGetter) -> SymbolsGetter:
         return SymbolsGetterCache(inner, _memory_symbols_getter)
+
+    @decorate
+    def get_ticker_finder_cache(self, inner: TickerFinder) -> TickerFinder:
+        return TickerFinderCache(inner, _memory_ticker_finder)
