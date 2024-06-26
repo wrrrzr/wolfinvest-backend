@@ -11,7 +11,6 @@ from app.logic.symbols import (
     BuySymbol,
     GetMySymbols,
     SellSymbol,
-    GetListSymbols,
     FindTicker,
 )
 from app.logic.users import GetMe
@@ -41,7 +40,6 @@ class LogicProvider(Provider):
     sell_symbol = provide(SellSymbol)
     take_refill = provide(TakeRefill)
     get_my_refills = provide(GetMyRefills)
-    get_list_symbols = provide(GetListSymbols)
     change_password = provide(ChangePassword)
     get_all_users = provide(GetAllUsers)
     delete_user = provide(DeleteUser)

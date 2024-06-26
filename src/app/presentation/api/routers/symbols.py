@@ -8,7 +8,6 @@ from app.logic.symbols import (
     GetMySymbols,
     SellSymbol,
     MySymbolDTO,
-    GetListSymbols,
     FindTicker,
 )
 from app.logic.exceptions import (
@@ -17,7 +16,6 @@ from app.logic.exceptions import (
     NotEnoughSymbolsError,
 )
 from app.logic.models import (
-    SymbolInList,
     SymbolHistory,
     SymbolPrice,
     SymbolTicker,
@@ -95,14 +93,6 @@ async def sell_symbol(
         raise HTTPException(
             status_code=404, detail=f"Symbol named {symbol} not found"
         )
-
-
-@router.get("/get-list-symbols")
-@inject
-async def get_list_symbols(
-    use_case: FromDishka[GetListSymbols],
-) -> list[SymbolInList]:
-    return await use_case()
 
 
 @router.get("/get-symbol-ticker")

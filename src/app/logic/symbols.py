@@ -4,11 +4,10 @@ from .abstract import (
     SymbolsGetter,
     UsersStorage,
     SymbolsStorage,
-    SymbolsList,
     TickerFinder,
 )
 from .exceptions import NotEnoughBalanceError, NotEnoughSymbolsError
-from .models import SymbolHistory, SymbolPrice, SymbolInList, SymbolTicker
+from .models import SymbolHistory, SymbolPrice, SymbolTicker
 
 
 class GetSymbol:
@@ -98,14 +97,6 @@ class SellSymbol:
         await self._users.add_balance(user_id, price * amount)
         await self._symbols.remove(user_id, symbol, amount)
         return price * amount
-
-
-class GetListSymbols:
-    def __init__(self, symbols_list: SymbolsList) -> None:
-        self._symbols_list = symbols_list
-
-    async def __call__(self) -> list[SymbolInList]:
-        return await self._symbols_list.get_all()
 
 
 class FindTicker:

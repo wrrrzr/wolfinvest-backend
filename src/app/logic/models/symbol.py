@@ -19,13 +19,6 @@ class Symbol:
 
 
 @dataclass
-class SymbolInList:
-    code: str
-    name: str
-    price: SymbolPrice
-
-
-@dataclass
 class SymbolHistory:
     price: SymbolPrice
     timestamp: datetime
