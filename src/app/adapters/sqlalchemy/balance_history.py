@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import insert, select
 
@@ -16,26 +18,38 @@ class SQLAlchemyBalanceHistoryStorage(BalanceHistoryStorage):
         self._session = session
 
     async def add_balance(
-        self, reason: BalanceChangeReason, user_id: int, balance: float
+        self,
+        reason: BalanceChangeReason,
+        created_at: datetime,
+        user_id: int,
+        balance: float,
     ) -> None:
         await self._change_balance(
-            BalanceChangeType.add, reason, user_id, balance
+            BalanceChangeType.add, created_at, reason, user_id, balance
         )
         return
 
     async def remove_balance(
-        self, reason: BalanceChangeReason, user_id: int, balance: float
+        self,
+        reason: BalanceChangeReason,
+        created_at: datetime,
+        user_id: int,
+        balance: float,
     ) -> None:
         await self._change_balance(
-            BalanceChangeType.remove, reason, user_id, balance
+            BalanceChangeType.remove, created_at, reason, user_id, balance
         )
         return
 
     async def set_balance(
-        self, reason: BalanceChangeReason, user_id: int, balance: float
+        self,
+        reason: BalanceChangeReason,
+        created_at: datetime,
+        user_id: int,
+        balance: float,
     ) -> None:
         await self._change_balance(
-            BalanceChangeType.set, reason, user_id, balance
+            BalanceChangeType.set, created_at, reason, user_id, balance
         )
         return
 
@@ -53,6 +67,7 @@ class SQLAlchemyBalanceHistoryStorage(BalanceHistoryStorage):
     async def _change_balance(
         self,
         change_type: BalanceChangeType,
+        created_at: datetime,
         reason: BalanceChangeReason,
         user_id: int,
         balance: float,
@@ -62,6 +77,7 @@ class SQLAlchemyBalanceHistoryStorage(BalanceHistoryStorage):
             reason=reason,
             user_id=user_id,
             amount=balance,
+            created_at=created_at,
         )
         await self._session.execute(stmt)
         await self._session.commit()

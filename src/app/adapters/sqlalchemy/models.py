@@ -50,3 +50,4 @@ class BalanceChangeModel(Base):
     reason = Column(Integer, nullable=False)
     user_id = Column(BigInteger, ForeignKey(UserModel.id), nullable=False)
     amount = Column(Float, nullable=False)
+    created_at = Column(DateTime(timezone=True), nullable=False)

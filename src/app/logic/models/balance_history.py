@@ -1,5 +1,6 @@
 from enum import IntEnum
 from dataclasses import dataclass
+from datetime import datetime
 
 
 class BalanceChangeReason(IntEnum):
@@ -20,3 +21,4 @@ class BalanceChange:
     change_type: int
     amount: float
     reason: int
+    created_at: datetime
