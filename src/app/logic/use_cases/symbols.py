@@ -7,7 +7,13 @@ from app.logic.abstract import (
     TickerFinder,
 )
 from app.logic.exceptions import NotEnoughBalanceError, NotEnoughSymbolsError
-from app.logic.models import SymbolHistory, SymbolPrice, SymbolTicker
+from app.logic.models import (
+    SymbolHistory,
+    SymbolPrice,
+    SymbolTicker,
+    BalanceChangeReason,
+)
+from app.logic.balance_editor import BalanceEditor
 
 
 class GetSymbol:
@@ -34,10 +40,12 @@ class BuySymbol:
         symbols_getter: SymbolsGetter,
         symbols: SymbolsStorage,
         users: UsersStorage,
+        users_balance: BalanceEditor,
     ) -> None:
         self._symbols_getter = symbols_getter
         self._symbols = symbols
         self._users = users
+        self._users_balance = users_balance
 
     async def __call__(self, user_id: int, symbol: str, amount: int) -> float:
         symbol = symbol.upper()
@@ -45,7 +53,9 @@ class BuySymbol:
         user = await self._users.select_one_by_id(user_id)
         if user.balance < price * amount:
             raise NotEnoughBalanceError()
-        await self._users.remove_balance(user_id, price * amount)
+        await self._users_balance.remove_balance(
+            BalanceChangeReason.buy_symbol, user_id, price * amount
+        )
         await self._symbols.insert_or_add(user_id, symbol, amount)
         return price * amount
 
@@ -82,11 +92,11 @@ class SellSymbol:
         self,
         symbols_getter: SymbolsGetter,
         symbols: SymbolsStorage,
-        users: UsersStorage,
+        users_balance: BalanceEditor,
     ) -> None:
         self._symbols_getter = symbols_getter
         self._symbols = symbols
-        self._users = users
+        self._users_balance = users_balance
 
     async def __call__(self, user_id: int, symbol: str, amount: int) -> float:
         symbol = symbol.upper()
@@ -94,7 +104,9 @@ class SellSymbol:
         if user_amount < amount:
             raise NotEnoughSymbolsError()
         price = (await self._symbols_getter.get_price(symbol)).sell
-        await self._users.add_balance(user_id, price * amount)
+        await self._users_balance.add_balance(
+            BalanceChangeReason.sold_symbol, user_id, price * amount
+        )
         await self._symbols.remove(user_id, symbol, amount)
         return price * amount
 

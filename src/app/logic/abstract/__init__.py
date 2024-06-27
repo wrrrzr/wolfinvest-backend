@@ -4,6 +4,7 @@ from .refills_storage import RefillsStorage
 from .symbols_getter import SymbolsGetter
 from .auth_manager import AuthManager
 from .ticker_finder import TickerFinder
+from .balance_history_storage import BalanceHistoryStorage
 
 __all__ = (
     "UsersStorage",
@@ -12,4 +13,5 @@ __all__ = (
     "SymbolsGetter",
     "AuthManager",
     "TickerFinder",
+    "BalanceHistoryStorage",
 )

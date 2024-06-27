@@ -22,6 +22,7 @@ from app.logic.use_cases.admin import (
     ChangeUserPassword,
     SetUserBalance,
 )
+from app.logic.use_cases.balance_history import GetMyBalanceHistory
 
 
 class LogicProvider(Provider):
@@ -43,3 +44,4 @@ class LogicProvider(Provider):
     change_user_password = provide(ChangeUserPassword)
     set_user_balance = provide(SetUserBalance)
     find_ticker = provide(FindTicker)
+    get_my_balance_history = provide(GetMyBalanceHistory)

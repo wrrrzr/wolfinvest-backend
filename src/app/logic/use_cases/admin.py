@@ -1,4 +1,4 @@
-from app.logic.models import User, Role
+from app.logic.models import User, Role, BalanceChangeReason
 from app.logic.exceptions import PermissionDenied
 from app.logic.abstract import (
     UsersStorage,
@@ -6,6 +6,7 @@ from app.logic.abstract import (
     SymbolsStorage,
     AuthManager,
 )
+from app.logic.balance_editor import BalanceEditor
 
 
 async def check_permissions(users: UsersStorage, user_id: int) -> None:
@@ -57,11 +58,16 @@ class ChangeUserPassword:
 
 
 class SetUserBalance:
-    def __init__(self, users: UsersStorage) -> None:
+    def __init__(
+        self, users: UsersStorage, users_balance: BalanceEditor
+    ) -> None:
         self._users = users
+        self._users_balance = users_balance
 
     async def __call__(
         self, user_id: int, target: int, new_balance: float
     ) -> None:
         await check_permissions(self._users, user_id)
-        await self._users.set_balance(target, new_balance)
+        await self._users_balance.set_balance(
+            BalanceChangeReason.admin_set, target, new_balance
+        )

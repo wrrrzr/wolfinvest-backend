@@ -15,11 +15,15 @@ from app.logic.abstract import (
     SymbolsGetter,
     AuthManager,
     TickerFinder,
+    BalanceHistoryStorage,
 )
 from app.adapters.sqlalchemy.db import async_session_maker
 from app.adapters.sqlalchemy.users import SQLAlchemyUsersStorage
 from app.adapters.sqlalchemy.symbols import SQLAlchemySymbolsStorage
 from app.adapters.sqlalchemy.refills import SQLAlchemyRefillsStorage
+from app.adapters.sqlalchemy.balance_history import (
+    SQLAlchemyBalanceHistoryStorage,
+)
 from app.adapters.cache import (
     UsersCacheStorage,
     create_users_memory,
@@ -60,6 +64,9 @@ class AdaptersProvider(Provider):
     symbols_getter = provide(YahooSymbolsGetter, provides=SymbolsGetter)
     auth_manager = provide(JWTAuthManager, provides=AuthManager)
     ticker_finder = provide(MemoryTickerFinder, provides=TickerFinder)
+    balance_history = provide(
+        SQLAlchemyBalanceHistoryStorage, provides=BalanceHistoryStorage
+    )
 
     @decorate
     def get_users_cache(self, inner: UsersStorage) -> UsersStorage:

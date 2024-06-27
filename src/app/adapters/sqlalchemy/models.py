@@ -39,4 +39,14 @@ class RefillModel(Base):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     user_id = Column(BigInteger, ForeignKey(UserModel.id), nullable=False)
     amount = Column(BigInteger, nullable=False)
-    created_at = Column(DateTime, nullable=False)
+    created_at = Column(DateTime(timezone=True), nullable=False)
+
+
+class BalanceChangeModel(Base):
+    __tablename__ = "balance_change"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    change_type = Column(Integer, nullable=False)
+    reason = Column(Integer, nullable=False)
+    user_id = Column(BigInteger, ForeignKey(UserModel.id), nullable=False)
+    amount = Column(Float, nullable=False)
