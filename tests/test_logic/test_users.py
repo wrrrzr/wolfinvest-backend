@@ -2,7 +2,7 @@ import pytest
 
 from app.logic.abstract import UsersStorage
 from app.logic.models import User, USER_DEFAULT_ROLE
-from app.logic.users import GetMe, UserGetMeDTO
+from app.logic.use_cases.users import GetMe, UserGetMeDTO
 
 
 class MockUsersStorage(UsersStorage):

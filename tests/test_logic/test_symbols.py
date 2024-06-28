@@ -1,7 +1,7 @@
 import pytest
 
 from app.logic.abstract import SymbolsGetter
-from app.logic.symbols import GetSymbol
+from app.logic.use_cases.symbols import GetSymbol
 
 
 class MockSymbolsGetter(SymbolsGetter):
