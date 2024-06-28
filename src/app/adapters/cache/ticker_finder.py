@@ -9,7 +9,7 @@ class TickerFinderMemory:
     data: dict[str, list[SymbolTicker]]
 
 
-def create_ticker_finder_memory() -> TickerFinder:
+def create_ticker_finder_memory() -> TickerFinderMemory:
     return TickerFinderMemory({})
 
 
