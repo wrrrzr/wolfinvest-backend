@@ -1,7 +1,17 @@
 from dataclasses import dataclass
 from datetime import datetime
+from enum import IntEnum, auto
 
 DEFAULT_AMOUNT = 0
+
+
+class SymbolHistoryInterval(IntEnum):
+    FIVE_MINUTES = auto()
+    HOUR = auto()
+    DAY = auto()
+    WEEK = auto()
+    MONTH = auto()
+    THREE_MONTHS = auto()
 
 
 @dataclass

@@ -12,6 +12,7 @@ from app.logic.models import (
     SymbolHistory,
     SymbolPrice,
     SymbolTicker,
+    SymbolHistoryInterval,
     BalanceChangeReason,
 )
 from app.logic.balance_editor import BalanceEditor
@@ -26,13 +27,15 @@ class GetSymbol:
         return await self._symbols_getter.get_price(symbol)
 
 
-class GetDailySymbolHistory:
+class GetSymbolHistory:
     def __init__(self, symbols_getter: SymbolsHistoryGetter) -> None:
         self._symbols_getter = symbols_getter
 
-    async def __call__(self, symbol: str) -> list[SymbolHistory]:
+    async def __call__(
+        self, interval: SymbolHistoryInterval, symbol: str
+    ) -> list[SymbolHistory]:
         symbol = symbol.upper()
-        return await self._symbols_getter.get_daily_history(symbol)
+        return await self._symbols_getter.get_history(interval, symbol)
 
 
 class BuySymbol:

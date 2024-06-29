@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.logic.use_cases.symbols import (
     GetSymbol,
-    GetDailySymbolHistory,
+    GetSymbolHistory,
     BuySymbol,
     GetMySymbols,
     SellSymbol,
@@ -19,6 +19,7 @@ from app.logic.models import (
     SymbolHistory,
     SymbolPrice,
     SymbolTicker,
+    SymbolHistoryInterval,
 )
 from ..di import UserId
 
@@ -38,13 +39,15 @@ async def get_price(
         )
 
 
-@router.get("/get-daily-history")
+@router.get("/get-history")
 @inject
-async def get_daily_history(
-    symbol: str, use_case: FromDishka[GetDailySymbolHistory]
+async def get_history(
+    interval: SymbolHistoryInterval,
+    symbol: str,
+    use_case: FromDishka[GetSymbolHistory],
 ) -> list[SymbolHistory]:
     try:
-        return await use_case(symbol)
+        return await use_case(interval, symbol)
     except UnfoundSymbolError:
         raise HTTPException(
             status_code=404, detail=f"Symbol named {symbol} not found"

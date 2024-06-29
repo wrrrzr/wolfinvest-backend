@@ -3,7 +3,7 @@ from dishka import Provider, Scope, provide_all
 from app.logic.use_cases.auth import RegisterUser, AuthUser
 from app.logic.use_cases.symbols import (
     GetSymbol,
-    GetDailySymbolHistory,
+    GetSymbolHistory,
     BuySymbol,
     GetMySymbols,
     SellSymbol,
@@ -26,7 +26,7 @@ class LogicProvider(Provider):
 
     use_cases = provide_all(
         GetSymbol,
-        GetDailySymbolHistory,
+        GetSymbolHistory,
         RegisterUser,
         AuthUser,
         GetMe,

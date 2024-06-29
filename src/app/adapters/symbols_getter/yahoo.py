@@ -1,25 +1,50 @@
 from datetime import datetime
+from dataclasses import dataclass
 
 import aiohttp
 
 from app.logic.abstract import SymbolsPriceGetter, SymbolsHistoryGetter
 from app.logic.exceptions import UnfoundSymbolError
-from app.logic.models import SymbolHistory, SymbolPrice
+from app.logic.models import SymbolHistory, SymbolPrice, SymbolHistoryInterval
+
+
+@dataclass
+class YahooHistoryData:
+    interval: str
+    history: str
+
+
+SYMBOLS_HISTORY_INTERVALS_YAHOO = {
+    SymbolHistoryInterval.FIVE_MINUTES: YahooHistoryData("5m", "1d"),
+    SymbolHistoryInterval.HOUR: YahooHistoryData("1h", "5d"),
+    SymbolHistoryInterval.DAY: YahooHistoryData("1d", "1mo"),
+    SymbolHistoryInterval.WEEK: YahooHistoryData("1wk", "3mo"),
+    SymbolHistoryInterval.MONTH: YahooHistoryData("1mo", "5y"),
+    SymbolHistoryInterval.THREE_MONTHS: YahooHistoryData("3mo", "max"),
+}
 
 
 class YahooSymbolsGetter(SymbolsPriceGetter, SymbolsHistoryGetter):
     async def get_price(self, symbol: str) -> SymbolPrice:
-        return (await self.get_daily_history(symbol))[0].price
+        return (
+            await self.get_daily_history(
+                SymbolHistoryInterval.FIVE_MINUTES, symbol
+            )
+        )[0].price
 
-    async def get_daily_history(self, symbol: str) -> list[SymbolHistory]:
+    async def get_history(
+        self, interval: SymbolHistoryInterval, symbol: str
+    ) -> list[SymbolHistory]:
         try:
+            history_data = SYMBOLS_HISTORY_INTERVALS_YAHOO[interval]
+            url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
             async with aiohttp.ClientSession() as session:
                 async with session.get(
-                    f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}",
+                    url,
                     params={
                         "events": "history",
-                        "interval": "30m",
-                        "history": "1d",
+                        "interval": history_data.interval,
+                        "range": history_data.history,
                     },
                 ) as resp:
                     resp = await resp.json()

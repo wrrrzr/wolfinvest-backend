@@ -4,11 +4,11 @@ from dataclasses import dataclass
 
 from app.logic.abstract import SymbolsGetter
 from app.logic.exceptions import UnfoundSymbolError
-from app.logic.models import SymbolHistory, SymbolPrice
+from app.logic.models import SymbolHistory, SymbolPrice, SymbolHistoryInterval
 from app.utils.funcs import get_current_time
 
 TIME_EXP_PRICE = timedelta(minutes=10)
-TIME_EXP_DAILY_HISTORY = timedelta(minutes=30)
+TIME_EXP_HISTORY = timedelta(minutes=30)
 
 
 @dataclass
@@ -18,15 +18,15 @@ class CachedSymbolPrice:
 
 
 @dataclass
-class CachedSymbolDailyHistory:
-    history: Optional[list[SymbolHistory]]
+class CachedSymbolHistory:
+    history: Optional[dict[SymbolHistoryInterval, list[SymbolHistory]]]
     time_exp_cache: datetime
 
 
 @dataclass
 class MemorySymbolsGetter:
     price: dict[str, CachedSymbolPrice]
-    daily_history: dict[str, CachedSymbolDailyHistory]
+    history: dict[str, CachedSymbolHistory]
 
 
 def create_symbols_getter_memory() -> MemorySymbolsGetter:
@@ -51,17 +51,19 @@ class SymbolsGetterCache(SymbolsGetter):
             await self._set_price(symbol)
         return self._memory.price[symbol].price
 
-    async def get_daily_history(self, symbol: str) -> list[SymbolHistory]:
-        if symbol not in self._memory.daily_history:
-            await self._set_daily_history(symbol)
-        if self._memory.daily_history[symbol].history is None:
-            raise UnfoundSymbolError()
+    async def get_history(
+        self, interval: SymbolHistoryInterval, symbol: str
+    ) -> list[SymbolHistory]:
         if (
-            self._memory.daily_history[symbol].time_exp_cache
-            < get_current_time()
+            symbol not in self._memory.history
+            or interval not in self._memory.history[symbol].history
         ):
-            await self._set_daily_history(symbol)
-        return self._memory.daily_history[symbol].history
+            await self._set_history(interval, symbol)
+        if self._memory.history[symbol].history is None:
+            raise UnfoundSymbolError()
+        if self._memory.history[symbol].time_exp_cache < get_current_time():
+            await self._set_history(interval, symbol)
+        return self._memory.history[symbol].history[interval]
 
     async def _set_price(self, symbol: str) -> None:
         try:
@@ -72,11 +74,20 @@ class SymbolsGetterCache(SymbolsGetter):
             price, get_current_time() + TIME_EXP_PRICE
         )
 
-    async def _set_daily_history(self, symbol: str) -> None:
+    async def _set_history(
+        self, interval: SymbolHistoryInterval, symbol: str
+    ) -> None:
         try:
-            history = await self._inner.get_daily_history(symbol)
+            history = await self._inner.get_history(interval, symbol)
         except UnfoundSymbolError:
             history = None
-        self._memory.daily_history[symbol] = CachedSymbolDailyHistory(
-            history, get_current_time() + TIME_EXP_DAILY_HISTORY
-        )
+        if history is None:
+            self._memory.history[symbol] = CachedSymbolHistory(
+                None, get_current_time()
+            )
+            return
+        if symbol not in self._memory.history:
+            self._memory.history[symbol] = CachedSymbolHistory(
+                {}, get_current_time() + TIME_EXP_HISTORY
+            )
+        self._memory.history[symbol].history[interval] = history
