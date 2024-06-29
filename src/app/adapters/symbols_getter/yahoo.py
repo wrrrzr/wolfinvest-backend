@@ -27,9 +27,7 @@ SYMBOLS_HISTORY_INTERVALS_YAHOO = {
 class YahooSymbolsGetter(SymbolsPriceGetter, SymbolsHistoryGetter):
     async def get_price(self, symbol: str) -> SymbolPrice:
         return (
-            await self.get_daily_history(
-                SymbolHistoryInterval.FIVE_MINUTES, symbol
-            )
+            await self.get_history(SymbolHistoryInterval.FIVE_MINUTES, symbol)
         )[0].price
 
     async def get_history(
