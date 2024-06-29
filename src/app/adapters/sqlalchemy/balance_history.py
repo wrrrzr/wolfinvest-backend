@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import insert, select
 
-from app.logic.abstract import BalanceHistoryStorage
+from app.logic.abstract import BalanceHistoryEditor, BalanceHistoryAllSelector
 from app.logic.models import (
     BalanceChangeReason,
     BalanceChangeType,
@@ -13,7 +13,9 @@ from app.utils.dataclasses import object_to_dataclass
 from .models import BalanceChangeModel
 
 
-class SQLAlchemyBalanceHistoryStorage(BalanceHistoryStorage):
+class SQLAlchemyBalanceHistoryStorage(
+    BalanceHistoryEditor, BalanceHistoryAllSelector
+):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 

@@ -15,7 +15,8 @@ from app.logic.abstract import (
     SymbolsGetter,
     AuthManager,
     TickerFinder,
-    BalanceHistoryStorage,
+    BalanceHistoryEditor,
+    BalanceHistoryAllSelector,
 )
 from app.adapters.sqlalchemy.db import async_session_maker
 from app.adapters.sqlalchemy.users import SQLAlchemyUsersStorage
@@ -64,8 +65,11 @@ class AdaptersProvider(Provider):
     symbols_getter = provide(YahooSymbolsGetter, provides=SymbolsGetter)
     auth_manager = provide(JWTAuthManager, provides=AuthManager)
     ticker_finder = provide(MemoryTickerFinder, provides=TickerFinder)
-    balance_history = provide(
-        SQLAlchemyBalanceHistoryStorage, provides=BalanceHistoryStorage
+    balance_history_editor = provide(
+        SQLAlchemyBalanceHistoryStorage, provides=BalanceHistoryEditor
+    )
+    balance_history_selector = provide(
+        SQLAlchemyBalanceHistoryStorage, provides=BalanceHistoryAllSelector
     )
 
     @decorate

@@ -4,7 +4,7 @@ from datetime import datetime
 from app.logic.models import BalanceChangeReason, BalanceChange
 
 
-class BalanceHistoryStorage(ABC):
+class BalanceHistoryEditor(ABC):
     @abstractmethod
     async def add_balance(
         self,
@@ -35,6 +35,8 @@ class BalanceHistoryStorage(ABC):
     ) -> None:
         raise NotImplementedError
 
+
+class BalanceHistoryAllSelector(ABC):
     @abstractmethod
     async def select_all_user_history(
         self, user_id: int
