@@ -35,7 +35,9 @@ def create_symbols_getter_memory() -> MemorySymbolsGetter:
 
 class SymbolsGetterCache(SymbolsGetter):
     def __init__(
-        self, inner: SymbolsGetter, memory: MemorySymbolsGetter
+        self,
+        inner: SymbolsGetter,
+        memory: MemorySymbolsGetter,
     ) -> None:
         self._inner = inner
         self._memory = memory

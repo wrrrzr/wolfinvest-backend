@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from dishka import (
     Provider,
     Scope,
+    AnyOf,
     provide,
     decorate,
 )
@@ -12,6 +13,8 @@ from app.logic.abstract import (
     UsersStorage,
     SymbolsStorage,
     RefillsStorage,
+    SymbolsPriceGetter,
+    SymbolsHistoryGetter,
     SymbolsGetter,
     AuthManager,
     TickerFinder,
@@ -62,7 +65,6 @@ class AdaptersProvider(Provider):
     users = provide(SQLAlchemyUsersStorage, provides=UsersStorage)
     symbols = provide(SQLAlchemySymbolsStorage, provides=SymbolsStorage)
     refills = provide(SQLAlchemyRefillsStorage, provides=RefillsStorage)
-    symbols_getter = provide(YahooSymbolsGetter, provides=SymbolsGetter)
     auth_manager = provide(JWTAuthManager, provides=AuthManager)
     ticker_finder = provide(MemoryTickerFinder, provides=TickerFinder)
     balance_history_editor = provide(
@@ -71,6 +73,12 @@ class AdaptersProvider(Provider):
     balance_history_selector = provide(
         SQLAlchemyBalanceHistoryStorage, provides=BalanceHistoryAllSelector
     )
+
+    @provide
+    def symbols_getter(
+        self,
+    ) -> AnyOf[SymbolsPriceGetter, SymbolsHistoryGetter]:
+        return SymbolsGetterCache(YahooSymbolsGetter(), _memory_symbols_getter)
 
     @decorate
     def get_users_cache(self, inner: UsersStorage) -> UsersStorage:
@@ -83,10 +91,6 @@ class AdaptersProvider(Provider):
     @decorate
     def get_refills_cache(self, inner: RefillsStorage) -> RefillsStorage:
         return RefillsCacheStorage(inner, _memory_refills)
-
-    @decorate
-    def get_symbols_getter_cache(self, inner: SymbolsGetter) -> SymbolsGetter:
-        return SymbolsGetterCache(inner, _memory_symbols_getter)
 
     @decorate
     def get_ticker_finder_cache(self, inner: TickerFinder) -> TickerFinder:

@@ -2,12 +2,12 @@ from datetime import datetime
 
 import aiohttp
 
-from app.logic.abstract import SymbolsGetter
+from app.logic.abstract import SymbolsPriceGetter, SymbolsHistoryGetter
 from app.logic.exceptions import UnfoundSymbolError
 from app.logic.models import SymbolHistory, SymbolPrice
 
 
-class YahooSymbolsGetter(SymbolsGetter):
+class YahooSymbolsGetter(SymbolsPriceGetter, SymbolsHistoryGetter):
     async def get_price(self, symbol: str) -> SymbolPrice:
         return (await self.get_daily_history(symbol))[0].price
 

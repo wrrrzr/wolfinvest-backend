@@ -3,11 +3,17 @@ from abc import ABC, abstractmethod
 from app.logic.models import SymbolHistory, SymbolPrice
 
 
-class SymbolsGetter(ABC):
+class SymbolsPriceGetter(ABC):
     @abstractmethod
     async def get_price(self, symbol: str) -> SymbolPrice:
         raise NotImplementedError
 
+
+class SymbolsHistoryGetter(ABC):
     @abstractmethod
     async def get_daily_history(self, symbol: str) -> list[SymbolHistory]:
         raise NotImplementedError
+
+
+class SymbolsGetter(SymbolsPriceGetter, SymbolsHistoryGetter, ABC):
+    pass

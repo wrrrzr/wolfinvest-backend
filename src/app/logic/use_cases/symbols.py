@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 
 from app.logic.abstract import (
-    SymbolsGetter,
+    SymbolsPriceGetter,
+    SymbolsHistoryGetter,
     UsersStorage,
     SymbolsStorage,
     TickerFinder,
@@ -17,7 +18,7 @@ from app.logic.balance_editor import BalanceEditor
 
 
 class GetSymbol:
-    def __init__(self, symbols_getter: SymbolsGetter) -> None:
+    def __init__(self, symbols_getter: SymbolsPriceGetter) -> None:
         self._symbols_getter = symbols_getter
 
     async def __call__(self, symbol: str) -> SymbolPrice:
@@ -26,7 +27,7 @@ class GetSymbol:
 
 
 class GetDailySymbolHistory:
-    def __init__(self, symbols_getter: SymbolsGetter) -> None:
+    def __init__(self, symbols_getter: SymbolsHistoryGetter) -> None:
         self._symbols_getter = symbols_getter
 
     async def __call__(self, symbol: str) -> list[SymbolHistory]:
@@ -37,7 +38,7 @@ class GetDailySymbolHistory:
 class BuySymbol:
     def __init__(
         self,
-        symbols_getter: SymbolsGetter,
+        symbols_getter: SymbolsPriceGetter,
         symbols: SymbolsStorage,
         users: UsersStorage,
         users_balance: BalanceEditor,
@@ -69,7 +70,7 @@ class MySymbolDTO:
 
 class GetMySymbols:
     def __init__(
-        self, symbols: SymbolsStorage, symbols_getter: SymbolsGetter
+        self, symbols: SymbolsStorage, symbols_getter: SymbolsPriceGetter
     ) -> None:
         self._symbols = symbols
         self._symbols_getter = symbols_getter
@@ -90,7 +91,7 @@ class GetMySymbols:
 class SellSymbol:
     def __init__(
         self,
-        symbols_getter: SymbolsGetter,
+        symbols_getter: SymbolsPriceGetter,
         symbols: SymbolsStorage,
         users_balance: BalanceEditor,
     ) -> None:
