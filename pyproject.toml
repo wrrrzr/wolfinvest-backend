@@ -3,7 +3,7 @@ name = "app"
 version = "0.0.1"
 requires-python = ">=3.12"
 dependencies = [
-    "dishka~=1.0.0",
+    "dishka~=1.1.0",
     "sqlalchemy~=2.0.29",
     "alembic~=1.13.1",
     "fastapi~=0.110.1",
