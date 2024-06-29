@@ -1,4 +1,14 @@
-from .users_storage import UsersStorage
+from .users_storage import (
+    UsersAdder,
+    UsersBalanceEditor,
+    UsersPasswordEditor,
+    UsersOneSelector,
+    UsersAllSelector,
+    UsersChecker,
+    UsersDeleter,
+    UsersIdGetter,
+    UsersStorage,
+)
 from .symbols_storage import SymbolsStorage
 from .refills_storage import RefillsStorage
 from .symbols_getter import (
@@ -14,6 +24,14 @@ from .balance_history_storage import (
 )
 
 __all__ = (
+    "UsersAdder",
+    "UsersBalanceEditor",
+    "UsersPasswordEditor",
+    "UsersOneSelector",
+    "UsersAllSelector",
+    "UsersChecker",
+    "UsersDeleter",
+    "UsersIdGetter",
     "UsersStorage",
     "SymbolsStorage",
     "RefillsStorage",

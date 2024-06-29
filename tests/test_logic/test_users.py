@@ -1,39 +1,12 @@
 import pytest
 
-from app.logic.abstract import UsersStorage
+from app.logic.abstract import UsersOneSelector
 from app.logic.models import User, USER_DEFAULT_ROLE
 from app.logic.use_cases.users import GetMe, UserGetMeDTO
 
 
-class MockUsersStorage(UsersStorage):
-    async def insert() -> None:
-        pass
-
+class MockUsersStorage(UsersOneSelector):
     async def select_one_by_username() -> None:
-        pass
-
-    async def select_all() -> None:
-        pass
-
-    async def change_password() -> None:
-        pass
-
-    async def exists_by_username() -> None:
-        pass
-
-    async def add_balance() -> None:
-        pass
-
-    async def remove_balance() -> None:
-        pass
-
-    async def set_balance() -> None:
-        pass
-
-    async def delete_user() -> None:
-        pass
-
-    async def get_new_user_id() -> None:
         pass
 
     async def select_one_by_id(self, user_id: int) -> User:

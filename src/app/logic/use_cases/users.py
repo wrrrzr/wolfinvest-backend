@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from app.utils.dataclasses import object_to_dataclass
-from app.logic.abstract import UsersStorage
+from app.logic.abstract import UsersOneSelector
 
 
 @dataclass
@@ -13,7 +13,7 @@ class UserGetMeDTO:
 
 
 class GetMe:
-    def __init__(self, users: UsersStorage) -> None:
+    def __init__(self, users: UsersOneSelector) -> None:
         self._users = users
 
     async def __call__(self, user_id: int) -> UserGetMeDTO:

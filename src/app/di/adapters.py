@@ -10,12 +10,18 @@ from dishka import (
 )
 
 from app.logic.abstract import (
-    UsersStorage,
+    UsersAdder,
+    UsersBalanceEditor,
+    UsersPasswordEditor,
+    UsersOneSelector,
+    UsersAllSelector,
+    UsersChecker,
+    UsersDeleter,
+    UsersIdGetter,
     SymbolsStorage,
     RefillsStorage,
     SymbolsPriceGetter,
     SymbolsHistoryGetter,
-    SymbolsGetter,
     AuthManager,
     TickerFinder,
     BalanceHistoryEditor,
@@ -62,7 +68,6 @@ class AdaptersProvider(Provider):
         async with async_session_maker() as session:
             yield session
 
-    users = provide(SQLAlchemyUsersStorage, provides=UsersStorage)
     symbols = provide(SQLAlchemySymbolsStorage, provides=SymbolsStorage)
     refills = provide(SQLAlchemyRefillsStorage, provides=RefillsStorage)
     auth_manager = provide(JWTAuthManager, provides=AuthManager)
@@ -75,14 +80,25 @@ class AdaptersProvider(Provider):
     )
 
     @provide
+    def users_storage(self, session: AsyncSession) -> AnyOf[
+        UsersAdder,
+        UsersBalanceEditor,
+        UsersPasswordEditor,
+        UsersOneSelector,
+        UsersAllSelector,
+        UsersChecker,
+        UsersDeleter,
+        UsersIdGetter,
+    ]:
+        return UsersCacheStorage(
+            SQLAlchemyUsersStorage(session), _memory_users
+        )
+
+    @provide
     def symbols_getter(
         self,
     ) -> AnyOf[SymbolsPriceGetter, SymbolsHistoryGetter]:
         return SymbolsGetterCache(YahooSymbolsGetter(), _memory_symbols_getter)
-
-    @decorate
-    def get_users_cache(self, inner: UsersStorage) -> UsersStorage:
-        return UsersCacheStorage(inner, _memory_users)
 
     @decorate
     def get_symbols_cache(self, inner: SymbolsStorage) -> SymbolsStorage:

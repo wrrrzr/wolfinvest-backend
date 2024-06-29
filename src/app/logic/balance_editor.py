@@ -1,11 +1,11 @@
-from app.logic.abstract import UsersStorage, BalanceHistoryEditor
+from app.logic.abstract import UsersBalanceEditor, BalanceHistoryEditor
 from app.logic.models import BalanceChangeReason
 from app.utils.funcs import get_current_time
 
 
 class BalanceEditor:
     def __init__(
-        self, users: UsersStorage, balance_history: BalanceHistoryEditor
+        self, users: UsersBalanceEditor, balance_history: BalanceHistoryEditor
     ) -> None:
         self._users = users
         self._balance_history = balance_history

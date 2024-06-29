@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from app.logic.abstract import (
     SymbolsPriceGetter,
     SymbolsHistoryGetter,
-    UsersStorage,
+    UsersOneSelector,
     SymbolsStorage,
     TickerFinder,
 )
@@ -40,7 +40,7 @@ class BuySymbol:
         self,
         symbols_getter: SymbolsPriceGetter,
         symbols: SymbolsStorage,
-        users: UsersStorage,
+        users: UsersOneSelector,
         users_balance: BalanceEditor,
     ) -> None:
         self._symbols_getter = symbols_getter
