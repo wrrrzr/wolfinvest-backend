@@ -48,7 +48,7 @@ from app.adapters.cache import (
 )
 from app.adapters.symbols_getter import YahooSymbolsGetter
 from app.adapters.auth import JWTAuthManager
-from app.adapters.ticker_finder import MemoryTickerFinder
+from app.adapters.ticker_finder import TickersFileTickerFinder
 
 _memory_users = create_users_memory()
 _memory_symbols = create_symbols_memory()
@@ -71,7 +71,7 @@ class AdaptersProvider(Provider):
     symbols = provide(SQLAlchemySymbolsStorage, provides=SymbolsStorage)
     refills = provide(SQLAlchemyRefillsStorage, provides=RefillsStorage)
     auth_manager = provide(JWTAuthManager, provides=AuthManager)
-    ticker_finder = provide(MemoryTickerFinder, provides=TickerFinder)
+    ticker_finder = provide(TickersFileTickerFinder, provides=TickerFinder)
     balance_history_editor = provide(
         SQLAlchemyBalanceHistoryStorage, provides=BalanceHistoryEditor
     )

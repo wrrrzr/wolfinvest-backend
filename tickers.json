@@ -1,7 +1,4 @@
-from app.logic.abstract import TickerFinder
-from app.logic.models import SymbolTicker
-
-TICKERS_KV = {
+{
     "microsoft": "MSFT",
     "apple": "AAPL",
     "nvidia": "NVDA",
@@ -27,14 +24,20 @@ TICKERS_KV = {
     "uber": "UBER",
     "nike": "NIKE",
     "paypal": "PYPL",
+    "intel": "INTC",
+    "johnson & johnson": "JNJ",
+    "bank of america": "BAC",
+    "pepsico": "PEP",
+    "t-mobile us": "TMUS",
+    "cisco systems": "CSCO",
+    "disney": "DIS",
+    "mcdonald's": "MCD",
+    "texas instruments": "TXN",
+    "verizon communications": "VZ",
+    "american express company": "AXP",
+    "caterpillar": "CAT",
+    "philip morris international": "PM",
+    "ibm": "IBM",
+    "morgan stanley": "MS",
+    "pfizer": "PFE"
 }
-
-
-class MemoryTickerFinder(TickerFinder):
-    async def find_ticker(self, name: str) -> list[SymbolTicker]:
-        name = name.lower()
-        return [
-            SymbolTicker(name=k, ticker=v)
-            for k, v in TICKERS_KV.items()
-            if name in k
-        ]

@@ -17,6 +17,11 @@ class JWTConfig:
     auth_secret_key: str
 
 
+@dataclass
+class TickersConfig:
+    file_path: str
+
+
 def getenv(key: str) -> str:
     val = os.getenv(key)
     if val is None:
@@ -32,3 +37,8 @@ def load_jwt_config() -> JWTConfig:
 def load_sqlalchemy_config() -> SQLAlchemyConfig:
     db_uri = getenv("DB_URI")
     return SQLAlchemyConfig(db_uri=db_uri)
+
+
+def load_tickers_config() -> TickersConfig:
+    file_path = getenv("TICKERS_FILE_PATH")
+    return TickersConfig(file_path=file_path)

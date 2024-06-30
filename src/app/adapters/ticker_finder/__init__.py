@@ -1,3 +1,3 @@
-from .memory import MemoryTickerFinder
+from .tickers_file import TickersFileTickerFinder
 
-__all__ = ("MemoryTickerFinder",)
+__all__ = ("TickersFileTickerFinder",)

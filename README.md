@@ -10,6 +10,7 @@ Set env values
 ```bash
 DB_URI=postgresql+asyncpg://user:password@localhost/database
 AUTH_SECRET_KEY=secret_key
+TICKERS_FILE_PATH=tickers.json
 ```
 
 Run
