@@ -17,20 +17,20 @@ from app.logic.exceptions import (
 )
 from app.logic.models import (
     SymbolHistory,
-    SymbolPrice,
     SymbolTicker,
     SymbolHistoryInterval,
+    SymbolData,
 )
 from ..di import UserId
 
 router = APIRouter(prefix="/symbols", tags=["symbols"])
 
 
-@router.get("/get-price")
+@router.get("/get-symbol")
 @inject
-async def get_price(
+async def get_symbol(
     symbol: str, use_case: FromDishka[GetSymbol]
-) -> SymbolPrice:
+) -> SymbolData:
     try:
         return await use_case(symbol)
     except UnfoundSymbolError:

@@ -5,6 +5,7 @@ from .symbol import (
     SymbolPrice,
     SymbolTicker,
     SymbolHistoryInterval,
+    SymbolData,
 )
 from .refill import Refill
 from .balance_history import (
@@ -22,6 +23,7 @@ __all__ = (
     "SymbolPrice",
     "SymbolTicker",
     "SymbolHistoryInterval",
+    "SymbolData",
     "Refill",
     "BalanceChangeReason",
     "BalanceChangeType",

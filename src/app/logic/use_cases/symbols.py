@@ -13,18 +13,25 @@ from app.logic.models import (
     SymbolPrice,
     SymbolTicker,
     SymbolHistoryInterval,
+    SymbolData,
     BalanceChangeReason,
 )
 from app.logic.balance_editor import BalanceEditor
 
 
 class GetSymbol:
-    def __init__(self, symbols_getter: SymbolsPriceGetter) -> None:
+    def __init__(
+        self, symbols_getter: SymbolsPriceGetter, ticker_finder: TickerFinder
+    ) -> None:
         self._symbols_getter = symbols_getter
+        self._ticker_finder = ticker_finder
 
-    async def __call__(self, symbol: str) -> SymbolPrice:
+    async def __call__(self, symbol: str) -> SymbolData:
         symbol = symbol.upper()
-        return await self._symbols_getter.get_price(symbol)
+        return SymbolData(
+            price=await self._symbols_getter.get_price(symbol),
+            name=await self._ticker_finder.get_name_by_ticker(symbol),
+        )
 
 
 class GetSymbolHistory:
@@ -66,6 +73,7 @@ class BuySymbol:
 
 @dataclass
 class MySymbolDTO:
+    name: str
     code: str
     amount: int
     price: SymbolPrice
@@ -73,15 +81,20 @@ class MySymbolDTO:
 
 class GetMySymbols:
     def __init__(
-        self, symbols: SymbolsStorage, symbols_getter: SymbolsPriceGetter
+        self,
+        symbols: SymbolsStorage,
+        symbols_getter: SymbolsPriceGetter,
+        ticker_finder: TickerFinder,
     ) -> None:
         self._symbols = symbols
         self._symbols_getter = symbols_getter
+        self._ticker_finder = ticker_finder
 
     async def __call__(self, user_id: int) -> list[MySymbolDTO]:
         symbols = await self._symbols.get_all_user_symbols(user_id)
         return [
             MySymbolDTO(
+                name=await self._ticker_finder.get_name_by_ticker(i.code),
                 code=i.code,
                 amount=i.amount,
                 price=await self._symbols_getter.get_price(i.code),

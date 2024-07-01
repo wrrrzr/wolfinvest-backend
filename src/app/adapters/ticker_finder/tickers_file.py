@@ -22,3 +22,9 @@ class TickersFileTickerFinder(TickerFinder):
             if count >= 5:
                 break
         return res
+
+    async def get_name_by_ticker(self, ticker: str) -> str:
+        ticker = ticker.upper()
+        for k, v in TICKERS_KV.items():
+            if v == ticker:
+                return k

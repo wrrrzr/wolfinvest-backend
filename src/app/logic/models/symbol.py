@@ -21,6 +21,12 @@ class SymbolPrice:
 
 
 @dataclass
+class SymbolData:
+    price: SymbolPrice
+    name: str
+
+
+@dataclass
 class Symbol:
     id: int
     owner_id: int
