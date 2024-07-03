@@ -59,4 +59,4 @@ class YahooSymbolsGetter(SymbolsPriceGetter, SymbolsHistoryGetter):
                         )
                     ]
         except (TypeError, KeyError):
-            raise UnfoundSymbolError()
+            raise UnfoundSymbolError(f"Cannot find symbol {symbol}")

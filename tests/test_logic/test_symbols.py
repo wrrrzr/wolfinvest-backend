@@ -2,7 +2,7 @@ import pytest
 
 from app.logic.abstract import SymbolsPriceGetter
 from app.logic.use_cases.symbols import GetSymbol
-from app.logic.models import SymbolPrice
+from app.logic.models import SymbolPrice, SymbolData
 
 
 class MockSymbolsPriceGetter(SymbolsPriceGetter):
@@ -22,6 +22,8 @@ class MockSymbolsPriceGetter(SymbolsPriceGetter):
     ],
 )
 async def test_get_symbol(foo: SymbolPrice, bar: SymbolPrice) -> None:
-    use_case = GetSymbol(MockSymbolsPriceGetter({"FOO": foo, "BAR": bar}))
-    assert await use_case("FOO") == foo
-    assert await use_case("BAR") == bar
+    use_case = GetSymbol(
+        MockSymbolsPriceGetter({"FOO": foo, "BAR": bar}), MockTickerFinder()
+    )
+    assert (await use_case("FOO")).price == foo
+    assert (await use_case("BAR")).price == bar

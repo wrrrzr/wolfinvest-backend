@@ -46,7 +46,7 @@ class SymbolsGetterCache(SymbolsGetter):
         if symbol not in self._memory.price:
             await self._set_price(symbol)
         if self._memory.price[symbol].price is None:
-            raise UnfoundSymbolError()
+            raise UnfoundSymbolError(f"Cannot find symbol {symbol}")
         if self._memory.price[symbol].time_exp_cache < get_current_time():
             await self._set_price(symbol)
         return self._memory.price[symbol].price
@@ -60,7 +60,7 @@ class SymbolsGetterCache(SymbolsGetter):
         ):
             await self._set_history(interval, symbol)
         if self._memory.history[symbol].history is None:
-            raise UnfoundSymbolError()
+            raise UnfoundSymbolError(f"Cannot find symbol {symbol}")
         if self._memory.history[symbol].time_exp_cache < get_current_time():
             await self._set_history(interval, symbol)
         return self._memory.history[symbol].history[interval]
