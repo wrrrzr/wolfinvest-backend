@@ -1,6 +1,6 @@
 from typing import AsyncIterable
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from dishka import (
     Provider,
     Scope,
@@ -27,7 +27,11 @@ from app.logic.abstract import (
     BalanceHistoryEditor,
     BalanceHistoryAllSelector,
 )
-from app.adapters.sqlalchemy.db import async_session_maker
+from app.logic.abstract.config import (
+    JWTConfigLoader,
+    SQLAlchemyConfigLoader,
+    TickersConfigLoader,
+)
 from app.adapters.sqlalchemy.users import SQLAlchemyUsersStorage
 from app.adapters.sqlalchemy.symbols import SQLAlchemySymbolsStorage
 from app.adapters.sqlalchemy.refills import SQLAlchemyRefillsStorage
@@ -49,6 +53,7 @@ from app.adapters.cache import (
 from app.adapters.symbols_getter import YahooSymbolsGetter
 from app.adapters.auth import JWTAuthManager
 from app.adapters.ticker_finder import TickersFileTickerFinder
+from app.adapters.config import EnvConfigLoader
 
 _memory_users = create_users_memory()
 _memory_symbols = create_symbols_memory()
@@ -64,8 +69,12 @@ class AdaptersProvider(Provider):
         super().__init__()
 
     @provide
-    async def session(self) -> AsyncIterable[AsyncSession]:
-        async with async_session_maker() as session:
+    async def session(
+        self, config: SQLAlchemyConfigLoader
+    ) -> AsyncIterable[AsyncSession]:
+        data = await config.load_sqlalchemy_config()
+        engine = create_async_engine(data.db_uri)
+        async with AsyncSession(engine) as session:
             yield session
 
     symbols = provide(SQLAlchemySymbolsStorage, provides=SymbolsStorage)
@@ -78,6 +87,12 @@ class AdaptersProvider(Provider):
     balance_history_selector = provide(
         SQLAlchemyBalanceHistoryStorage, provides=BalanceHistoryAllSelector
     )
+
+    @provide
+    def config_loader(
+        self,
+    ) -> AnyOf[JWTConfigLoader, SQLAlchemyConfigLoader, TickersConfigLoader]:
+        return EnvConfigLoader()
 
     @provide
     def users_storage(self, session: AsyncSession) -> AnyOf[

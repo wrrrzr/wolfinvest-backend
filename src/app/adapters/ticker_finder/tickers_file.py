@@ -1,21 +1,23 @@
 import json
 
+import aiofiles
+
 from app.logic.abstract import TickerFinder
+from app.logic.abstract.config import TickersConfigLoader
 from app.logic.models import SymbolTicker
-from app.config import load_tickers_config
-
-FILE_PATH = load_tickers_config().file_path
-
-with open(FILE_PATH, "r", encoding="utf-8") as f:
-    TICKERS_KV = json.load(f)
 
 
 class TickersFileTickerFinder(TickerFinder):
+    def __init__(self, config_loader: TickersConfigLoader) -> None:
+        self._config_loader = config_loader
+
     async def find_ticker(self, name: str) -> list[SymbolTicker]:
+        tickers_kv = await self._get_tickers_kv()
+
         name = name.lower()
         res = []
         count = 0
-        for k, v in TICKERS_KV.items():
+        for k, v in tickers_kv.items():
             if name in k:
                 res.append(SymbolTicker(name=k, ticker=v))
                 count += 1
@@ -24,7 +26,15 @@ class TickersFileTickerFinder(TickerFinder):
         return res
 
     async def get_name_by_ticker(self, ticker: str) -> str:
+        tickers_kv = await self._get_tickers_kv()
+
         ticker = ticker.upper()
-        for k, v in TICKERS_KV.items():
+        for k, v in tickers_kv.items():
             if v == ticker:
                 return k
+
+    async def _get_tickers_kv(self) -> dict[str, str]:
+        file_path = (await self._config_loader.load_tickers_config()).file_path
+
+        async with aiofiles.open(file_path, "r", encoding="utf-8") as f:
+            return json.loads(await f.read())

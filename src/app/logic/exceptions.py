@@ -28,3 +28,7 @@ class IncorrectPasswordError(LogicError):
 
 class PermissionDenied(LogicError):
     pass
+
+
+class ConfigLoadError(LogicError):
+    pass
