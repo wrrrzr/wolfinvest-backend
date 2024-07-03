@@ -31,6 +31,9 @@ from app.logic.abstract.config import (
     JWTConfigLoader,
     SQLAlchemyConfigLoader,
     TickersConfigLoader,
+    JWTConfig,
+    SQLAlchemyConfig,
+    TickersConfig,
 )
 from app.adapters.sqlalchemy.users import SQLAlchemyUsersStorage
 from app.adapters.sqlalchemy.symbols import SQLAlchemySymbolsStorage
@@ -69,11 +72,26 @@ class AdaptersProvider(Provider):
         super().__init__()
 
     @provide
+    async def sqlalchemy_config(
+        self, loader: SQLAlchemyConfigLoader
+    ) -> SQLAlchemyConfig:
+        return await loader.load_sqlalchemy_config()
+
+    @provide
+    async def jwt_config(self, loader: JWTConfigLoader) -> JWTConfig:
+        return await loader.load_jwt_config()
+
+    @provide
+    async def tickers_config(
+        self, loader: TickersConfigLoader
+    ) -> TickersConfig:
+        return await loader.load_tickers_config()
+
+    @provide
     async def session(
-        self, config: SQLAlchemyConfigLoader
+        self, config: SQLAlchemyConfig
     ) -> AsyncIterable[AsyncSession]:
-        data = await config.load_sqlalchemy_config()
-        engine = create_async_engine(data.db_uri)
+        engine = create_async_engine(config.db_uri)
         async with AsyncSession(engine) as session:
             yield session
 

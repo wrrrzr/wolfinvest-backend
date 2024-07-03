@@ -3,13 +3,13 @@ import json
 import aiofiles
 
 from app.logic.abstract import TickerFinder
-from app.logic.abstract.config import TickersConfigLoader
+from app.logic.abstract.config import TickersConfig
 from app.logic.models import SymbolTicker
 
 
 class TickersFileTickerFinder(TickerFinder):
-    def __init__(self, config_loader: TickersConfigLoader) -> None:
-        self._config_loader = config_loader
+    def __init__(self, config: TickersConfig) -> None:
+        self._config = config
 
     async def find_ticker(self, name: str) -> list[SymbolTicker]:
         tickers_kv = await self._get_tickers_kv()
@@ -34,7 +34,7 @@ class TickersFileTickerFinder(TickerFinder):
                 return k
 
     async def _get_tickers_kv(self) -> dict[str, str]:
-        file_path = (await self._config_loader.load_tickers_config()).file_path
+        file_path = self._config.file_path
 
         async with aiofiles.open(file_path, "r", encoding="utf-8") as f:
             return json.loads(await f.read())
