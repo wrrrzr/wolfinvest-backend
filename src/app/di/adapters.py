@@ -27,14 +27,7 @@ from app.logic.abstract import (
     BalanceHistoryEditor,
     BalanceHistoryAllSelector,
 )
-from app.logic.abstract.config import (
-    JWTConfigLoader,
-    SQLAlchemyConfigLoader,
-    TickersConfigLoader,
-    JWTConfig,
-    SQLAlchemyConfig,
-    TickersConfig,
-)
+from app.logic.models import SQLAlchemyConfig
 from app.adapters.sqlalchemy.users import SQLAlchemyUsersStorage
 from app.adapters.sqlalchemy.symbols import SQLAlchemySymbolsStorage
 from app.adapters.sqlalchemy.refills import SQLAlchemyRefillsStorage
@@ -56,7 +49,6 @@ from app.adapters.cache import (
 from app.adapters.symbols_getter import YahooSymbolsGetter
 from app.adapters.auth import JWTAuthManager
 from app.adapters.ticker_finder import TickersFileTickerFinder
-from app.adapters.config import EnvConfigLoader
 
 _memory_users = create_users_memory()
 _memory_symbols = create_symbols_memory()
@@ -70,22 +62,6 @@ class AdaptersProvider(Provider):
 
     def __init__(self) -> None:
         super().__init__()
-
-    @provide
-    async def sqlalchemy_config(
-        self, loader: SQLAlchemyConfigLoader
-    ) -> SQLAlchemyConfig:
-        return await loader.load_sqlalchemy_config()
-
-    @provide
-    async def jwt_config(self, loader: JWTConfigLoader) -> JWTConfig:
-        return await loader.load_jwt_config()
-
-    @provide
-    async def tickers_config(
-        self, loader: TickersConfigLoader
-    ) -> TickersConfig:
-        return await loader.load_tickers_config()
 
     @provide
     async def session(
@@ -105,12 +81,6 @@ class AdaptersProvider(Provider):
     balance_history_selector = provide(
         SQLAlchemyBalanceHistoryStorage, provides=BalanceHistoryAllSelector
     )
-
-    @provide
-    def config_loader(
-        self,
-    ) -> AnyOf[JWTConfigLoader, SQLAlchemyConfigLoader, TickersConfigLoader]:
-        return EnvConfigLoader()
 
     @provide
     def users_storage(self, session: AsyncSession) -> AnyOf[

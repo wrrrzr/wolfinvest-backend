@@ -1,7 +1,7 @@
 import pytest
 
 from app.adapters.auth import JWTAuthManager
-from app.logic.abstract.config import JWTConfig
+from app.logic.models import JWTConfig
 
 
 @pytest.fixture

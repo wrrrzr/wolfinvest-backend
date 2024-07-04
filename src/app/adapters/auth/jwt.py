@@ -6,7 +6,7 @@ from passlib.context import CryptContext
 
 from app.utils.funcs import get_current_time
 from app.logic.abstract import AuthManager
-from app.logic.abstract.config import JWTConfig
+from app.logic.models import JWTConfig
 
 ALGORITHM = "HS256"
 EXPIRATION_TIME = timedelta(hours=6)

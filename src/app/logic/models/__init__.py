@@ -13,6 +13,7 @@ from .balance_history import (
     BalanceChangeType,
     BalanceChange,
 )
+from .config import JWTConfig, SQLAlchemyConfig, TickersConfig
 
 __all__ = (
     "User",
@@ -28,4 +29,7 @@ __all__ = (
     "BalanceChangeReason",
     "BalanceChangeType",
     "BalanceChange",
+    "JWTConfig",
+    "SQLAlchemyConfig",
+    "TickersConfig",
 )

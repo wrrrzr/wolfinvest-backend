@@ -3,8 +3,7 @@ import json
 import aiofiles
 
 from app.logic.abstract import TickerFinder
-from app.logic.abstract.config import TickersConfig
-from app.logic.models import SymbolTicker
+from app.logic.models import SymbolTicker, TickersConfig
 
 
 class TickersFileTickerFinder(TickerFinder):
