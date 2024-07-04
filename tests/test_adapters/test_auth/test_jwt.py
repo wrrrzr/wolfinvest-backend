@@ -1,11 +1,12 @@
 import pytest
 
 from app.adapters.auth import JWTAuthManager
+from app.logic.abstract.config import JWTConfig
 
 
 @pytest.fixture
 def manager() -> JWTAuthManager:
-    return JWTAuthManager()
+    return JWTAuthManager(JWTConfig(auth_secret_key="SDFGHJKL"))
 
 
 async def test_hash_password(manager: JWTAuthManager) -> None:
