@@ -27,6 +27,7 @@ from app.logic.abstract import (
     BalanceHistoryEditor,
     BalanceHistoryAllSelector,
 )
+from app.logic.abstract.currency_getter import CurrencyPriceGetter
 from app.logic.models import SQLAlchemyConfig
 from app.adapters.sqlalchemy.users import SQLAlchemyUsersStorage
 from app.adapters.sqlalchemy.symbols import SQLAlchemySymbolsStorage
@@ -45,16 +46,20 @@ from app.adapters.cache import (
     create_symbols_getter_memory,
     TickerFinderCache,
     create_ticker_finder_memory,
+    CacheCurrencyGetter,
+    create_currency_getter_memory,
 )
 from app.adapters.symbols_getter import YahooSymbolsGetter
 from app.adapters.auth import JWTAuthManager
 from app.adapters.ticker_finder import TickersFileTickerFinder
+from app.adapters.currency_getter import ExchangerateApiGetter
 
 _memory_users = create_users_memory()
 _memory_symbols = create_symbols_memory()
 _memory_refills = create_refills_memory()
 _memory_symbols_getter = create_symbols_getter_memory()
 _memory_ticker_finder = create_ticker_finder_memory()
+_memory_currency_getter = create_currency_getter_memory()
 
 
 class AdaptersProvider(Provider):
@@ -81,6 +86,12 @@ class AdaptersProvider(Provider):
     balance_history_selector = provide(
         SQLAlchemyBalanceHistoryStorage, provides=BalanceHistoryAllSelector
     )
+
+    @provide
+    def currency_getter(self) -> AnyOf[CurrencyPriceGetter]:
+        return CacheCurrencyGetter(
+            ExchangerateApiGetter(), _memory_currency_getter
+        )
 
     @provide
     def users_storage(self, session: AsyncSession) -> AnyOf[
