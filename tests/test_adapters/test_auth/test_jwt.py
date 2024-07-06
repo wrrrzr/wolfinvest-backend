@@ -9,6 +9,11 @@ def manager() -> JWTAuthManager:
     return JWTAuthManager(JWTConfig(auth_secret_key="SDFGHJKL"))
 
 
+@pytest.fixture
+def other_manager() -> JWTAuthManager:
+    return JWTAuthManager(JWTConfig(auth_secret_key="wfghjdkflgsjh"))
+
+
 async def test_hash_password(manager: JWTAuthManager) -> None:
     assert await manager.hash_password("Hello") != "Hello"
 
@@ -36,3 +41,10 @@ async def test_verify_token(manager: JWTAuthManager) -> None:
 
 async def test_incorrect_verify_token(manager: JWTAuthManager) -> None:
     assert await manager.verify_token("asbhdfjkvwhjd") is None
+
+
+async def test_incorrect_secret_key_token(
+    manager: JWTAuthManager, other_manager: JWTAuthManager
+) -> None:
+    token = await manager.create_token({"id": 100})
+    assert await other_manager.verify_token(token) is None
