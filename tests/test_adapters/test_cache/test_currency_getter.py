@@ -1,3 +1,5 @@
+import pytest
+
 from app.adapters.cache import (
     CacheCurrencyGetter,
     create_currency_getter_memory,
@@ -16,25 +18,28 @@ class CurrencyGetterCounter(CurrencyGetter):
         return MOCK_PRICE
 
 
-async def test_get_price() -> None:
-    getter = CacheCurrencyGetter(
-        CurrencyGetterCounter(), create_currency_getter_memory()
-    )
+@pytest.fixture
+def target() -> tuple[CacheCurrencyGetter, CurrencyGetterCounter]:
+    counter = CurrencyGetterCounter()
+    getter = CacheCurrencyGetter(counter, create_currency_getter_memory())
+    return getter, counter
+
+
+async def test_get_price(target) -> None:
+    getter, counter = target
     assert await getter.get_price("EUR") == MOCK_PRICE
 
 
-async def test_get_price_caching() -> None:
-    counter = CurrencyGetterCounter()
-    getter = CacheCurrencyGetter(counter, create_currency_getter_memory())
+async def test_get_price_caching(target) -> None:
+    getter, counter = target
     await getter.get_price("EUR")
     await getter.get_price("EUR")
     await getter.get_price("EUR")
     assert counter.count_price == 1
 
 
-async def test_get_price_caching_many() -> None:
-    counter = CurrencyGetterCounter()
-    getter = CacheCurrencyGetter(counter, create_currency_getter_memory())
+async def test_get_price_caching_many(target) -> None:
+    getter, counter = target
     await getter.get_price("EUR")
     await getter.get_price("CAD")
     await getter.get_price("EUR")

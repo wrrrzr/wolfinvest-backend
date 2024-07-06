@@ -1,3 +1,5 @@
+import pytest
+
 from app.logic.abstract import SymbolsGetter
 from app.logic.models import SymbolHistory, SymbolPrice, SymbolHistoryInterval
 from app.adapters.cache import SymbolsGetterCache, create_symbols_getter_memory
@@ -32,52 +34,51 @@ class CounterSymbolsGetter(SymbolsGetter):
         return MOCK_SYMBOL_HISTORY[interval]
 
 
-async def test_get_price() -> None:
-    getter = SymbolsGetterCache(
-        CounterSymbolsGetter(), create_symbols_getter_memory()
-    )
+@pytest.fixture
+def target() -> tuple[SymbolsGetterCache, CounterSymbolsGetter]:
+    counter = CounterSymbolsGetter()
+    getter = SymbolsGetterCache(counter, create_symbols_getter_memory())
+    return getter, counter
+
+
+async def test_get_price(target) -> None:
+    getter, counter = target
     assert await getter.get_price("AAPL") == MOCK_SYMBOL_PRICE
 
 
-async def test_get_price_caching() -> None:
-    counter = CounterSymbolsGetter()
-    getter = SymbolsGetterCache(counter, create_symbols_getter_memory())
+async def test_get_price_caching(target) -> None:
+    getter, counter = target
     await getter.get_price("AAPL")
     await getter.get_price("AAPL")
     await getter.get_price("AAPL")
     assert counter.count_price == 1
 
 
-async def test_get_price_caching_many() -> None:
-    counter = CounterSymbolsGetter()
-    getter = SymbolsGetterCache(counter, create_symbols_getter_memory())
+async def test_get_price_caching_many(target) -> None:
+    getter, counter = target
     await getter.get_price("AAPL")
     await getter.get_price("MSFT")
     await getter.get_price("AAPL")
     assert counter.count_price == 2
 
 
-async def test_get_history() -> None:
-    getter = SymbolsGetterCache(
-        CounterSymbolsGetter(), create_symbols_getter_memory()
-    )
+async def test_get_history(target) -> None:
+    getter, counter = target
     assert (
         await getter.get_history(SymbolHistoryInterval.FIVE_MINUTES, "AAPL")
         == MOCK_SYMBOL_HISTORY[SymbolHistoryInterval.FIVE_MINUTES]
     )
 
 
-async def test_get_history_caching() -> None:
-    counter = CounterSymbolsGetter()
-    getter = SymbolsGetterCache(counter, create_symbols_getter_memory())
+async def test_get_history_caching(target) -> None:
+    getter, counter = target
     await getter.get_history(SymbolHistoryInterval.FIVE_MINUTES, "AAPL")
     await getter.get_history(SymbolHistoryInterval.FIVE_MINUTES, "AAPL")
     assert counter.count_history == 1
 
 
-async def test_get_history_caching_many() -> None:
-    counter = CounterSymbolsGetter()
-    getter = SymbolsGetterCache(counter, create_symbols_getter_memory())
+async def test_get_history_caching_many(target) -> None:
+    getter, counter = target
     await getter.get_history(SymbolHistoryInterval.FIVE_MINUTES, "AAPL")
     await getter.get_history(SymbolHistoryInterval.FIVE_MINUTES, "MSFT")
     await getter.get_history(SymbolHistoryInterval.FIVE_MINUTES, "AAPL")
