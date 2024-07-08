@@ -8,6 +8,7 @@ from app.logic.use_cases.symbols import (
     GetMySymbols,
     SellSymbol,
     FindTicker,
+    GetMySymbolsActions,
 )
 from app.logic.use_cases.users import GetMe
 from app.logic.use_cases.refills import TakeRefill, GetMyRefills
@@ -44,4 +45,5 @@ class LogicProvider(Provider):
         FindTicker,
         GetMyBalanceHistory,
         GetCurrencyPrice,
+        GetMySymbolsActions,
     )

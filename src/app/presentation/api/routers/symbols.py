@@ -9,17 +9,19 @@ from app.logic.use_cases.symbols import (
     SellSymbol,
     MySymbolDTO,
     FindTicker,
+    GetMySymbolsActions,
 )
 from app.logic.exceptions import (
     UnfoundSymbolError,
     NotEnoughBalanceError,
     NotEnoughSymbolsError,
 )
-from app.logic.models import (
+from app.logic.models.symbol import (
     SymbolHistory,
     SymbolTicker,
     SymbolHistoryInterval,
     SymbolData,
+    SymbolAction,
 )
 from ..di import UserId
 
@@ -104,3 +106,11 @@ async def get_symbol_ticker(
     name: str, use_case: FromDishka[FindTicker]
 ) -> list[SymbolTicker]:
     return await use_case(name)
+
+
+@router.get("/get-my-symbols-actions")
+@inject
+async def get_my_symbols_actions(
+    user_id: FromDishka[UserId], use_case: FromDishka[GetMySymbolsActions]
+) -> list[SymbolAction]:
+    return await use_case(user_id)
