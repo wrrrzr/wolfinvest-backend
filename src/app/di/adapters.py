@@ -18,12 +18,18 @@ from app.logic.abstract import (
     UsersChecker,
     UsersDeleter,
     UsersIdGetter,
-    SymbolsStorage,
     SymbolsPriceGetter,
     SymbolsHistoryGetter,
     TickerFinder,
     BalanceHistoryEditor,
     BalanceHistoryAllSelector,
+)
+from app.logic.abstract.symbols_storage import (
+    SymbolsAdder,
+    SymbolsManySelector,
+    SymbolsRemover,
+    SymbolsUsersDeletor,
+    SymbolsAmountSelector,
 )
 from app.logic.abstract.refills_storage import (
     RefillsAdder,
@@ -80,7 +86,6 @@ class AdaptersProvider(Provider):
         async with AsyncSession(engine) as session:
             yield session
 
-    symbols = provide(SQLAlchemySymbolsStorage, provides=SymbolsStorage)
     ticker_finder = provide(TickersFileTickerFinder, provides=TickerFinder)
     balance_history_editor = provide(
         SQLAlchemyBalanceHistoryStorage, provides=BalanceHistoryEditor
@@ -98,6 +103,18 @@ class AdaptersProvider(Provider):
     def currency_getter(self) -> AnyOf[CurrencyPriceGetter]:
         return CacheCurrencyGetter(
             ExchangerateApiGetter(), _memory_currency_getter
+        )
+
+    @provide
+    def symbols_storage(self, session: AsyncSession) -> AnyOf[
+        SymbolsAdder,
+        SymbolsAmountSelector,
+        SymbolsManySelector,
+        SymbolsRemover,
+        SymbolsUsersDeletor,
+    ]:
+        return SymbolsCacheStorage(
+            SQLAlchemySymbolsStorage(session), _memory_symbols
         )
 
     @provide
@@ -128,10 +145,6 @@ class AdaptersProvider(Provider):
         self,
     ) -> AnyOf[SymbolsPriceGetter, SymbolsHistoryGetter]:
         return SymbolsGetterCache(YahooSymbolsGetter(), _memory_symbols_getter)
-
-    @decorate
-    def get_symbols_cache(self, inner: SymbolsStorage) -> SymbolsStorage:
-        return SymbolsCacheStorage(inner, _memory_symbols)
 
     @decorate
     def get_ticker_finder_cache(self, inner: TickerFinder) -> TickerFinder:

@@ -9,7 +9,6 @@ from .users_storage import (
     UsersIdGetter,
     UsersStorage,
 )
-from .symbols_storage import SymbolsStorage
 from .symbols_getter import (
     SymbolsPriceGetter,
     SymbolsHistoryGetter,
@@ -31,7 +30,6 @@ __all__ = (
     "UsersDeleter",
     "UsersIdGetter",
     "UsersStorage",
-    "SymbolsStorage",
     "SymbolsPriceGetter",
     "SymbolsHistoryGetter",
     "SymbolsGetter",

@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy import insert, update, exists, select, delete
 
-from app.logic.abstract import SymbolsStorage
+from app.logic.abstract.symbols_storage import SymbolsStorage
 from app.logic.models.symbol import Symbol, DEFAULT_AMOUNT
 from app.utils.dataclasses import object_to_dataclass
 from .models import SymbolModel

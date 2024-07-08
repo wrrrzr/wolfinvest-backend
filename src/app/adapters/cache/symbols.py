@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from app.logic.abstract import SymbolsStorage
+from app.logic.abstract.symbols_storage import SymbolsStorage
 from app.logic.models import Symbol
 
 
