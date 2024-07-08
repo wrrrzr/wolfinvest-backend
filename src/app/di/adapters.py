@@ -19,13 +19,17 @@ from app.logic.abstract import (
     UsersDeleter,
     UsersIdGetter,
     SymbolsStorage,
-    RefillsStorage,
     SymbolsPriceGetter,
     SymbolsHistoryGetter,
     AuthManager,
     TickerFinder,
     BalanceHistoryEditor,
     BalanceHistoryAllSelector,
+)
+from app.logic.abstract.refills_storage import (
+    RefillsAdder,
+    RefillsUsersSelector,
+    RefillsUsersDeletor,
 )
 from app.logic.abstract.currency_getter import CurrencyPriceGetter
 from app.logic.models import SQLAlchemyConfig
@@ -77,7 +81,6 @@ class AdaptersProvider(Provider):
             yield session
 
     symbols = provide(SQLAlchemySymbolsStorage, provides=SymbolsStorage)
-    refills = provide(SQLAlchemyRefillsStorage, provides=RefillsStorage)
     auth_manager = provide(JWTAuthManager, provides=AuthManager)
     ticker_finder = provide(TickersFileTickerFinder, provides=TickerFinder)
     balance_history_editor = provide(
@@ -91,6 +94,14 @@ class AdaptersProvider(Provider):
     def currency_getter(self) -> AnyOf[CurrencyPriceGetter]:
         return CacheCurrencyGetter(
             ExchangerateApiGetter(), _memory_currency_getter
+        )
+
+    @provide
+    def refills_storage(
+        self, session: AsyncSession
+    ) -> AnyOf[RefillsAdder, RefillsUsersSelector, RefillsUsersDeletor]:
+        return RefillsCacheStorage(
+            SQLAlchemyRefillsStorage(session), _memory_refills
         )
 
     @provide
@@ -117,10 +128,6 @@ class AdaptersProvider(Provider):
     @decorate
     def get_symbols_cache(self, inner: SymbolsStorage) -> SymbolsStorage:
         return SymbolsCacheStorage(inner, _memory_symbols)
-
-    @decorate
-    def get_refills_cache(self, inner: RefillsStorage) -> RefillsStorage:
-        return RefillsCacheStorage(inner, _memory_refills)
 
     @decorate
     def get_ticker_finder_cache(self, inner: TickerFinder) -> TickerFinder:

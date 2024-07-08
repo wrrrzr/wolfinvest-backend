@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from app.logic.abstract import RefillsStorage
+from app.logic.abstract.refills_storage import RefillsStorage
 from app.logic.models import Refill
 
 

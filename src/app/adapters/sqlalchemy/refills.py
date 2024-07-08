@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import insert, select, delete
 
 from app.utils.dataclasses import object_to_dataclass
-from app.logic.abstract import RefillsStorage
+from app.logic.abstract.refills_storage import RefillsStorage
 from app.logic.models import Refill
 from .models import RefillModel
 

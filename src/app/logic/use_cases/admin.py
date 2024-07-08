@@ -5,10 +5,10 @@ from app.logic.abstract import (
     UsersAllSelector,
     UsersDeleter,
     UsersPasswordEditor,
-    RefillsStorage,
     SymbolsStorage,
     AuthManager,
 )
+from app.logic.abstract.refills_storage import RefillsUsersDeletor
 from app.logic.balance_editor import BalanceEditor
 
 
@@ -35,7 +35,7 @@ class DeleteUser:
         self,
         users_selector: UsersOneSelector,
         users_deleter: UsersDeleter,
-        refills: RefillsStorage,
+        refills: RefillsUsersDeletor,
         symbols: SymbolsStorage,
     ) -> None:
         self._users_selector = users_selector

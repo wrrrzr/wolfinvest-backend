@@ -3,14 +3,17 @@ from datetime import datetime
 
 from app.utils.funcs import get_current_time
 from app.utils.dataclasses import object_to_dataclass
-from app.logic.abstract import RefillsStorage
+from app.logic.abstract.refills_storage import (
+    RefillsAdder,
+    RefillsUsersSelector,
+)
 from app.logic.models import BalanceChangeReason
 from app.logic.balance_editor import BalanceEditor
 
 
 class TakeRefill:
     def __init__(
-        self, users_balance: BalanceEditor, refills: RefillsStorage
+        self, users_balance: BalanceEditor, refills: RefillsAdder
     ) -> None:
         self._users_balance = users_balance
         self._refills = refills
@@ -29,7 +32,7 @@ class MyRefillDTO:
 
 
 class GetMyRefills:
-    def __init__(self, refills: RefillsStorage) -> None:
+    def __init__(self, refills: RefillsUsersSelector) -> None:
         self._refills = refills
 
     async def __call__(self, user_id: int) -> list[MyRefillDTO]:
