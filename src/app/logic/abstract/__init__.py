@@ -15,7 +15,6 @@ from .symbols_getter import (
     SymbolsHistoryGetter,
     SymbolsGetter,
 )
-from .auth_manager import AuthManager
 from .ticker_finder import TickerFinder
 from .balance_history_storage import (
     BalanceHistoryEditor,
@@ -36,7 +35,6 @@ __all__ = (
     "SymbolsPriceGetter",
     "SymbolsHistoryGetter",
     "SymbolsGetter",
-    "AuthManager",
     "TickerFinder",
     "BalanceHistoryEditor",
     "BalanceHistoryAllSelector",

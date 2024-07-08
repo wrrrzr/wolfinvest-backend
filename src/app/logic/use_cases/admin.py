@@ -6,8 +6,8 @@ from app.logic.abstract import (
     UsersDeleter,
     UsersPasswordEditor,
     SymbolsStorage,
-    AuthManager,
 )
+from app.logic.abstract.auth_manager import PasswordManager
 from app.logic.abstract.refills_storage import RefillsUsersDeletor
 from app.logic.balance_editor import BalanceEditor
 
@@ -55,17 +55,17 @@ class ChangeUserPassword:
         self,
         users_selector: UsersOneSelector,
         users_password: UsersPasswordEditor,
-        auth_manager: AuthManager,
+        password_manager: PasswordManager,
     ) -> None:
         self._users_selector = users_selector
         self._users_password = users_password
-        self._auth_manager = auth_manager
+        self._password_manager = password_manager
 
     async def __call__(
         self, user_id: int, target: int, new_password: str
     ) -> None:
         await check_permissions(self._users_selector, user_id)
-        new_password_hash = await self._auth_manager.hash_password(
+        new_password_hash = await self._password_manager.hash_password(
             new_password
         )
         await self._users_password.change_password(target, new_password_hash)

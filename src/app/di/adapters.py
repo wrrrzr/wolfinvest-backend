@@ -21,7 +21,6 @@ from app.logic.abstract import (
     SymbolsStorage,
     SymbolsPriceGetter,
     SymbolsHistoryGetter,
-    AuthManager,
     TickerFinder,
     BalanceHistoryEditor,
     BalanceHistoryAllSelector,
@@ -31,6 +30,7 @@ from app.logic.abstract.refills_storage import (
     RefillsUsersSelector,
     RefillsUsersDeletor,
 )
+from app.logic.abstract.auth_manager import TokenManager, PasswordManager
 from app.logic.abstract.currency_getter import CurrencyPriceGetter
 from app.logic.models import SQLAlchemyConfig
 from app.adapters.sqlalchemy.users import SQLAlchemyUsersStorage
@@ -54,7 +54,7 @@ from app.adapters.cache import (
     create_currency_getter_memory,
 )
 from app.adapters.symbols_getter import YahooSymbolsGetter
-from app.adapters.auth import JWTAuthManager
+from app.adapters.auth import JWTTokenManager, PasslibPasswordManager
 from app.adapters.ticker_finder import TickersFileTickerFinder
 from app.adapters.currency_getter import ExchangerateApiGetter
 
@@ -81,13 +81,17 @@ class AdaptersProvider(Provider):
             yield session
 
     symbols = provide(SQLAlchemySymbolsStorage, provides=SymbolsStorage)
-    auth_manager = provide(JWTAuthManager, provides=AuthManager)
     ticker_finder = provide(TickersFileTickerFinder, provides=TickerFinder)
     balance_history_editor = provide(
         SQLAlchemyBalanceHistoryStorage, provides=BalanceHistoryEditor
     )
     balance_history_selector = provide(
         SQLAlchemyBalanceHistoryStorage, provides=BalanceHistoryAllSelector
+    )
+
+    token_manager = provide(JWTTokenManager, provides=TokenManager)
+    password_manager = provide(
+        PasslibPasswordManager, provides=PasswordManager
     )
 
     @provide

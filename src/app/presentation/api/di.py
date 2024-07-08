@@ -3,7 +3,7 @@ from typing import NewType
 from fastapi import HTTPException, Request
 from dishka import Scope, Provider, from_context, provide
 
-from app.logic.abstract import AuthManager
+from app.logic.abstract.auth_manager import TokenManager
 
 UserId = NewType("UserId", int)
 
@@ -14,13 +14,13 @@ class AuthProvider(Provider):
 
     @provide(scope=Scope.REQUEST)
     async def get_user_id(
-        self, auth_manager: AuthManager, request: Request
+        self, token_manager: TokenManager, request: Request
     ) -> UserId:
         token = request.cookies.get("token")
         if token is None:
             raise HTTPException(status_code=401, detail="You don't have token")
 
-        data = await auth_manager.verify_token(token)
+        data = await token_manager.verify_token(token)
 
         if data is None:
             raise HTTPException(status_code=401, detail="Unknown token")

@@ -1,3 +1,4 @@
-from .jwt import JWTAuthManager
+from .jwt import JWTTokenManager
+from .passlib import PasslibPasswordManager
 
-__all__ = ("JWTAuthManager",)
+__all__ = ("JWTTokenManager", "PasslibPasswordManager")
