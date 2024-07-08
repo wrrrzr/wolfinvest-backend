@@ -51,3 +51,13 @@ class BalanceChangeModel(Base):
     user_id = Column(BigInteger, ForeignKey(UserModel.id), nullable=False)
     amount = Column(Float, nullable=False)
     created_at = Column(DateTime(timezone=True), nullable=False)
+
+
+class SymbolActionModel(Base):
+    __tablename__ = "symbol_action"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    user_id = Column(BigInteger, ForeignKey(UserModel.id), nullable=False)
+    action = Column(Integer, nullable=False)
+    amount = Column(Integer, nullable=False)
+    created_at = Column(DateTime(timezone=True), nullable=False)

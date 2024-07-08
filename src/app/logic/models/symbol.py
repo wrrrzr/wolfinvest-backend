@@ -14,6 +14,11 @@ class SymbolHistoryInterval(IntEnum):
     THREE_MONTHS = auto()
 
 
+class Action(IntEnum):
+    buy = auto()
+    sell = auto()
+
+
 @dataclass
 class SymbolPrice:
     buy: float
@@ -44,3 +49,12 @@ class SymbolHistory:
 class SymbolTicker:
     name: str
     ticker: str
+
+
+@dataclass
+class SymbolAction:
+    user_id: int
+    ticker: str
+    action: int
+    amount: int
+    created_at: datetime

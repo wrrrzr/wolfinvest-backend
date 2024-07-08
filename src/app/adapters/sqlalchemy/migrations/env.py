@@ -1,4 +1,5 @@
 import asyncio
+import os
 from logging.config import fileConfig
 
 from sqlalchemy import pool
@@ -6,10 +7,21 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
-from app.config import load_sqlalchemy_config
 from app.adapters.sqlalchemy.models import Base
 
-DB_URI = load_sqlalchemy_config().db_uri
+
+class ConfigParseError(Exception):
+    pass
+
+
+def getenv(key: str) -> str:
+    val = os.getenv(key)
+    if val is None:
+        raise ConfigParseError(f"{key} is not set")
+    return val
+
+
+DB_URI = getenv("DB_URI")
 
 config = context.config
 config.set_main_option("sqlalchemy.url", DB_URI)
