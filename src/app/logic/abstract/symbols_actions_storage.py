@@ -7,13 +7,23 @@ from app.logic.models.symbol import SymbolAction
 class SymbolsActionsAdder(ABC):
     @abstractmethod
     async def insert_buy(
-        self, user_id: int, ticker: str, amount: int, created_at: datetime
+        self,
+        user_id: int,
+        ticker: str,
+        amount: int,
+        price: float,
+        created_at: datetime,
     ) -> None:
         raise NotImplementedError
 
     @abstractmethod
     async def insert_sell(
-        self, user_id: int, ticker: str, amount: int, created_at: datetime
+        self,
+        user_id: int,
+        ticker: str,
+        amount: int,
+        price: float,
+        created_at: datetime,
     ) -> None:
         raise NotImplementedError
 

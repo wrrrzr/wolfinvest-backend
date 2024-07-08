@@ -60,5 +60,6 @@ class SymbolActionModel(Base):
     user_id = Column(BigInteger, ForeignKey(UserModel.id), nullable=False)
     ticker = Column(String, nullable=False)
     action = Column(Integer, nullable=False)
-    amount = Column(Float, nullable=False)
+    amount = Column(Integer, nullable=False)
+    price = Column(Float, nullable=False)
     created_at = Column(DateTime(timezone=True), nullable=False)

@@ -81,7 +81,7 @@ class BuySymbol:
             BalanceChangeReason.buy_symbol, user_id, price * amount
         )
         await self._symbols_actions.insert_buy(
-            user_id, symbol, price, get_current_time()
+            user_id, symbol, amount, price, get_current_time()
         )
         await self._symbols_adder.insert_or_add(user_id, symbol, amount)
         return price * amount
@@ -149,7 +149,7 @@ class SellSymbol:
             BalanceChangeReason.sold_symbol, user_id, price * amount
         )
         await self._symbols_actions.insert_sell(
-            user_id, symbol, price, get_current_time()
+            user_id, symbol, amount, price, get_current_time()
         )
         await self._symbols_remover.remove(user_id, symbol, amount)
         return price * amount

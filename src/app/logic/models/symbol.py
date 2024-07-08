@@ -56,5 +56,6 @@ class SymbolAction:
     user_id: int
     ticker: str
     action: int
-    amount: float
+    amount: int
+    price: float
     created_at: datetime

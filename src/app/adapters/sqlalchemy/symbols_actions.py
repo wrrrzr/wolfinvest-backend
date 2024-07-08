@@ -14,12 +14,18 @@ class SQLAlchemySymbolsActionsStorage(SymbolsActionsStorage):
         self._session = session
 
     async def insert_buy(
-        self, user_id: int, ticker: str, amount: int, created_at: datetime
+        self,
+        user_id: int,
+        ticker: str,
+        amount: int,
+        price: float,
+        created_at: datetime,
     ) -> None:
         stmt = insert(SymbolActionModel).values(
             user_id=user_id,
             ticker=ticker,
             amount=amount,
+            price=price,
             created_at=created_at,
             action=Action.buy,
         )
@@ -28,12 +34,18 @@ class SQLAlchemySymbolsActionsStorage(SymbolsActionsStorage):
         return
 
     async def insert_sell(
-        self, user_id: int, ticker: str, amount: int, created_at: datetime
+        self,
+        user_id: int,
+        ticker: str,
+        amount: int,
+        price: float,
+        created_at: datetime,
     ) -> None:
         stmt = insert(SymbolActionModel).values(
             user_id=user_id,
             ticker=ticker,
             amount=amount,
+            price=price,
             created_at=created_at,
             action=Action.sell,
         )
