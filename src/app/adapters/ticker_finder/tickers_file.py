@@ -31,6 +31,7 @@ class TickersFileTickerFinder(TickerFinder):
         for k, v in tickers_kv.items():
             if v == ticker:
                 return k
+        return "???"
 
     async def _get_tickers_kv(self) -> dict[str, str]:
         file_path = self._config.file_path

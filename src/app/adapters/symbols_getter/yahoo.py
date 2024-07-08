@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 import aiohttp
 
-from app.logic.abstract import SymbolsPriceGetter, SymbolsHistoryGetter
+from app.logic.abstract import SymbolsGetter
 from app.logic.exceptions import UnfoundSymbolError
 from app.logic.models import SymbolHistory, SymbolPrice, SymbolHistoryInterval
 
@@ -24,7 +24,7 @@ SYMBOLS_HISTORY_INTERVALS_YAHOO = {
 }
 
 
-class YahooSymbolsGetter(SymbolsPriceGetter, SymbolsHistoryGetter):
+class YahooSymbolsGetter(SymbolsGetter):
     async def get_price(self, symbol: str) -> SymbolPrice:
         return (
             await self.get_history(SymbolHistoryInterval.FIVE_MINUTES, symbol)
