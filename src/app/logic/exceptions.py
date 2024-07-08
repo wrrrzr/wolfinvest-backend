@@ -32,3 +32,7 @@ class PermissionDenied(LogicError):
 
 class ConfigLoadError(LogicError):
     pass
+
+
+class VerifyTokenError(LogicError):
+    pass

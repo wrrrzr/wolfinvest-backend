@@ -2,6 +2,7 @@ import pytest
 
 from app.adapters.auth import JWTTokenManager
 from app.logic.models import JWTConfig
+from app.logic.exceptions import VerifyTokenError
 
 
 @pytest.fixture
@@ -24,11 +25,13 @@ async def test_verify_token(manager: JWTTokenManager) -> None:
 
 
 async def test_incorrect_verify_token(manager: JWTTokenManager) -> None:
-    assert await manager.verify_token("asbhdfjkvwhjd") is None
+    with pytest.raises(VerifyTokenError):
+        await manager.verify_token("asbhdfjkvwhjd")
 
 
 async def test_incorrect_secret_key_token(
     manager: JWTTokenManager, other_manager: JWTTokenManager
 ) -> None:
     token = await manager.create_token({"id": 100})
-    assert await other_manager.verify_token(token) is None
+    with pytest.raises(VerifyTokenError):
+        await other_manager.verify_token(token)

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Optional
+from typing import Any
 
 
 class PasswordManager(ABC):
@@ -18,7 +18,7 @@ class TokenManager(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def verify_token(self, token: str) -> Optional[dict[str, Any]]:
+    async def verify_token(self, token: str) -> dict[str, Any]:
         raise NotImplementedError
 
 
