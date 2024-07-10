@@ -12,7 +12,10 @@ from app.logic.abstract.symbols_storage import (
     SymbolsRemover,
     SymbolsAmountSelector,
 )
-from app.logic.abstract.symbols_actions_storage import SymbolsActionsAdder
+from app.logic.abstract.symbols_actions_storage import (
+    SymbolsActionsAdder,
+    SymbolsActionsManySelector,
+)
 from app.logic.exceptions import NotEnoughBalanceError, NotEnoughSymbolsError
 from app.logic.models import (
     SymbolHistory,
@@ -22,8 +25,30 @@ from app.logic.models import (
     SymbolData,
     BalanceChangeReason,
 )
+from app.logic.models.symbol import SymbolAction, Action
 from app.logic.balance_editor import BalanceEditor
 from app.utils.funcs import get_current_time
+
+
+@dataclass
+class Earn:
+    absolute: float
+    precent: float
+
+
+def count_earn_symbol(
+    actions: SymbolAction, current_amount: int, current_price: float
+) -> Earn:
+    total = 0.0
+
+    for i in actions:
+        if i.action == Action.buy:
+            total -= i.price * i.amount
+        elif i.action == Action.sell:
+            total += i.price * i.amount
+
+    total += current_price * current_amount
+    return Earn(total, total / 100 * current_price / current_amount)
 
 
 class GetSymbol:
@@ -89,6 +114,7 @@ class MySymbolDTO:
     code: str
     amount: int
     price: SymbolPrice
+    earn: Earn
 
 
 class GetMySymbols:
@@ -97,25 +123,37 @@ class GetMySymbols:
         symbols_many_selector: SymbolsManySelector,
         symbols_getter: SymbolsPriceGetter,
         ticker_finder: TickerFinder,
+        symbols_actions: SymbolsActionsManySelector,
     ) -> None:
         self.symbols_many_selector = symbols_many_selector
         self._symbols_getter = symbols_getter
         self._ticker_finder = ticker_finder
+        self._symbols_actions = symbols_actions
 
     async def __call__(self, user_id: int) -> list[MySymbolDTO]:
         symbols = await self.symbols_many_selector.get_all_user_symbols(
             user_id
         )
-        return [
-            MySymbolDTO(
-                name=await self._ticker_finder.get_name_by_ticker(i.code),
-                code=i.code,
-                amount=i.amount,
-                price=await self._symbols_getter.get_price(i.code),
+        res = []
+        for i in symbols:
+            if i.amount <= 0:
+                continue
+            price = await self._symbols_getter.get_price(i.code)
+            actions = (
+                await self._symbols_actions.get_user_symbols_actions_by_symbol(
+                    user_id, i.code
+                )
             )
-            for i in symbols
-            if i.amount > 0
-        ]
+            res.append(
+                MySymbolDTO(
+                    name=await self._ticker_finder.get_name_by_ticker(i.code),
+                    code=i.code,
+                    amount=i.amount,
+                    price=price,
+                    earn=count_earn_symbol(actions, i.amount, price.buy),
+                )
+            )
+        return res
 
 
 class SellSymbol:
