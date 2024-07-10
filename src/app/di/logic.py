@@ -8,8 +8,8 @@ from app.logic.use_cases.symbols import (
     GetMySymbols,
     SellSymbol,
     FindTicker,
-    GetMySymbolsActions,
 )
+from app.logic.use_cases.symbols_actions import GetMySymbolsActions
 from app.logic.use_cases.users import GetMe
 from app.logic.use_cases.refills import TakeRefill, GetMyRefills
 from app.logic.use_cases.settings import ChangePassword

@@ -30,8 +30,8 @@ class SymbolsActionsAdder(ABC):
 
 class SymbolsActionsManySelector(ABC):
     @abstractmethod
-    async def get_all_user_symbols_actions(
-        self, user_id: int
+    async def get_user_symbols_actions_by_symbol(
+        self, user_id: int, symbol: str
     ) -> list[SymbolAction]:
         raise NotImplementedError
 

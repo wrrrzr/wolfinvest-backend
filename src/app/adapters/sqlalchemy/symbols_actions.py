@@ -53,11 +53,12 @@ class SQLAlchemySymbolsActionsStorage(SymbolsActionsStorage):
         await self._session.commit()
         return
 
-    async def get_all_user_symbols_actions(
-        self, user_id: int
+    async def get_user_symbols_actions_by_symbol(
+        self, user_id: int, symbol: str
     ) -> list[SymbolAction]:
         stmt = select(SymbolActionModel).where(
-            SymbolActionModel.user_id == user_id
+            SymbolActionModel.user_id == user_id,
+            SymbolActionModel.ticker == symbol,
         )
         res = await self._session.execute(stmt)
         return [

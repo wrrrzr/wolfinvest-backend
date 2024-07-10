@@ -8,6 +8,7 @@ from . import settings
 from . import admin
 from . import balance_history
 from . import currency
+from . import symbols_actions
 
 routers = (
     symbols.router,
@@ -18,6 +19,7 @@ routers = (
     admin.router,
     balance_history.router,
     currency.router,
+    symbols_actions.router,
 )
 
 

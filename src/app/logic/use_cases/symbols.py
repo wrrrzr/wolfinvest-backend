@@ -12,10 +12,7 @@ from app.logic.abstract.symbols_storage import (
     SymbolsRemover,
     SymbolsAmountSelector,
 )
-from app.logic.abstract.symbols_actions_storage import (
-    SymbolsActionsAdder,
-    SymbolsActionsManySelector,
-)
+from app.logic.abstract.symbols_actions_storage import SymbolsActionsAdder
 from app.logic.exceptions import NotEnoughBalanceError, NotEnoughSymbolsError
 from app.logic.models import (
     SymbolHistory,
@@ -25,7 +22,6 @@ from app.logic.models import (
     SymbolData,
     BalanceChangeReason,
 )
-from app.logic.models.symbol import SymbolAction
 from app.logic.balance_editor import BalanceEditor
 from app.utils.funcs import get_current_time
 
@@ -161,13 +157,3 @@ class FindTicker:
 
     async def __call__(self, name: str) -> list[SymbolTicker]:
         return await self._ticker_finder.find_ticker(name)
-
-
-class GetMySymbolsActions:
-    def __init__(self, symbols_actions: SymbolsActionsManySelector) -> None:
-        self._symbols_actions = symbols_actions
-
-    async def __call__(self, user_id: int) -> list[SymbolAction]:
-        return await self._symbols_actions.get_all_user_symbols_actions(
-            user_id
-        )
