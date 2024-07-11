@@ -8,7 +8,7 @@ router = APIRouter(prefix="/currency", tags=["currency"])
 
 @router.post("/get-price")
 @inject
-async def take_refill(
+async def get_price(
     use_case: FromDishka[GetCurrencyPrice], currency: str
 ) -> float:
     return await use_case(currency)
