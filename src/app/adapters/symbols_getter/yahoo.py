@@ -16,7 +16,7 @@ class YahooHistoryData:
 
 SYMBOLS_HISTORY_INTERVALS_YAHOO = {
     SymbolHistoryInterval.FIVE_MINUTES: YahooHistoryData("5m", "1d"),
-    SymbolHistoryInterval.HOUR: YahooHistoryData("1h", "5d"),
+    SymbolHistoryInterval.HOUR: YahooHistoryData("1h", "1wk"),
     SymbolHistoryInterval.DAY: YahooHistoryData("1d", "1mo"),
     SymbolHistoryInterval.WEEK: YahooHistoryData("1wk", "3mo"),
     SymbolHistoryInterval.MONTH: YahooHistoryData("1mo", "5y"),
