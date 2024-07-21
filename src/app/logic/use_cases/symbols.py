@@ -37,7 +37,7 @@ class Earn:
 
 
 def count_earn_symbol(
-    actions: SymbolAction, current_amount: int, current_price: float
+    actions: list[SymbolAction], current_amount: int, current_price: float
 ) -> Earn:
     total = 0.0
 
