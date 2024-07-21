@@ -24,6 +24,7 @@ from app.logic.abstract import (
     BalanceHistoryEditor,
     BalanceHistoryAllSelector,
 )
+from app.logic.abstract.currency_storage import CurrencyUserAllSelector
 from app.logic.abstract.symbols_storage import (
     SymbolsAdder,
     SymbolsManySelector,
@@ -53,6 +54,7 @@ from app.adapters.sqlalchemy.balance_history import (
 from app.adapters.sqlalchemy.symbols_actions import (
     SQLAlchemySymbolsActionsStorage,
 )
+from app.adapters.sqlalchemy.currency import SQLAlchemyCurrencyStorage
 from app.adapters.cache import (
     UsersCacheStorage,
     create_users_memory,
@@ -106,6 +108,12 @@ class AdaptersProvider(Provider):
     password_manager = provide(
         PasslibPasswordManager, provides=PasswordManager
     )
+
+    @provide
+    def currency_storage(
+        self, session: AsyncSession
+    ) -> AnyOf[CurrencyUserAllSelector]:
+        return SQLAlchemyCurrencyStorage(session)
 
     @provide
     def currency_getter(self) -> AnyOf[CurrencyPriceGetter]:
