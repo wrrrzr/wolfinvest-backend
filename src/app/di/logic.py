@@ -20,7 +20,11 @@ from app.logic.use_cases.admin import (
     SetUserBalance,
 )
 from app.logic.use_cases.balance_history import GetMyBalanceHistory
-from app.logic.use_cases.currency import GetCurrencyPrice
+from app.logic.use_cases.currency import (
+    GetCurrencyPrice,
+    BuyCurrency,
+    GetUserCurrencies,
+)
 
 
 class LogicProvider(Provider):
@@ -46,4 +50,6 @@ class LogicProvider(Provider):
         GetMyBalanceHistory,
         GetCurrencyPrice,
         GetMySymbolsActions,
+        BuyCurrency,
+        GetUserCurrencies,
     )

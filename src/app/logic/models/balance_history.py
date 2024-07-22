@@ -8,6 +8,8 @@ class BalanceChangeReason(IntEnum):
     admin_set = 1
     buy_symbol = 2
     sold_symbol = 3
+    buy_currency = 4
+    sold_currency = 5
 
 
 class BalanceChangeType(IntEnum):
