@@ -4,7 +4,7 @@ from sqlalchemy import insert, select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.logic.abstract.currency_actions_storage import CurrencyActionsStorage
-from app.logic.models.symbol import SymbolAction, Action
+from app.logic.models.currency import Action, CurrencyAction
 from app.utils.dataclasses import object_to_dataclass
 from .models import CurrenciesActionModel
 
@@ -17,7 +17,7 @@ class SQLAlchemyCurrenciesActionsStorage(CurrencyActionsStorage):
         self,
         user_id: int,
         ticker: str,
-        amount: int,
+        amount: float,
         price: float,
         created_at: datetime,
     ) -> None:
@@ -29,7 +29,7 @@ class SQLAlchemyCurrenciesActionsStorage(CurrencyActionsStorage):
         self,
         user_id: int,
         ticker: str,
-        amount: int,
+        amount: float,
         price: float,
         created_at: datetime,
     ) -> None:
@@ -39,14 +39,14 @@ class SQLAlchemyCurrenciesActionsStorage(CurrencyActionsStorage):
 
     async def get_user_currencies_actions_by_currency(
         self, user_id: int, ticker: str
-    ) -> list[SymbolAction]:
+    ) -> list[CurrencyAction]:
         stmt = select(CurrenciesActionModel).where(
             CurrenciesActionModel.user_id == user_id,
             CurrenciesActionModel.ticker == ticker,
         )
         res = await self._session.execute(stmt)
         return [
-            object_to_dataclass(i, SymbolAction) for i in res.scalars().all()
+            object_to_dataclass(i, CurrencyAction) for i in res.scalars().all()
         ]
 
     async def delete_all_user_currency_actions(self, user_id: int) -> None:
@@ -61,7 +61,7 @@ class SQLAlchemyCurrenciesActionsStorage(CurrencyActionsStorage):
         self,
         user_id: int,
         ticker: str,
-        amount: int,
+        amount: float,
         price: float,
         created_at: datetime,
         action: int,

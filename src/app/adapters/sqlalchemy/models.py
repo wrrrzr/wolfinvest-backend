@@ -24,15 +24,6 @@ class UserModel(Base):
     role = Column(Integer, nullable=False)
 
 
-class SymbolModel(Base):
-    __tablename__ = "symbols"
-
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    owner_id = Column(BigInteger, ForeignKey(UserModel.id), nullable=False)
-    code = Column(String, nullable=False)
-    amount = Column(BigInteger, nullable=False)
-
-
 class RefillModel(Base):
     __tablename__ = "refills"
 

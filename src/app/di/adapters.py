@@ -32,6 +32,7 @@ from app.logic.abstract.currency_storage import (
 from app.logic.abstract.symbols_storage import (
     SymbolsAdder,
     SymbolsManySelector,
+    SymbolsActionsManySelector,
     SymbolsRemover,
     SymbolsUsersDeletor,
     SymbolsAmountSelector,
@@ -40,11 +41,6 @@ from app.logic.abstract.refills_storage import (
     RefillsAdder,
     RefillsUsersSelector,
     RefillsUsersDeletor,
-)
-from app.logic.abstract.symbols_actions_storage import (
-    SymbolsActionsAdder,
-    SymbolsActionsManySelector,
-    SymbolsActionsUsersDeletor,
 )
 from app.logic.abstract.currency_actions_storage import (
     CurrencyActionsAdder,
@@ -62,9 +58,6 @@ from app.adapters.sqlalchemy.currency_actions import (
 )
 from app.adapters.sqlalchemy.balance_history import (
     SQLAlchemyBalanceHistoryStorage,
-)
-from app.adapters.sqlalchemy.symbols_actions import (
-    SQLAlchemySymbolsActionsStorage,
 )
 from app.adapters.sqlalchemy.currency import SQLAlchemyCurrencyStorage
 from app.adapters.cache import (
@@ -142,18 +135,11 @@ class AdaptersProvider(Provider):
         )
 
     @provide
-    def symbols_actions_storage(self, session: AsyncSession) -> AnyOf[
-        SymbolsActionsAdder,
-        SymbolsActionsManySelector,
-        SymbolsActionsUsersDeletor,
-    ]:
-        return SQLAlchemySymbolsActionsStorage(session)
-
-    @provide
     def symbols_storage(self, session: AsyncSession) -> AnyOf[
         SymbolsAdder,
         SymbolsAmountSelector,
         SymbolsManySelector,
+        SymbolsActionsManySelector,
         SymbolsRemover,
         SymbolsUsersDeletor,
     ]:

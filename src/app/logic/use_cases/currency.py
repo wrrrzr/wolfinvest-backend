@@ -43,7 +43,7 @@ class BuyCurrency:
         self._users = users
         self._users_balance = users_balance
 
-    async def __call__(self, user_id: int, ticker: str, amount: int) -> None:
+    async def __call__(self, user_id: int, ticker: str, amount: float) -> None:
         ticker = ticker.upper()
         price = await self._currency_price.get_price(ticker)
         user = await self._users.select_one_by_id(user_id)

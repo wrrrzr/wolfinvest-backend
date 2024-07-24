@@ -1,31 +1,41 @@
 from abc import ABC, abstractmethod
 
-from app.logic.models import Symbol
+from app.logic.models.symbol import SymbolAction
 
 
 class SymbolsAdder(ABC):
     @abstractmethod
-    async def insert_or_add(
-        self, owner_id: int, code: str, amount: int
+    async def add(
+        self, user_id: int, ticker: str, amount: int, price: float
     ) -> None:
         raise NotImplementedError
 
 
 class SymbolsAmountSelector(ABC):
     @abstractmethod
-    async def get_amount(self, owner_id: int, code: str) -> int:
+    async def get_amount(self, user_id: int, ticker: str) -> int:
         raise NotImplementedError
 
 
 class SymbolsManySelector(ABC):
     @abstractmethod
-    async def get_all_user_symbols(self, user_id: int) -> list[Symbol]:
+    async def get_all_user_symbols(self, user_id: int) -> dict[str, int]:
+        raise NotImplementedError
+
+
+class SymbolsActionsManySelector(ABC):
+    @abstractmethod
+    async def get_user_symbols_actions_by_symbol(
+        self, user_id: int, ticker: str
+    ) -> list[SymbolAction]:
         raise NotImplementedError
 
 
 class SymbolsRemover(ABC):
     @abstractmethod
-    async def remove(self, owner_id: int, code: str, amount: int) -> None:
+    async def remove(
+        self, user_id: int, ticker: str, amount: int, price: float
+    ) -> None:
         raise NotImplementedError
 
 
@@ -39,6 +49,7 @@ class SymbolsStorage(
     SymbolsAdder,
     SymbolsAmountSelector,
     SymbolsManySelector,
+    SymbolsActionsManySelector,
     SymbolsRemover,
     SymbolsUsersDeletor,
     ABC,

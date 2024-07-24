@@ -1,9 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from app.logic.abstract.symbols_actions_storage import (
-    SymbolsActionsManySelector,
-)
+from app.logic.abstract.symbols_storage import SymbolsActionsManySelector
 from app.utils.dataclasses import object_to_dataclass
 
 

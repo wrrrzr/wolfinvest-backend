@@ -1,13 +1,13 @@
 from dataclasses import dataclass
 
 from app.logic.abstract.symbols_storage import SymbolsStorage
-from app.logic.models import Symbol
+from app.logic.models.symbol import SymbolAction
 
 
 @dataclass
 class SymbolsMemory:
     amount: dict[int, dict[str, int]]
-    owner: dict[int, dict[str, Symbol]]
+    owner: dict[int, dict[str, int]]
 
 
 def create_symbols_memory() -> SymbolsMemory:
@@ -19,44 +19,52 @@ class SymbolsCacheStorage(SymbolsStorage):
         self._inner = inner
         self._memory = memory
 
-    async def insert_or_add(
-        self, owner_id: int, code: str, amount: int
+    async def add(
+        self, user_id: int, ticker: str, amount: int, price: float
     ) -> None:
-        if owner_id not in self._memory.amount:
-            self._memory.amount[owner_id] = {}
-        if code not in self._memory.amount[owner_id]:
-            self._memory.amount[owner_id][code] = await self._inner.get_amount(
-                owner_id, code
+        if user_id not in self._memory.amount:
+            self._memory.amount[user_id] = {}
+        if ticker not in self._memory.amount[user_id]:
+            self._memory.amount[user_id][ticker] = (
+                await self._inner.get_amount(user_id, ticker)
             )
-        self._memory.amount[owner_id][code] += amount
-        await self._inner.insert_or_add(owner_id, code, amount)
-        await self._update_owner(owner_id)
+        await self._inner.add(user_id, ticker, amount, price)
+        await self._update_owner(user_id)
 
-    async def get_amount(self, owner_id: int, code: str) -> int:
-        if owner_id not in self._memory.amount:
-            self._memory.amount[owner_id] = {}
-        if code not in self._memory.amount[owner_id]:
-            self._memory.amount[owner_id][code] = await self._inner.get_amount(
-                owner_id, code
+    async def get_amount(self, user_id: int, ticker: str) -> int:
+        if user_id not in self._memory.amount:
+            self._memory.amount[user_id] = {}
+        if ticker not in self._memory.amount[user_id]:
+            self._memory.amount[user_id][ticker] = (
+                await self._inner.get_amount(user_id, ticker)
             )
-        return self._memory.amount[owner_id][code]
+        return self._memory.amount[user_id][ticker]
 
-    async def get_all_user_symbols(self, user_id: int) -> list[Symbol]:
+    async def get_all_user_symbols(self, user_id: int) -> dict[str, int]:
         await self._check_exists_or_update(user_id)
-        return list(self._memory.owner[user_id].values())
+        return self._memory.owner[user_id]
 
-    async def remove(self, owner_id: int, code: str, amount: int) -> None:
-        await self._inner.remove(owner_id, code, amount)
-        await self._update_owner(owner_id)
-        self._memory.amount[owner_id][code] -= amount
+    async def get_user_symbols_actions_by_symbol(
+        self, user_id: int, ticker: str
+    ) -> list[SymbolAction]:
+        return await self._inner.get_user_symbols_actions_by_symbol(
+            user_id, ticker
+        )
+
+    async def remove(
+        self, user_id: int, ticker: str, amount: int, price: float
+    ) -> None:
+        await self._inner.remove(user_id, ticker, amount, price)
+        await self._update_owner(user_id)
 
     async def delete_all_user_symbols(self, user_id: int) -> None:
         await self._inner.delete_all_user_symbols(user_id)
 
-    async def _check_exists_or_update(self, owner_id: int) -> None:
-        if owner_id not in self._memory.owner:
-            await self._update_owner(owner_id)
+    async def _check_exists_or_update(self, user_id: int) -> None:
+        if user_id not in self._memory.owner:
+            await self._update_owner(user_id)
 
-    async def _update_owner(self, owner_id: int) -> None:
-        symbols = await self._inner.get_all_user_symbols(owner_id)
-        self._memory.owner[owner_id] = {i.code: i for i in symbols}
+    async def _update_owner(self, user_id: int) -> None:
+        self._memory.owner[user_id] = await self._inner.get_all_user_symbols(
+            user_id
+        )

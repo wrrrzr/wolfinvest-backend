@@ -9,12 +9,9 @@ from app.logic.abstract import (
 from app.logic.abstract.symbols_storage import (
     SymbolsAdder,
     SymbolsManySelector,
+    SymbolsActionsManySelector,
     SymbolsRemover,
     SymbolsAmountSelector,
-)
-from app.logic.abstract.symbols_actions_storage import (
-    SymbolsActionsAdder,
-    SymbolsActionsManySelector,
 )
 from app.logic.exceptions import NotEnoughBalanceError, NotEnoughSymbolsError
 from app.logic.models import (
@@ -27,7 +24,6 @@ from app.logic.models import (
 )
 from app.logic.models.symbol import SymbolAction, Action
 from app.logic.balance_editor import BalanceEditor
-from app.utils.funcs import get_current_time
 
 
 @dataclass
@@ -84,13 +80,11 @@ class BuySymbol:
         symbols_adder: SymbolsAdder,
         users: UsersOneSelector,
         users_balance: BalanceEditor,
-        symbols_actions: SymbolsActionsAdder,
     ) -> None:
         self._symbols_getter = symbols_getter
         self._symbols_adder = symbols_adder
         self._users = users
         self._users_balance = users_balance
-        self._symbols_actions = symbols_actions
 
     async def __call__(self, user_id: int, symbol: str, amount: int) -> float:
         symbol = symbol.upper()
@@ -101,10 +95,7 @@ class BuySymbol:
         await self._users_balance.remove_balance(
             BalanceChangeReason.buy_symbol, user_id, price * amount
         )
-        await self._symbols_actions.insert_buy(
-            user_id, symbol, amount, price, get_current_time()
-        )
-        await self._symbols_adder.insert_or_add(user_id, symbol, amount)
+        await self._symbols_adder.add(user_id, symbol, amount, price)
         return price * amount
 
 
@@ -125,32 +116,32 @@ class GetMySymbols:
         ticker_finder: TickerFinder,
         symbols_actions: SymbolsActionsManySelector,
     ) -> None:
-        self.symbols_many_selector = symbols_many_selector
+        self._symbols_many_selector = symbols_many_selector
         self._symbols_getter = symbols_getter
         self._ticker_finder = ticker_finder
         self._symbols_actions = symbols_actions
 
     async def __call__(self, user_id: int) -> list[MySymbolDTO]:
-        symbols = await self.symbols_many_selector.get_all_user_symbols(
+        symbols = await self._symbols_many_selector.get_all_user_symbols(
             user_id
         )
         res = []
-        for i in symbols:
-            if i.amount <= 0:
+        for ticker, amount in symbols.items():
+            if amount <= 0:
                 continue
-            price = await self._symbols_getter.get_price(i.code)
+            price = await self._symbols_getter.get_price(ticker)
             actions = (
                 await self._symbols_actions.get_user_symbols_actions_by_symbol(
-                    user_id, i.code
+                    user_id, ticker
                 )
             )
             res.append(
                 MySymbolDTO(
-                    name=await self._ticker_finder.get_name_by_ticker(i.code),
-                    code=i.code,
-                    amount=i.amount,
+                    name=await self._ticker_finder.get_name_by_ticker(ticker),
+                    code=ticker,
+                    amount=amount,
                     price=price,
-                    earn=count_earn_symbol(actions, i.amount, price.buy),
+                    earn=count_earn_symbol(actions, amount, price.buy),
                 )
             )
         return res
@@ -163,13 +154,11 @@ class SellSymbol:
         symbols_remover: SymbolsRemover,
         symbols_amount_selector: SymbolsAmountSelector,
         users_balance: BalanceEditor,
-        symbols_actions: SymbolsActionsAdder,
     ) -> None:
         self._symbols_getter = symbols_getter
         self._symbols_remover = symbols_remover
         self._symbols_amount_selector = symbols_amount_selector
         self._users_balance = users_balance
-        self._symbols_actions = symbols_actions
 
     async def __call__(self, user_id: int, symbol: str, amount: int) -> float:
         symbol = symbol.upper()
@@ -182,10 +171,7 @@ class SellSymbol:
         await self._users_balance.add_balance(
             BalanceChangeReason.sold_symbol, user_id, price * amount
         )
-        await self._symbols_actions.insert_sell(
-            user_id, symbol, amount, price, get_current_time()
-        )
-        await self._symbols_remover.remove(user_id, symbol, amount)
+        await self._symbols_remover.remove(user_id, symbol, amount, price)
         return price * amount
 
 

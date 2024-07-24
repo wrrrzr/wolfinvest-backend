@@ -9,9 +9,6 @@ from app.logic.abstract import (
 from app.logic.abstract.symbols_storage import SymbolsUsersDeletor
 from app.logic.abstract.auth_manager import PasswordManager
 from app.logic.abstract.refills_storage import RefillsUsersDeletor
-from app.logic.abstract.symbols_actions_storage import (
-    SymbolsActionsUsersDeletor,
-)
 from app.logic.balance_editor import BalanceEditor
 
 
@@ -40,19 +37,16 @@ class DeleteUser:
         users_deleter: UsersDeleter,
         refills: RefillsUsersDeletor,
         symbols: SymbolsUsersDeletor,
-        symbols_actions: SymbolsActionsUsersDeletor,
     ) -> None:
         self._users_selector = users_selector
         self._users_deleter = users_deleter
         self._refills = refills
         self._symbols = symbols
-        self._symbols_actions = symbols_actions
 
     async def __call__(self, user_id: int, target: int) -> None:
         await check_permissions(self._users_selector, user_id)
         await self._symbols.delete_all_user_symbols(target)
         await self._refills.delete_all_user_refills(target)
-        await self._symbols_actions.delete_all_user_symbols_actions(target)
         await self._users_deleter.delete_user(target)
 
 

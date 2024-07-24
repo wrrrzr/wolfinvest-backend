@@ -10,7 +10,7 @@ class CurrencyActionsAdder(ABC):
         self,
         user_id: int,
         ticker: str,
-        amount: int,
+        amount: float,
         price: float,
         created_at: datetime,
     ) -> None:
@@ -21,7 +21,7 @@ class CurrencyActionsAdder(ABC):
         self,
         user_id: int,
         ticker: str,
-        amount: int,
+        amount: float,
         price: float,
         created_at: datetime,
     ) -> None:
