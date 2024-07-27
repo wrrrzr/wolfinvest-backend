@@ -1,19 +1,35 @@
 from abc import ABC, abstractmethod
 
-from app.logic.models.currency import Currency
+from app.logic.models.currency import CurrencyAction
 
 
 class CurrencyUserAllSelector(ABC):
     @abstractmethod
-    async def get_all_user_currencies(self, user_id: int) -> list[Currency]:
+    async def get_all_user_currencies(self, user_id: int) -> dict[str, float]:
         raise NotImplementedError
 
 
 class CurrencyAdder(ABC):
     @abstractmethod
-    async def insert_or_add(
-        self, user_id: int, ticker: str, amount: float
+    async def add(
+        self, user_id: int, ticker: str, amount: float, price: float
     ) -> None:
+        raise NotImplementedError
+
+
+class CurrencyRemover(ABC):
+    @abstractmethod
+    async def remove(
+        self, user_id: int, ticker: str, amount: float, price: float
+    ) -> None:
+        raise NotImplementedError
+
+
+class CurrencyActionsManySelector(ABC):
+    @abstractmethod
+    async def get_user_currencies_actions_by_currency(
+        self, user_id: int, ticker: str
+    ) -> list[CurrencyAction]:
         raise NotImplementedError
 
 
@@ -24,6 +40,11 @@ class CurrencyUsersDeletor(ABC):
 
 
 class CurrencyStorage(
-    CurrencyUserAllSelector, CurrencyAdder, CurrencyUsersDeletor, ABC
+    CurrencyUserAllSelector,
+    CurrencyAdder,
+    CurrencyRemover,
+    CurrencyActionsManySelector,
+    CurrencyUsersDeletor,
+    ABC,
 ):
     pass

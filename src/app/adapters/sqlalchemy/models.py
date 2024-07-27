@@ -56,15 +56,6 @@ class SymbolActionModel(Base):
     created_at = Column(DateTime(timezone=True), nullable=False)
 
 
-class CurrencyModel(Base):
-    __tablename__ = "currencies"
-
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    user_id = Column(BigInteger, ForeignKey(UserModel.id), nullable=False)
-    ticker = Column(String, nullable=False)
-    amount = Column(Float, nullable=False)
-
-
 class CurrenciesActionModel(Base):
     __tablename__ = "currencies_action"
 

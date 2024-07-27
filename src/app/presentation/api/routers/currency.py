@@ -6,7 +6,6 @@ from app.logic.use_cases.currency import (
     BuyCurrency,
     GetUserCurrencies,
 )
-from app.logic.models.currency import Currency
 from app.logic.exceptions import NotEnoughBalanceError
 from ..di import UserId
 
@@ -25,7 +24,7 @@ async def get_price(
 @inject
 async def get_my_currencies(
     use_case: FromDishka[GetUserCurrencies], user_id: FromDishka[UserId]
-) -> list[Currency]:
+) -> dict[str, float]:
     return await use_case(user_id)
 
 
