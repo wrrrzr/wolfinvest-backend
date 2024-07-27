@@ -40,7 +40,7 @@ class SQLAlchemySymbolsStorage(SymbolsStorage):
                     else_=0,
                 )
             )
-        )
+        ).where(SymbolActionModel.user_id == user_id)
 
         try:
             return (await self._session.execute(stmt)).scalar()
@@ -48,22 +48,26 @@ class SQLAlchemySymbolsStorage(SymbolsStorage):
             return DEFAULT_AMOUNT
 
     async def get_all_user_symbols(self, user_id: int) -> dict[str, int]:
-        stmt = select(
-            SymbolActionModel.ticker,
-            func.sum(
-                case(
-                    (
-                        SymbolActionModel.action == Action.buy,
-                        SymbolActionModel.amount,
-                    ),
-                    (
-                        SymbolActionModel.action == Action.sell,
-                        -SymbolActionModel.amount,
-                    ),
-                    else_=0,
-                )
-            ),
-        ).group_by(SymbolActionModel.ticker)
+        stmt = (
+            select(
+                SymbolActionModel.ticker,
+                func.sum(
+                    case(
+                        (
+                            SymbolActionModel.action == Action.buy,
+                            SymbolActionModel.amount,
+                        ),
+                        (
+                            SymbolActionModel.action == Action.sell,
+                            -SymbolActionModel.amount,
+                        ),
+                        else_=0,
+                    )
+                ),
+            )
+            .where(SymbolActionModel.user_id == user_id)
+            .group_by(SymbolActionModel.ticker)
+        )
 
         res = await self._session.execute(stmt)
         return dict(res.all())

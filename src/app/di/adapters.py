@@ -26,6 +26,7 @@ from app.logic.abstract import (
 )
 from app.logic.abstract.currency_storage import (
     CurrencyUserAllSelector,
+    CurrencyAmountSelector,
     CurrencyAdder,
     CurrencyRemover,
     CurrencyActionsManySelector,
@@ -111,6 +112,7 @@ class AdaptersProvider(Provider):
     @provide
     def currency_storage(self, session: AsyncSession) -> AnyOf[
         CurrencyUserAllSelector,
+        CurrencyAmountSelector,
         CurrencyAdder,
         CurrencyRemover,
         CurrencyActionsManySelector,

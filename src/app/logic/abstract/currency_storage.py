@@ -9,6 +9,12 @@ class CurrencyUserAllSelector(ABC):
         raise NotImplementedError
 
 
+class CurrencyAmountSelector(ABC):
+    @abstractmethod
+    async def get_amount(self, user_id: int, ticker: str) -> float:
+        raise NotImplementedError
+
+
 class CurrencyAdder(ABC):
     @abstractmethod
     async def add(
@@ -41,6 +47,7 @@ class CurrencyUsersDeletor(ABC):
 
 class CurrencyStorage(
     CurrencyUserAllSelector,
+    CurrencyAmountSelector,
     CurrencyAdder,
     CurrencyRemover,
     CurrencyActionsManySelector,

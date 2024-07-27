@@ -3,10 +3,12 @@ from app.logic.abstract.users_storage import UsersOneSelector
 from app.logic.abstract.currency_storage import (
     CurrencyUserAllSelector,
     CurrencyAdder,
+    CurrencyRemover,
+    CurrencyAmountSelector,
 )
 from app.logic.balance_editor import BalanceEditor
 from app.logic.models.balance_history import BalanceChangeReason
-from app.logic.exceptions import NotEnoughBalanceError
+from app.logic.exceptions import NotEnoughBalanceError, NotEnoughCurrencyError
 
 
 class GetUserCurrencies:
@@ -54,4 +56,28 @@ class BuyCurrency:
 
 
 class SellCurrency:
-    pass
+    def __init__(
+        self,
+        currency_remover: CurrencyRemover,
+        currency_price: CurrencyPriceGetter,
+        users_balance: BalanceEditor,
+        currency_amount: CurrencyAmountSelector,
+    ) -> None:
+        self._currency_remover = currency_remover
+        self._currency_price = currency_price
+        self._users_balance = users_balance
+        self._currency_amount = currency_amount
+
+    async def __call__(self, user_id: int, ticker: str, amount: float) -> None:
+        ticker = ticker.upper()
+        price = await self._currency_price.get_price(ticker)
+        user_amount = await self._currency_amount.get_amount(user_id, ticker)
+
+        if user_amount < amount:
+            raise NotEnoughCurrencyError()
+
+        await self._users_balance.add_balance(
+            BalanceChangeReason.sold_currency, user_id, price * amount
+        )
+        await self._currency_remover.remove(user_id, ticker, amount, price)
+        return

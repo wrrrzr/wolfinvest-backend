@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import NoResultFound
 from sqlalchemy import select, insert, delete, func, case
 
 from app.logic.abstract.currency_storage import CurrencyStorage
@@ -14,9 +15,8 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    async def get_all_user_currencies(self, user_id: int) -> dict[str, float]:
+    async def get_amount(self, user_id: int, ticker: str) -> float:
         stmt = select(
-            CurrenciesActionModel.ticker,
             func.sum(
                 case(
                     (
@@ -29,8 +29,38 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
                     ),
                     else_=0,
                 )
-            ),
-        ).group_by(CurrenciesActionModel.ticker)
+            )
+        ).where(
+            CurrenciesActionModel.user_id == user_id,
+            CurrenciesActionModel.ticker == ticker,
+        )
+
+        try:
+            return (await self._session.execute(stmt)).scalar()
+        except NoResultFound:
+            return 0.0
+
+    async def get_all_user_currencies(self, user_id: int) -> dict[str, float]:
+        stmt = (
+            select(
+                CurrenciesActionModel.ticker,
+                func.sum(
+                    case(
+                        (
+                            CurrenciesActionModel.action == Action.buy,
+                            CurrenciesActionModel.amount,
+                        ),
+                        (
+                            CurrenciesActionModel.action == Action.sell,
+                            -CurrenciesActionModel.amount,
+                        ),
+                        else_=0,
+                    )
+                ),
+            )
+            .where(CurrenciesActionModel.user_id == user_id)
+            .group_by(CurrenciesActionModel.ticker)
+        )
 
         res = await self._session.execute(stmt)
         return dict(res.all())

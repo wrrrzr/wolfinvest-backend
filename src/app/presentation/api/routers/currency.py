@@ -5,8 +5,9 @@ from app.logic.use_cases.currency import (
     GetCurrencyPrice,
     BuyCurrency,
     GetUserCurrencies,
+    SellCurrency,
 )
-from app.logic.exceptions import NotEnoughBalanceError
+from app.logic.exceptions import NotEnoughBalanceError, NotEnoughCurrencyError
 from ..di import UserId
 
 router = APIRouter(prefix="/currency", tags=["currency"])
@@ -40,3 +41,17 @@ async def buy_currency(
         await use_case(user_id, currency, amount)
     except NotEnoughBalanceError:
         raise HTTPException(status_code=400, detail="not enough balance")
+
+
+@router.post("/sell-currency")
+@inject
+async def sell_currency(
+    use_case: FromDishka[SellCurrency],
+    user_id: FromDishka[UserId],
+    currency: str,
+    amount: float,
+) -> None:
+    try:
+        await use_case(user_id, currency, amount)
+    except NotEnoughCurrencyError:
+        raise HTTPException(status_code=400, detail="not enough currency")

@@ -24,6 +24,7 @@ from app.logic.use_cases.currency import (
     GetCurrencyPrice,
     BuyCurrency,
     GetUserCurrencies,
+    SellCurrency,
 )
 
 
@@ -52,4 +53,5 @@ class LogicProvider(Provider):
         GetMySymbolsActions,
         BuyCurrency,
         GetUserCurrencies,
+        SellCurrency,
     )

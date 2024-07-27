@@ -14,6 +14,10 @@ class NotEnoughSymbolsError(LogicError):
     pass
 
 
+class NotEnoughCurrencyError(LogicError):
+    pass
+
+
 class UsernameAlreadyTakenError(LogicError):
     pass
 
