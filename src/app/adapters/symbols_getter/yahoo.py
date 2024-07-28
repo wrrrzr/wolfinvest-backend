@@ -49,7 +49,11 @@ class YahooSymbolsGetter(SymbolsGetter):
                     resp = resp["chart"]["result"][0]
                     return [
                         SymbolHistory(
-                            price=SymbolPrice(buy=i[0], sell=i[1]),
+                            price=SymbolPrice(
+                                buy=i[0],
+                                sell=i[1],
+                                currency=resp["meta"]["currency"],
+                            ),
                             timestamp=datetime.fromtimestamp(i[2]),
                         )
                         for i in zip(

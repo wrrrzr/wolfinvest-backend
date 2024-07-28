@@ -23,6 +23,7 @@ class Action(IntEnum):
 class SymbolPrice:
     buy: float
     sell: float
+    currency: str
 
 
 @dataclass
