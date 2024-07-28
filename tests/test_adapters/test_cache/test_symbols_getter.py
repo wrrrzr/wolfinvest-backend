@@ -5,15 +5,28 @@ from app.logic.models import SymbolHistory, SymbolPrice, SymbolHistoryInterval
 from app.adapters.cache import SymbolsGetterCache, create_symbols_getter_memory
 from app.utils.funcs import get_current_time
 
-MOCK_SYMBOL_PRICE = SymbolPrice(1.2, 1.0)
+MOCK_CURRENCY = "USD"
+MOCK_SYMBOL_PRICE = SymbolPrice(1.2, 1.0, MOCK_CURRENCY)
 MOCK_SYMBOL_HISTORY = {
     SymbolHistoryInterval.FIVE_MINUTES: [
-        SymbolHistory(SymbolPrice(1.2, 1.0), get_current_time()),
-        SymbolHistory(SymbolPrice(1.1, 1.0), get_current_time()),
-        SymbolHistory(SymbolPrice(1.1, 1.0), get_current_time()),
-        SymbolHistory(SymbolPrice(1.0, 0.9), get_current_time()),
-        SymbolHistory(SymbolPrice(1.1, 1.0), get_current_time()),
-        SymbolHistory(SymbolPrice(0.9, 0.8), get_current_time()),
+        SymbolHistory(
+            SymbolPrice(1.2, 1.0, MOCK_CURRENCY), get_current_time()
+        ),
+        SymbolHistory(
+            SymbolPrice(1.1, 1.0, MOCK_CURRENCY), get_current_time()
+        ),
+        SymbolHistory(
+            SymbolPrice(1.1, 1.0, MOCK_CURRENCY), get_current_time()
+        ),
+        SymbolHistory(
+            SymbolPrice(1.0, 0.9, MOCK_CURRENCY), get_current_time()
+        ),
+        SymbolHistory(
+            SymbolPrice(1.1, 1.0, MOCK_CURRENCY), get_current_time()
+        ),
+        SymbolHistory(
+            SymbolPrice(0.9, 0.8, MOCK_CURRENCY), get_current_time()
+        ),
     ]
 }
 
