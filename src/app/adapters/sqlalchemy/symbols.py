@@ -42,10 +42,10 @@ class SQLAlchemySymbolsStorage(SymbolsStorage):
             )
         ).where(SymbolActionModel.user_id == user_id)
 
-        try:
-            return (await self._session.execute(stmt)).scalar()
-        except NoResultFound:
-            return DEFAULT_AMOUNT
+        res = (await self._session.execute(stmt)).scalar_one()
+        if res is not None:
+            return res
+        return 0
 
     async def get_all_user_symbols(self, user_id: int) -> dict[str, int]:
         stmt = (

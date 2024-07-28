@@ -61,9 +61,9 @@ async def buy_symbol(
     symbol: str,
     amount: int,
     user_id: FromDishka[UserId],
-) -> float:
+) -> None:
     try:
-        return await use_case(user_id, symbol, amount)
+        await use_case(user_id, symbol, amount)
     except NotEnoughBalanceError:
         raise HTTPException(status_code=400, detail="not enough balance")
     except UnfoundSymbolError:
@@ -87,9 +87,9 @@ async def sell_symbol(
     symbol: str,
     amount: int,
     user_id: FromDishka[UserId],
-) -> float:
+) -> None:
     try:
-        return await use_case(user_id, symbol, amount)
+        await use_case(user_id, symbol, amount)
     except NotEnoughSymbolsError:
         raise HTTPException(status_code=400, detail="not enough symbol")
     except UnfoundSymbolError:

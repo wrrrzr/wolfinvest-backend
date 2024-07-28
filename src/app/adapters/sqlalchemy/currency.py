@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import NoResultFound
 from sqlalchemy import select, insert, delete, func, case
 
 from app.logic.abstract.currency_storage import CurrencyStorage
@@ -35,10 +34,12 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
             CurrenciesActionModel.ticker == ticker,
         )
 
-        try:
-            return (await self._session.execute(stmt)).scalar()
-        except NoResultFound:
-            return 0.0
+        res = (await self._session.execute(stmt)).scalar()
+
+        if res is not None:
+            return res
+
+        return 0.0
 
     async def get_all_user_currencies(self, user_id: int) -> dict[str, float]:
         stmt = (

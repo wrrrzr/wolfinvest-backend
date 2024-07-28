@@ -9,4 +9,7 @@ class ExchangerateApiGetter(CurrencyGetter):
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
                 data = await resp.json()
-                return data["rates"][MAIN_CURRENCY]
+                try:
+                    return data["rates"][MAIN_CURRENCY]
+                except KeyError:
+                    return 1.0

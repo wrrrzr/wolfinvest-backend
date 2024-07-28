@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from app.logic.abstract import (
     SymbolsPriceGetter,
     SymbolsHistoryGetter,
-    UsersOneSelector,
     TickerFinder,
 )
 from app.logic.abstract.symbols_storage import (
@@ -13,6 +12,11 @@ from app.logic.abstract.symbols_storage import (
     SymbolsRemover,
     SymbolsAmountSelector,
 )
+from app.logic.abstract.currency_storage import (
+    CurrencyRemover,
+    CurrencyAmountSelector,
+    CurrencyAdder,
+)
 from app.logic.exceptions import NotEnoughBalanceError, NotEnoughSymbolsError
 from app.logic.models import (
     SymbolHistory,
@@ -20,10 +24,8 @@ from app.logic.models import (
     SymbolTicker,
     SymbolHistoryInterval,
     SymbolData,
-    BalanceChangeReason,
 )
 from app.logic.models.symbol import SymbolAction, Action
-from app.logic.balance_editor import BalanceEditor
 
 
 @dataclass
@@ -78,25 +80,27 @@ class BuySymbol:
         self,
         symbols_getter: SymbolsPriceGetter,
         symbols_adder: SymbolsAdder,
-        users: UsersOneSelector,
-        users_balance: BalanceEditor,
+        currency_remover: CurrencyRemover,
+        currency_amount: CurrencyAmountSelector,
     ) -> None:
         self._symbols_getter = symbols_getter
         self._symbols_adder = symbols_adder
-        self._users = users
-        self._users_balance = users_balance
+        self._currency_remover = currency_remover
+        self._currency_amount = currency_amount
 
-    async def __call__(self, user_id: int, symbol: str, amount: int) -> float:
+    async def __call__(self, user_id: int, symbol: str, amount: int) -> None:
         symbol = symbol.upper()
-        price = (await self._symbols_getter.get_price(symbol)).buy
-        user = await self._users.select_one_by_id(user_id)
-        if user.balance < price * amount:
-            raise NotEnoughBalanceError()
-        await self._users_balance.remove_balance(
-            BalanceChangeReason.buy_symbol, user_id, price * amount
+        price = await self._symbols_getter.get_price(symbol)
+        user_balance = await self._currency_amount.get_amount(
+            user_id, price.currency
         )
-        await self._symbols_adder.add(user_id, symbol, amount, price)
-        return price * amount
+        if user_balance < price.buy * amount:
+            raise NotEnoughBalanceError()
+        await self._currency_remover.remove(
+            user_id, price.currency, price.buy, 0.0
+        )
+        await self._symbols_adder.add(user_id, symbol, amount, price.buy)
+        return
 
 
 @dataclass
@@ -153,26 +157,26 @@ class SellSymbol:
         symbols_getter: SymbolsPriceGetter,
         symbols_remover: SymbolsRemover,
         symbols_amount_selector: SymbolsAmountSelector,
-        users_balance: BalanceEditor,
+        currency_adder: CurrencyAdder,
     ) -> None:
         self._symbols_getter = symbols_getter
         self._symbols_remover = symbols_remover
         self._symbols_amount_selector = symbols_amount_selector
-        self._users_balance = users_balance
+        self._currency_adder = currency_adder
 
-    async def __call__(self, user_id: int, symbol: str, amount: int) -> float:
+    async def __call__(self, user_id: int, symbol: str, amount: int) -> None:
         symbol = symbol.upper()
         user_amount = await self._symbols_amount_selector.get_amount(
             user_id, symbol
         )
         if user_amount < amount:
             raise NotEnoughSymbolsError()
-        price = (await self._symbols_getter.get_price(symbol)).sell
-        await self._users_balance.add_balance(
-            BalanceChangeReason.sold_symbol, user_id, price * amount
+        price = await self._symbols_getter.get_price(symbol)
+        await self._symbols_remover.remove(user_id, symbol, amount, price.sell)
+        await self._currency_adder.add(
+            user_id, price.currency, price.sell, 0.0
         )
-        await self._symbols_remover.remove(user_id, symbol, amount, price)
-        return price * amount
+        return
 
 
 class FindTicker:
