@@ -1,10 +1,6 @@
 from typing import Dict, Protocol, Any
 
 
-class Dataclass(Protocol):
-    __dataclass_fields__: Dict[str, Any]
-
-
 class ObjectWithDict(Protocol):
     __dict__: Dict[Any, Any]
 
