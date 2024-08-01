@@ -69,7 +69,11 @@ from app.adapters.cache import (
     CacheCurrencyGetter,
     create_currency_getter_memory,
 )
-from app.adapters.symbols_getter import YahooSymbolsGetter
+from app.adapters.symbols_getter import (
+    YahooSymbolsGetter,
+    MoexSymbolsGetter,
+    MultiSymbolsGetter,
+)
 from app.adapters.auth import JWTTokenManager, PasslibPasswordManager
 from app.adapters.ticker_finder import TickersFileTickerFinder
 from app.adapters.currency_getter import ExchangerateApiGetter
@@ -166,7 +170,13 @@ class AdaptersProvider(Provider):
     def symbols_getter(
         self,
     ) -> AnyOf[SymbolsPriceGetter, SymbolsHistoryGetter]:
-        return SymbolsGetterCache(YahooSymbolsGetter(), _memory_symbols_getter)
+        return SymbolsGetterCache(
+            MultiSymbolsGetter(
+                YahooSymbolsGetter(),
+                MoexSymbolsGetter(),
+            ),
+            _memory_symbols_getter,
+        )
 
     @decorate
     def get_ticker_finder_cache(self, inner: TickerFinder) -> TickerFinder:
