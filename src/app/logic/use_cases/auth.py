@@ -12,8 +12,6 @@ from app.logic.exceptions import (
     IncorrectPasswordError,
 )
 
-DEFAULT_BALANCE = 0
-
 
 class RegisterUser:
     def __init__(
@@ -37,7 +35,6 @@ class RegisterUser:
         await self._users_adder.insert(
             User(
                 id=new_id,
-                balance=DEFAULT_BALANCE,
                 username=username,
                 password=pass_hash,
                 role=USER_DEFAULT_ROLE,

@@ -24,27 +24,6 @@ class UsersCacheStorage(UsersStorage):
         self._memory.data.append(user)
         await self._inner.insert(user)
 
-    async def add_balance(self, user_id: int, balance: float) -> None:
-        await self._check_user_and_update(user_id)
-        await self._inner.add_balance(user_id, balance)
-        list(filter(lambda x: x.id == user_id, self._memory.data))[
-            0
-        ].balance += balance
-
-    async def remove_balance(self, user_id: int, balance: float) -> None:
-        await self._check_user_and_update(user_id)
-        await self._inner.remove_balance(user_id, balance)
-        list(filter(lambda x: x.id == user_id, self._memory.data))[
-            0
-        ].balance -= balance
-
-    async def set_balance(self, user_id: int, balance: float) -> None:
-        await self._check_user_and_update(user_id)
-        await self._inner.set_balance(user_id, balance)
-        list(filter(lambda x: x.id == user_id, self._memory.data))[
-            0
-        ].balance = balance
-
     async def change_password(self, user_id: int, password: str) -> None:
         await self._check_user_and_update(user_id)
         await self._inner.change_password(user_id, password)
