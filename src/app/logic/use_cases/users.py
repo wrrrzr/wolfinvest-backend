@@ -1,7 +1,10 @@
 from dataclasses import dataclass
 
-from app.utils.dataclasses import object_to_dataclass
 from app.logic.abstract import UsersOneSelector
+from app.logic.abstract.currency_storage import (
+    CurrencyAmountSelector,
+    MAIN_CURRENCY,
+)
 
 
 @dataclass
@@ -13,9 +16,17 @@ class UserGetMeDTO:
 
 
 class GetMe:
-    def __init__(self, users: UsersOneSelector) -> None:
+    def __init__(
+        self, users: UsersOneSelector, currency_amount: CurrencyAmountSelector
+    ) -> None:
         self._users = users
+        self._currency_amount = currency_amount
 
     async def __call__(self, user_id: int) -> UserGetMeDTO:
         res = await self._users.select_one_by_id(user_id)
-        return object_to_dataclass(res, UserGetMeDTO)
+        balance = await self._currency_amount.get_amount(
+            user_id, MAIN_CURRENCY
+        )
+        return UserGetMeDTO(
+            id=res.id, balance=balance, username=res.username, role=res.role
+        )

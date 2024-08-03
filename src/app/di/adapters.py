@@ -11,7 +11,6 @@ from dishka import (
 
 from app.logic.abstract import (
     UsersAdder,
-    UsersBalanceEditor,
     UsersPasswordEditor,
     UsersOneSelector,
     UsersAllSelector,
@@ -154,7 +153,6 @@ class AdaptersProvider(Provider):
     @provide
     def users_storage(self, session: AsyncSession) -> AnyOf[
         UsersAdder,
-        UsersBalanceEditor,
         UsersPasswordEditor,
         UsersOneSelector,
         UsersAllSelector,

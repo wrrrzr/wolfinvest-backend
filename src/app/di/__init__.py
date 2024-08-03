@@ -3,7 +3,6 @@ from dishka import Provider
 from .adapters import AdaptersProvider
 from .logic import LogicProvider
 from .config import ConfigProvider
-from .other import OtherProvider
 
 
 def all_providers() -> list[Provider]:
@@ -11,7 +10,6 @@ def all_providers() -> list[Provider]:
         AdaptersProvider(),
         LogicProvider(),
         ConfigProvider(),
-        OtherProvider(),
     ]
 
 

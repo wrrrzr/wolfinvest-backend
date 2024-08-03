@@ -1,6 +1,5 @@
 from .users_storage import (
     UsersAdder,
-    UsersBalanceEditor,
     UsersPasswordEditor,
     UsersOneSelector,
     UsersAllSelector,
@@ -22,7 +21,6 @@ from .balance_history_storage import (
 
 __all__ = (
     "UsersAdder",
-    "UsersBalanceEditor",
     "UsersPasswordEditor",
     "UsersOneSelector",
     "UsersAllSelector",

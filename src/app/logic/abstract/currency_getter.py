@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 
-MAIN_CURRENCY = "USD"
-
 
 class CurrencyPriceGetter(ABC):
     @abstractmethod

@@ -18,7 +18,6 @@ class UserModel(Base):
     __tablename__ = "users"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    balance = Column(Float, default=0.0, nullable=False)
     username = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
     role = Column(Integer, nullable=False)

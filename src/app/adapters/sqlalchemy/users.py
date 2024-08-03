@@ -22,36 +22,6 @@ class SQLAlchemyUsersStorage(UsersStorage):
         await self._session.commit()
         return
 
-    async def add_balance(self, user_id: int, balance: float) -> None:
-        stmt = (
-            update(UserModel)
-            .values(balance=UserModel.balance + balance)
-            .where(UserModel.id == user_id)
-        )
-        await self._session.execute(stmt)
-        await self._session.commit()
-        return
-
-    async def remove_balance(self, user_id: int, balance: float) -> None:
-        stmt = (
-            update(UserModel)
-            .values(balance=UserModel.balance - balance)
-            .where(UserModel.id == user_id)
-        )
-        await self._session.execute(stmt)
-        await self._session.commit()
-        return
-
-    async def set_balance(self, user_id: int, balance: float) -> None:
-        stmt = (
-            update(UserModel)
-            .values(balance=balance)
-            .where(UserModel.id == user_id)
-        )
-        await self._session.execute(stmt)
-        await self._session.commit()
-        return
-
     async def change_password(self, user_id: int, password: str) -> None:
         stmt = (
             update(UserModel)

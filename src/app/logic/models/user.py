@@ -13,7 +13,6 @@ USER_DEFAULT_ROLE = Role.USER
 @dataclass
 class User:
     id: int
-    balance: float
     username: str
     password: str
     role: int

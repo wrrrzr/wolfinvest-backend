@@ -7,22 +7,19 @@ from app.logic.abstract.refills_storage import (
     RefillsAdder,
     RefillsUsersSelector,
 )
-from app.logic.models import BalanceChangeReason
-from app.logic.balance_editor import BalanceEditor
+from app.logic.abstract.currency_storage import CurrencyAdder, MAIN_CURRENCY
 
 
 class TakeRefill:
     def __init__(
-        self, users_balance: BalanceEditor, refills: RefillsAdder
+        self, users_balance: CurrencyAdder, refills: RefillsAdder
     ) -> None:
         self._users_balance = users_balance
         self._refills = refills
 
     async def __call__(self, user_id: int, amount: int) -> None:
         await self._refills.insert(user_id, amount, get_current_time())
-        await self._users_balance.add_balance(
-            BalanceChangeReason.taked_refill, user_id, amount
-        )
+        await self._users_balance.add(user_id, MAIN_CURRENCY, amount, 1.0)
 
 
 @dataclass

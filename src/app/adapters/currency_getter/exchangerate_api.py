@@ -1,6 +1,7 @@
 import aiohttp
 
-from app.logic.abstract.currency_getter import CurrencyGetter, MAIN_CURRENCY
+from app.logic.abstract.currency_getter import CurrencyGetter
+from app.logic.abstract.currency_storage import MAIN_CURRENCY
 
 
 class ExchangerateApiGetter(CurrencyGetter):

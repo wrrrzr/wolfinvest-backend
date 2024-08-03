@@ -9,20 +9,6 @@ class UsersAdder(ABC):
         raise NotImplementedError
 
 
-class UsersBalanceEditor(ABC):
-    @abstractmethod
-    async def add_balance(self, user_id: int, balance: float) -> None:
-        raise NotImplementedError
-
-    @abstractmethod
-    async def remove_balance(self, user_id: int, balance: float) -> None:
-        raise NotImplementedError
-
-    @abstractmethod
-    async def set_balance(self, user_id: int, balance: float) -> None:
-        raise NotImplementedError
-
-
 class UsersPasswordEditor(ABC):
     @abstractmethod
     async def change_password(self, user_id: int, password: str) -> None:
@@ -65,7 +51,6 @@ class UsersIdGetter(ABC):
 
 class UsersStorage(
     UsersAdder,
-    UsersBalanceEditor,
     UsersPasswordEditor,
     UsersOneSelector,
     UsersAllSelector,

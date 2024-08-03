@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 
 from app.logic.models.currency import CurrencyAction
 
+MAIN_CURRENCY = "USD"
+
 
 class CurrencyUserAllSelector(ABC):
     @abstractmethod
