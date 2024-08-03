@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from app.utils.funcs import get_current_time
-from app.utils.dataclasses import object_to_dataclass
+from app.utils.dataclasses import objects_to_dataclasses
 from app.logic.abstract.refills_storage import (
     RefillsAdder,
     RefillsUsersSelector,
@@ -34,4 +34,4 @@ class GetMyRefills:
 
     async def __call__(self, user_id: int) -> list[MyRefillDTO]:
         refills = await self._refills.get_all_user_refills(user_id)
-        return [object_to_dataclass(i, MyRefillDTO) for i in refills]
+        return objects_to_dataclasses(refills, MyRefillDTO)

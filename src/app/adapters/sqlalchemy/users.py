@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import insert, update, select, exists, delete
 from sqlalchemy.sql.expression import func
 
-from app.utils.dataclasses import object_to_dataclass
+from app.utils.dataclasses import object_to_dataclass, objects_to_dataclasses
 from app.logic.abstract import UsersStorage
 from app.logic.models import User
 from .models import UserModel
@@ -44,8 +44,8 @@ class SQLAlchemyUsersStorage(UsersStorage):
 
     async def select_all(self) -> list[User]:
         stmt = select(UserModel)
-        res = (await self._session.execute(stmt)).scalars().all()
-        return [object_to_dataclass(i, User) for i in res]
+        res = await self._session.execute(stmt)
+        return objects_to_dataclasses(res.scalars().all(), User)
 
     async def exists_by_username(self, username: str) -> bool:
         stmt = exists(UserModel).where(UserModel.username == username).select()

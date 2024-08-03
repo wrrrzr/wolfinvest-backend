@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from app.logic.abstract.symbols_storage import SymbolsActionsManySelector
-from app.utils.dataclasses import object_to_dataclass
+from app.utils.dataclasses import objects_to_dataclasses
 
 
 @dataclass
@@ -26,4 +26,4 @@ class GetMySymbolsActions:
                 user_id, symbol
             )
         )
-        return [object_to_dataclass(i, MySymbolActionDTO) for i in symbols]
+        return objects_to_dataclasses(symbols, MySymbolActionDTO)
