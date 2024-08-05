@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from app.logic.abstract.symbols_storage import SymbolsStorage
-from app.logic.models.symbol import SymbolAction
+from app.logic.models.symbol import SymbolAction, UserSymbolData
 
 
 @dataclass
@@ -40,7 +40,9 @@ class SymbolsCacheStorage(SymbolsStorage):
             )
         return self._memory.amount[user_id][ticker]
 
-    async def get_all_user_symbols(self, user_id: int) -> dict[str, int]:
+    async def get_all_user_symbols(
+        self, user_id: int
+    ) -> dict[str, UserSymbolData]:
         await self._check_exists_or_update(user_id)
         return self._memory.owner[user_id]
 

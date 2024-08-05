@@ -60,3 +60,9 @@ class SymbolAction:
     amount: int
     price: float
     created_at: datetime
+
+
+@dataclass
+class UserSymbolData:
+    amount: int
+    actions: list[SymbolAction]

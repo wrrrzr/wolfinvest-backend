@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from app.logic.models.symbol import SymbolAction
+from app.logic.models.symbol import SymbolAction, UserSymbolData
 
 
 class SymbolsAdder(ABC):
@@ -19,7 +19,9 @@ class SymbolsAmountSelector(ABC):
 
 class SymbolsManySelector(ABC):
     @abstractmethod
-    async def get_all_user_symbols(self, user_id: int) -> dict[str, int]:
+    async def get_all_user_symbols(
+        self, user_id: int
+    ) -> dict[str, UserSymbolData]:
         raise NotImplementedError
 
 

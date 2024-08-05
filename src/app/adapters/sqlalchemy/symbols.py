@@ -1,10 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import NoResultFound
 from sqlalchemy import insert, select, delete, func, case
 
 from app.logic.abstract.symbols_storage import SymbolsStorage
-from app.logic.models.symbol import SymbolAction, Action, DEFAULT_AMOUNT
-from app.utils.dataclasses import object_to_dataclass
+from app.logic.models.symbol import SymbolAction, Action, UserSymbolData
+from app.utils.dataclasses import object_to_dataclass, objects_to_dataclasses
 from app.utils.funcs import get_current_time
 from .models import SymbolActionModel
 
@@ -47,7 +46,14 @@ class SQLAlchemySymbolsStorage(SymbolsStorage):
             return res
         return 0
 
-    async def get_all_user_symbols(self, user_id: int) -> dict[str, int]:
+    async def get_all_user_symbols(
+        self, user_id: int
+    ) -> dict[str, UserSymbolData]:
+        stmt_actions = select(
+            SymbolActionModel.ticker,
+            SymbolActionModel,
+        ).where(SymbolActionModel.user_id == user_id)
+
         stmt = (
             select(
                 SymbolActionModel.ticker,
@@ -69,8 +75,24 @@ class SQLAlchemySymbolsStorage(SymbolsStorage):
             .group_by(SymbolActionModel.ticker)
         )
 
-        res = await self._session.execute(stmt)
-        return dict(res.all())
+        res = (await self._session.execute(stmt)).all()
+        list_actions = (await self._session.execute(stmt_actions)).all()
+        res_actions = {}
+
+        for i in list_actions:
+            if i not in res_actions:
+                res_actions[i[0]] = []
+            res_actions[i[0]].append(i[1])
+
+        return {
+            symbols[0]: UserSymbolData(
+                amount=symbols[1],
+                actions=objects_to_dataclasses(
+                    res_actions[symbols[0]], SymbolAction
+                ),
+            )
+            for symbols in res
+        }
 
     async def get_user_symbols_actions_by_symbol(
         self, user_id: int, ticker: str

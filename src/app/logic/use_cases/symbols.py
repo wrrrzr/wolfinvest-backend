@@ -1,3 +1,4 @@
+import asyncio
 from dataclasses import dataclass
 
 from app.logic.abstract import (
@@ -130,22 +131,28 @@ class GetMySymbols:
             user_id
         )
         res = []
-        for ticker, amount in symbols.items():
-            if amount <= 0:
+        price_tasks = [
+            self._symbols_getter.get_price(ticker)
+            for ticker, data in symbols.items()
+            if data.amount > 0
+        ]
+
+        prices = await asyncio.gather(*price_tasks)
+
+        for idx, (ticker, symbol_data) in enumerate(symbols.items()):
+            if symbol_data.amount <= 0:
                 continue
-            price = await self._symbols_getter.get_price(ticker)
-            actions = (
-                await self._symbols_actions.get_user_symbols_actions_by_symbol(
-                    user_id, ticker
-                )
-            )
+
+            price = prices[idx]
             res.append(
                 MySymbolDTO(
                     name=await self._ticker_finder.get_name_by_ticker(ticker),
                     code=ticker,
-                    amount=amount,
+                    amount=symbol_data.amount,
                     price=price,
-                    earn=count_earn_symbol(actions, amount, price.buy),
+                    earn=count_earn_symbol(
+                        symbol_data.actions, symbol_data.amount, price.buy
+                    ),
                 )
             )
         return res
