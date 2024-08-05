@@ -1,4 +1,3 @@
-import asyncio
 from dataclasses import dataclass
 
 from app.logic.abstract import (
@@ -6,6 +5,7 @@ from app.logic.abstract import (
     SymbolsHistoryGetter,
     TickerFinder,
 )
+from app.logic.abstract.symbols_getter import SymbolsManyPriceGetter
 from app.logic.abstract.symbols_storage import (
     SymbolsAdder,
     SymbolsManySelector,
@@ -117,7 +117,7 @@ class GetMySymbols:
     def __init__(
         self,
         symbols_many_selector: SymbolsManySelector,
-        symbols_getter: SymbolsPriceGetter,
+        symbols_getter: SymbolsManyPriceGetter,
         ticker_finder: TickerFinder,
         symbols_actions: SymbolsActionsManySelector,
     ) -> None:
@@ -131,13 +131,10 @@ class GetMySymbols:
             user_id
         )
         res = []
-        price_tasks = [
-            self._symbols_getter.get_price(ticker)
-            for ticker, data in symbols.items()
-            if data.amount > 0
-        ]
 
-        prices = await asyncio.gather(*price_tasks)
+        prices = await self._symbols_getter.get_many_prices(
+            [ticker for ticker, data in symbols.items() if data.amount > 0]
+        )
 
         for idx, (ticker, symbol_data) in enumerate(symbols.items()):
             if symbol_data.amount <= 0:

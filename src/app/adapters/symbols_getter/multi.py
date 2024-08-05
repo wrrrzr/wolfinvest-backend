@@ -1,3 +1,6 @@
+import asyncio
+from typing import Iterable
+
 from app.logic.abstract import SymbolsGetter
 from app.logic.exceptions import UnfoundSymbolError
 from app.logic.models import SymbolHistory, SymbolPrice, SymbolHistoryInterval
@@ -14,6 +17,12 @@ class MultiSymbolsGetter(SymbolsGetter):
             except UnfoundSymbolError:
                 continue
         raise UnfoundSymbolError(f"Cannot find symbol {symbol}")
+
+    async def get_many_prices(
+        self, symbols: Iterable[str]
+    ) -> list[SymbolPrice]:
+        price_tasks = [self.get_price(i) for i in symbols]
+        return await asyncio.gather(*price_tasks)
 
     async def get_history(
         self, interval: SymbolHistoryInterval, symbol: str

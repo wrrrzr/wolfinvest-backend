@@ -23,6 +23,7 @@ from app.logic.abstract import (
     BalanceHistoryEditor,
     BalanceHistoryAllSelector,
 )
+from app.logic.abstract.symbols_getter import SymbolsManyPriceGetter
 from app.logic.abstract.currency_storage import (
     CurrencyUserAllSelector,
     CurrencyAmountSelector,
@@ -167,7 +168,9 @@ class AdaptersProvider(Provider):
     @provide
     def symbols_getter(
         self,
-    ) -> AnyOf[SymbolsPriceGetter, SymbolsHistoryGetter]:
+    ) -> AnyOf[
+        SymbolsPriceGetter, SymbolsManyPriceGetter, SymbolsHistoryGetter
+    ]:
         return SymbolsGetterCache(
             MultiSymbolsGetter(
                 YahooSymbolsGetter(),

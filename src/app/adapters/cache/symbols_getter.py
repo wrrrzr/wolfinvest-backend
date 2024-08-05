@@ -1,4 +1,5 @@
-from typing import Optional
+import asyncio
+from typing import Optional, Iterable
 from datetime import timedelta, datetime
 from dataclasses import dataclass
 
@@ -50,6 +51,12 @@ class SymbolsGetterCache(SymbolsGetter):
         if self._memory.price[symbol].time_exp_cache < get_current_time():
             await self._set_price(symbol)
         return self._memory.price[symbol].price
+
+    async def get_many_prices(
+        self, symbols: Iterable[str]
+    ) -> list[SymbolPrice]:
+        price_tasks = [self.get_price(i) for i in symbols]
+        return await asyncio.gather(*price_tasks)
 
     async def get_history(
         self, interval: SymbolHistoryInterval, symbol: str

@@ -7,7 +7,7 @@ from app.logic.models.symbol import SymbolAction, UserSymbolData
 @dataclass
 class SymbolsMemory:
     amount: dict[int, dict[str, int]]
-    owner: dict[int, dict[str, int]]
+    owner: dict[int, dict[str, UserSymbolData]]
 
 
 def create_symbols_memory() -> SymbolsMemory:
@@ -43,8 +43,7 @@ class SymbolsCacheStorage(SymbolsStorage):
     async def get_all_user_symbols(
         self, user_id: int
     ) -> dict[str, UserSymbolData]:
-        await self._check_exists_or_update(user_id)
-        return self._memory.owner[user_id]
+        return await self._inner.get_all_user_symbols(user_id)
 
     async def get_user_symbols_actions_by_symbol(
         self, user_id: int, ticker: str

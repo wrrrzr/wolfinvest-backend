@@ -1,5 +1,7 @@
+import asyncio
 from datetime import datetime
 from dataclasses import dataclass
+from typing import Iterable
 
 import aiohttp
 
@@ -29,6 +31,12 @@ class YahooSymbolsGetter(SymbolsGetter):
         return (
             await self.get_history(SymbolHistoryInterval.FIVE_MINUTES, symbol)
         )[0].price
+
+    async def get_many_prices(
+        self, symbols: Iterable[str]
+    ) -> list[SymbolPrice]:
+        price_tasks = [self.get_price(i) for i in symbols]
+        return await asyncio.gather(*price_tasks)
 
     async def get_history(
         self, interval: SymbolHistoryInterval, symbol: str
