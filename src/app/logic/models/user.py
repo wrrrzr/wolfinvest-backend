@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 from enum import IntEnum, auto
 
 
@@ -16,3 +17,4 @@ class User:
     username: str
     password: str
     role: int
+    register_at: datetime

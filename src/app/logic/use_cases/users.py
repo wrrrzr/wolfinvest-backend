@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 from app.logic.abstract import UsersOneSelector
 from app.logic.abstract.currency_storage import (
@@ -13,6 +14,7 @@ class UserGetMeDTO:
     balance: float
     username: str
     role: int
+    register_at: datetime
 
 
 class GetMe:
@@ -28,5 +30,9 @@ class GetMe:
             user_id, MAIN_CURRENCY
         )
         return UserGetMeDTO(
-            id=res.id, balance=balance, username=res.username, role=res.role
+            id=res.id,
+            balance=balance,
+            username=res.username,
+            role=res.role,
+            register_at=res.register_at,
         )

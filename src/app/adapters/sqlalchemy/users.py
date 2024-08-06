@@ -16,7 +16,10 @@ class SQLAlchemyUsersStorage(UsersStorage):
 
     async def insert(self, user: User) -> None:
         stmt = insert(UserModel).values(
-            id=user.id, username=user.username, password=user.password
+            id=user.id,
+            username=user.username,
+            password=user.password,
+            register_at=user.register_at,
         )
         await self._session.execute(stmt)
         await self._session.commit()

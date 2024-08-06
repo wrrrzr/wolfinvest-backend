@@ -11,6 +11,7 @@ from app.logic.exceptions import (
     IncorrectUsernameError,
     IncorrectPasswordError,
 )
+from app.utils.funcs import get_current_time
 
 
 class RegisterUser:
@@ -38,6 +39,7 @@ class RegisterUser:
                 username=username,
                 password=pass_hash,
                 role=USER_DEFAULT_ROLE,
+                register_at=get_current_time(),
             )
         )
 

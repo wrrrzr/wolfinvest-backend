@@ -21,6 +21,7 @@ class UserModel(Base):
     username = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
     role = Column(Integer, nullable=False)
+    register_at = Column(DateTime(timezone=True), nullable=False)
 
 
 class RefillModel(Base):
