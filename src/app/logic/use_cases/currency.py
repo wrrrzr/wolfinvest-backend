@@ -55,6 +55,10 @@ class BuyCurrency:
 
     async def __call__(self, user_id: int, ticker: str, amount: float) -> None:
         ticker = ticker.upper()
+
+        if ticker == MAIN_CURRENCY:
+            return
+
         price = await self._currency_price.get_price(ticker)
         user_balance = await self._currency_amount.get_amount(
             user_id, MAIN_CURRENCY
@@ -85,6 +89,10 @@ class SellCurrency:
 
     async def __call__(self, user_id: int, ticker: str, amount: float) -> None:
         ticker = ticker.upper()
+
+        if ticker == MAIN_CURRENCY:
+            return
+
         price = await self._currency_price.get_price(ticker)
         user_amount = await self._currency_amount.get_amount(user_id, ticker)
 
