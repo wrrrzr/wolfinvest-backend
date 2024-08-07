@@ -51,9 +51,9 @@ def calc_from_date(interval: SymbolHistoryInterval) -> str:
         case SymbolHistoryInterval.WEEK:
             return from_date_interval(timedelta(weeks=1))
         case SymbolHistoryInterval.MONTH:
-            return from_date_interval(timedelta(months=1))
+            return from_date_interval(timedelta(days=31))
         case SymbolHistoryInterval.THREE_MONTHS:
-            return from_date_interval(timedelta(months=1))
+            return from_date_interval(timedelta(days=90))
     raise ValueError("Unknown interval")
 
 
