@@ -24,3 +24,15 @@ class CurrencyAction:
     amount: int
     price: float
     created_at: datetime
+
+
+@dataclass
+class MyCurrencyDTO:
+    ticker: str
+    amount: float
+
+
+@dataclass
+class UserCurrencyData:
+    amount: float
+    actions: list[CurrencyAction]

@@ -4,9 +4,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, insert, delete, func, case
 
 from app.logic.abstract.currency_storage import CurrencyStorage
-from app.logic.models.currency import CurrencyAction, Action
+from app.logic.models.currency import CurrencyAction, Action, UserCurrencyData
 from app.utils.funcs import get_current_time
-from app.utils.dataclasses import object_to_dataclass
+from app.utils.dataclasses import object_to_dataclass, objects_to_dataclasses
 from .models import CurrenciesActionModel
 
 
@@ -41,7 +41,14 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
 
         return 0.0
 
-    async def get_all_user_currencies(self, user_id: int) -> dict[str, float]:
+    async def get_all_user_currencies(
+        self, user_id: int
+    ) -> dict[str, UserCurrencyData]:
+        stmt_actions = select(
+            CurrenciesActionModel.ticker,
+            CurrenciesActionModel,
+        ).where(CurrenciesActionModel.user_id == user_id)
+
         stmt = (
             select(
                 CurrenciesActionModel.ticker,
@@ -63,8 +70,25 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
             .group_by(CurrenciesActionModel.ticker)
         )
 
-        res = await self._session.execute(stmt)
-        return dict(res.all())
+        res = (await self._session.execute(stmt)).all()
+        list_actions = (await self._session.execute(stmt_actions)).all()
+        res_actions = {}
+
+        for i in list_actions:
+            if i not in res_actions:
+                res_actions[i[0]] = []
+            res_actions[i[0]].append(i[1])
+
+        return {
+            symbols[0]: UserCurrencyData(
+                amount=symbols[1],
+                actions=objects_to_dataclasses(
+                    res_actions[symbols[0]],
+                    CurrencyAction,
+                ),
+            )
+            for symbols in res
+        }
 
     async def add(
         self,

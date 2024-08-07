@@ -14,3 +14,8 @@ class SQLAlchemyConfig:
 @dataclass
 class TickersConfig:
     file_path: str
+
+
+@dataclass
+class CurrencyFileConfig:
+    file_path: str

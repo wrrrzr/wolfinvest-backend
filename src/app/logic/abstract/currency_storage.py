@@ -1,13 +1,15 @@
 from abc import ABC, abstractmethod
 
-from app.logic.models.currency import CurrencyAction
+from app.logic.models.currency import CurrencyAction, UserCurrencyData
 
 MAIN_CURRENCY = "USD"
 
 
 class CurrencyUserAllSelector(ABC):
     @abstractmethod
-    async def get_all_user_currencies(self, user_id: int) -> dict[str, float]:
+    async def get_all_user_currencies(
+        self, user_id: int
+    ) -> dict[str, UserCurrencyData]:
         raise NotImplementedError
 
 
