@@ -40,3 +40,7 @@ class ConfigLoadError(LogicError):
 
 class VerifyTokenError(LogicError):
     pass
+
+
+class UnfoundCurrencyError(LogicError):
+    pass

@@ -8,7 +8,11 @@ from app.logic.use_cases.currency import (
     SellCurrency,
 )
 from app.logic.models.currency import MyCurrencyDTO
-from app.logic.exceptions import NotEnoughBalanceError, NotEnoughCurrencyError
+from app.logic.exceptions import (
+    NotEnoughBalanceError,
+    NotEnoughCurrencyError,
+    UnfoundCurrencyError,
+)
 from ..di import UserId
 
 router = APIRouter(prefix="/currency", tags=["currency"])
@@ -19,7 +23,12 @@ router = APIRouter(prefix="/currency", tags=["currency"])
 async def get_price(
     use_case: FromDishka[GetCurrencyPrice], currency: str
 ) -> float:
-    return await use_case(currency)
+    try:
+        return await use_case(currency)
+    except UnfoundCurrencyError:
+        raise HTTPException(
+            status_code=404, detail=f"Cannot find currency {currency}"
+        )
 
 
 @router.get("/get-my-currencies")
@@ -42,6 +51,10 @@ async def buy_currency(
         await use_case(user_id, currency, amount)
     except NotEnoughBalanceError:
         raise HTTPException(status_code=400, detail="not enough balance")
+    except UnfoundCurrencyError:
+        raise HTTPException(
+            status_code=404, detail=f"Cannot find currency {currency}"
+        )
 
 
 @router.post("/sell-currency")
@@ -56,3 +69,7 @@ async def sell_currency(
         await use_case(user_id, currency, amount)
     except NotEnoughCurrencyError:
         raise HTTPException(status_code=400, detail="not enough currency")
+    except UnfoundCurrencyError:
+        raise HTTPException(
+            status_code=404, detail=f"Cannot find currency {currency}"
+        )

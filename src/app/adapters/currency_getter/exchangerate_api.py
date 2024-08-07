@@ -2,6 +2,7 @@ import aiohttp
 
 from app.logic.abstract.currency_getter import CurrencyGetter
 from app.logic.abstract.currency_storage import MAIN_CURRENCY
+from app.logic.exceptions import UnfoundCurrencyError
 
 
 class ExchangerateApiGetter(CurrencyGetter):
@@ -13,4 +14,8 @@ class ExchangerateApiGetter(CurrencyGetter):
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
                 data = await resp.json()
-                return data["rates"][MAIN_CURRENCY]
+
+        try:
+            return data["rates"][MAIN_CURRENCY]
+        except KeyError:
+            raise UnfoundCurrencyError(f"Cannot find currency {currency}")
