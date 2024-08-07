@@ -127,20 +127,15 @@ class GetMySymbols:
         self._symbols_actions = symbols_actions
 
     async def __call__(self, user_id: int) -> list[MySymbolDTO]:
-        symbols = await self._symbols_many_selector.get_all_user_symbols(
+        symbols_res = await self._symbols_many_selector.get_all_user_symbols(
             user_id
         )
+        symbols = {k: v for k, v in symbols_res.items() if v.amount > 0}
         res = []
 
-        prices = await self._symbols_getter.get_many_prices(
-            [ticker for ticker, data in symbols.items() if data.amount > 0]
-        )
+        prices = await self._symbols_getter.get_many_prices(symbols.keys())
 
-        for idx, (ticker, symbol_data) in enumerate(symbols.items()):
-            if symbol_data.amount <= 0:
-                continue
-
-            price = prices[idx]
+        for (ticker, symbol_data), price in zip(symbols.items(), prices):
             res.append(
                 MySymbolDTO(
                     name=await self._ticker_finder.get_name_by_ticker(ticker),
