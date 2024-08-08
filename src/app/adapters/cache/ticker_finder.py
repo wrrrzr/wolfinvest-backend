@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from app.logic.abstract import TickerFinder
+from app.logic.abstract.ticker_finder import TickerFinder
 from app.logic.models import SymbolTicker
 
 

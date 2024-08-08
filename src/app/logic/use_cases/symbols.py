@@ -1,11 +1,13 @@
 from dataclasses import dataclass
 
-from app.logic.abstract import (
-    SymbolsPriceGetter,
-    SymbolsHistoryGetter,
+from app.logic.abstract.ticker_finder import (
     TickerFinder,
 )
-from app.logic.abstract.symbols_getter import SymbolsManyPriceGetter
+from app.logic.abstract.symbols_getter import (
+    SymbolsManyPriceGetter,
+    SymbolsPriceGetter,
+    SymbolsHistoryGetter,
+)
 from app.logic.abstract.symbols_storage import (
     SymbolsAdder,
     SymbolsManySelector,

@@ -9,7 +9,7 @@ from dishka import (
     decorate,
 )
 
-from app.logic.abstract import (
+from app.logic.abstract.users_storage import (
     UsersAdder,
     UsersPasswordEditor,
     UsersOneSelector,
@@ -17,14 +17,18 @@ from app.logic.abstract import (
     UsersChecker,
     UsersDeleter,
     UsersIdGetter,
-    SymbolsPriceGetter,
-    SymbolsHistoryGetter,
-    TickerFinder,
+)
+from app.logic.abstract.ticker_finder import TickerFinder
+from app.logic.abstract.balance_history_storage import (
     BalanceHistoryEditor,
     BalanceHistoryAllSelector,
 )
 from app.logic.abstract.transaction import Transaction
-from app.logic.abstract.symbols_getter import SymbolsManyPriceGetter
+from app.logic.abstract.symbols_getter import (
+    SymbolsManyPriceGetter,
+    SymbolsPriceGetter,
+    SymbolsHistoryGetter,
+)
 from app.logic.abstract.currency_storage import (
     CurrencyUserAllSelector,
     CurrencyAmountSelector,

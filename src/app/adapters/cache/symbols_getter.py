@@ -3,7 +3,7 @@ from typing import Optional, Iterable
 from datetime import timedelta, datetime
 from dataclasses import dataclass
 
-from app.logic.abstract import SymbolsGetter
+from app.logic.abstract.symbols_getter import SymbolsGetter
 from app.logic.exceptions import UnfoundSymbolError
 from app.logic.models import SymbolHistory, SymbolPrice, SymbolHistoryInterval
 from app.utils.funcs import get_current_time

@@ -1,4 +1,6 @@
-from app.logic.abstract import BalanceHistoryAllSelector
+from app.logic.abstract.balance_history_storage import (
+    BalanceHistoryAllSelector,
+)
 from app.logic.models import BalanceChange
 
 

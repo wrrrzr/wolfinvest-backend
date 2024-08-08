@@ -3,7 +3,10 @@ from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import insert, select
 
-from app.logic.abstract import BalanceHistoryEditor, BalanceHistoryAllSelector
+from app.logic.abstract.balance_history_storage import (
+    BalanceHistoryEditor,
+    BalanceHistoryAllSelector,
+)
 from app.logic.models import (
     BalanceChangeReason,
     BalanceChangeType,

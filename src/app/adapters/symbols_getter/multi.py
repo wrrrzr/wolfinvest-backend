@@ -1,7 +1,7 @@
 import asyncio
 from typing import Iterable
 
-from app.logic.abstract import SymbolsGetter
+from app.logic.abstract.symbols_getter import SymbolsGetter
 from app.logic.exceptions import UnfoundSymbolError
 from app.logic.models import SymbolHistory, SymbolPrice, SymbolHistoryInterval
 

@@ -5,7 +5,7 @@ from typing import Iterable
 
 import aiohttp
 
-from app.logic.abstract import SymbolsGetter
+from app.logic.abstract.symbols_getter import SymbolsGetter
 from app.logic.exceptions import UnfoundSymbolError
 from app.logic.models import SymbolHistory, SymbolPrice, SymbolHistoryInterval
 from app.utils.funcs import get_current_time

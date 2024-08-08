@@ -1,6 +1,6 @@
 from app.logic.models import User, Role
 from app.logic.exceptions import PermissionDenied
-from app.logic.abstract import (
+from app.logic.abstract.users_storage import (
     UsersOneSelector,
     UsersAllSelector,
     UsersDeleter,

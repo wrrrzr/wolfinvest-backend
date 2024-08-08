@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from app.logic.abstract import UsersStorage
+from app.logic.abstract.users_storage import UsersStorage
 from app.logic.models import User
 
 
