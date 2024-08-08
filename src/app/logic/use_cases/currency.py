@@ -6,6 +6,7 @@ from app.logic.abstract.currency_storage import (
     CurrencyAmountSelector,
     MAIN_CURRENCY,
 )
+from app.logic.abstract.transaction import Transaction
 from app.logic.models.currency import MyCurrencyDTO
 from app.logic.exceptions import NotEnoughBalanceError, NotEnoughCurrencyError
 
@@ -47,11 +48,13 @@ class BuyCurrency:
         currency_remover: CurrencyRemover,
         currency_price: CurrencyPriceGetter,
         currency_amount: CurrencyAmountSelector,
+        transaction: Transaction,
     ) -> None:
         self._currency_adder = currency_adder
         self._currency_remover = currency_remover
         self._currency_price = currency_price
         self._currency_amount = currency_amount
+        self._transaction = transaction
 
     async def __call__(self, user_id: int, ticker: str, amount: float) -> None:
         ticker = ticker.upper()
@@ -71,7 +74,7 @@ class BuyCurrency:
             user_id, MAIN_CURRENCY, price * amount, price
         )
         await self._currency_adder.add(user_id, ticker, amount, price)
-        return
+        await self._transaction.commit()
 
 
 class SellCurrency:
@@ -81,11 +84,13 @@ class SellCurrency:
         currency_adder: CurrencyAdder,
         currency_price: CurrencyPriceGetter,
         currency_amount: CurrencyAmountSelector,
+        transaction: Transaction,
     ) -> None:
         self._currency_remover = currency_remover
         self._currency_adder = currency_adder
         self._currency_price = currency_price
         self._currency_amount = currency_amount
+        self._transaction = transaction
 
     async def __call__(self, user_id: int, ticker: str, amount: float) -> None:
         ticker = ticker.upper()
@@ -103,4 +108,4 @@ class SellCurrency:
             user_id, MAIN_CURRENCY, price * amount, price
         )
         await self._currency_remover.remove(user_id, ticker, amount, price)
-        return
+        await self._transaction.commit()

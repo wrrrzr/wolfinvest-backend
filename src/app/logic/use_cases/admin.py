@@ -6,6 +6,7 @@ from app.logic.abstract import (
     UsersDeleter,
     UsersPasswordEditor,
 )
+from app.logic.abstract.transaction import Transaction
 from app.logic.abstract.symbols_storage import SymbolsUsersDeletor
 from app.logic.abstract.auth_manager import PasswordManager
 from app.logic.abstract.refills_storage import RefillsUsersDeletor
@@ -38,12 +39,14 @@ class DeleteUser:
         refills: RefillsUsersDeletor,
         symbols: SymbolsUsersDeletor,
         currencies: CurrencyUsersDeletor,
+        transaction: Transaction,
     ) -> None:
         self._users_selector = users_selector
         self._users_deleter = users_deleter
         self._refills = refills
         self._symbols = symbols
         self._currencies = currencies
+        self._transaction = transaction
 
     async def __call__(self, user_id: int, target: int) -> None:
         await check_permissions(self._users_selector, user_id)
@@ -51,6 +54,7 @@ class DeleteUser:
         await self._refills.delete_all_user_refills(target)
         await self._currencies.delete_all_user_currencies(target)
         await self._users_deleter.delete_user(target)
+        await self._transaction.commit()
 
 
 class ChangeUserPassword:
@@ -59,10 +63,12 @@ class ChangeUserPassword:
         users_selector: UsersOneSelector,
         users_password: UsersPasswordEditor,
         password_manager: PasswordManager,
+        transaction: Transaction,
     ) -> None:
         self._users_selector = users_selector
         self._users_password = users_password
         self._password_manager = password_manager
+        self._transaction = transaction
 
     async def __call__(
         self, user_id: int, target: int, new_password: str
@@ -72,6 +78,7 @@ class ChangeUserPassword:
             new_password
         )
         await self._users_password.change_password(target, new_password_hash)
+        await self._transaction.commit()
 
 
 class SetUserBalance:

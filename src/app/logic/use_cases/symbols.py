@@ -18,6 +18,7 @@ from app.logic.abstract.currency_storage import (
     CurrencyAmountSelector,
     CurrencyAdder,
 )
+from app.logic.abstract.transaction import Transaction
 from app.logic.exceptions import NotEnoughBalanceError, NotEnoughSymbolsError
 from app.logic.models import (
     SymbolHistory,
@@ -83,11 +84,13 @@ class BuySymbol:
         symbols_adder: SymbolsAdder,
         currency_remover: CurrencyRemover,
         currency_amount: CurrencyAmountSelector,
+        transaction: Transaction,
     ) -> None:
         self._symbols_getter = symbols_getter
         self._symbols_adder = symbols_adder
         self._currency_remover = currency_remover
         self._currency_amount = currency_amount
+        self._transaction = transaction
 
     async def __call__(self, user_id: int, symbol: str, amount: int) -> None:
         symbol = symbol.upper()
@@ -101,7 +104,7 @@ class BuySymbol:
             user_id, price.currency, price.buy * amount, 0.0
         )
         await self._symbols_adder.add(user_id, symbol, amount, price.buy)
-        return
+        await self._transaction.commit()
 
 
 @dataclass
@@ -157,11 +160,13 @@ class SellSymbol:
         symbols_remover: SymbolsRemover,
         symbols_amount_selector: SymbolsAmountSelector,
         currency_adder: CurrencyAdder,
+        transaction: Transaction,
     ) -> None:
         self._symbols_getter = symbols_getter
         self._symbols_remover = symbols_remover
         self._symbols_amount_selector = symbols_amount_selector
         self._currency_adder = currency_adder
+        self._transaction = transaction
 
     async def __call__(self, user_id: int, symbol: str, amount: int) -> None:
         symbol = symbol.upper()
@@ -175,7 +180,7 @@ class SellSymbol:
         await self._currency_adder.add(
             user_id, price.currency, price.sell * amount, 0.0
         )
-        return
+        await self._transaction.commit()
 
 
 class FindTicker:

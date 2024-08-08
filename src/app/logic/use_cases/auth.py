@@ -5,6 +5,7 @@ from app.logic.abstract import (
     UsersIdGetter,
 )
 from app.logic.abstract.auth_manager import TokenManager, PasswordManager
+from app.logic.abstract.transaction import Transaction
 from app.logic.models import User, USER_DEFAULT_ROLE
 from app.logic.exceptions import (
     UsernameAlreadyTakenError,
@@ -21,11 +22,13 @@ class RegisterUser:
         users_id_getter: UsersIdGetter,
         users_adder: UsersAdder,
         password_manager: PasswordManager,
+        transaction: Transaction,
     ) -> None:
         self._users_checker = users_checker
         self._users_id_getter = users_id_getter
         self._users_adder = users_adder
         self._password_manager = password_manager
+        self._transaction = transaction
 
     async def __call__(self, username: str, password: str) -> None:
         if await self._users_checker.exists_by_username(username):
@@ -42,6 +45,7 @@ class RegisterUser:
                 register_at=get_current_time(),
             )
         )
+        await self._transaction.commit()
 
 
 class AuthUser:

@@ -129,7 +129,6 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
             CurrenciesActionModel.user_id == user_id
         )
         await self._session.execute(stmt)
-        await self._session.commit()
         return
 
     async def _insert(
@@ -150,5 +149,4 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
             action=action,
         )
         await self._session.execute(stmt)
-        await self._session.commit()
         return

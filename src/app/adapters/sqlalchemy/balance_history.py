@@ -82,5 +82,4 @@ class SQLAlchemyBalanceHistoryStorage(
             created_at=created_at,
         )
         await self._session.execute(stmt)
-        await self._session.commit()
         return

@@ -22,7 +22,6 @@ class SQLAlchemyUsersStorage(UsersStorage):
             register_at=user.register_at,
         )
         await self._session.execute(stmt)
-        await self._session.commit()
         return
 
     async def change_password(self, user_id: int, password: str) -> None:
@@ -32,7 +31,6 @@ class SQLAlchemyUsersStorage(UsersStorage):
             .where(UserModel.id == user_id)
         )
         await self._session.execute(stmt)
-        await self._session.commit()
         return
 
     async def select_one_by_id(self, user_id: int) -> User:
@@ -58,7 +56,6 @@ class SQLAlchemyUsersStorage(UsersStorage):
     async def delete_user(self, user_id: int) -> None:
         stmt = delete(UserModel).where(UserModel.id == user_id)
         await self._session.execute(stmt)
-        await self._session.commit()
         return
 
     async def get_new_user_id(self) -> int:

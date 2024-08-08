@@ -111,7 +111,6 @@ class SQLAlchemySymbolsStorage(SymbolsStorage):
             SymbolActionModel.user_id == user_id
         )
         await self._session.execute(stmt)
-        await self._session.commit()
         return
 
     async def _insert(
@@ -132,5 +131,4 @@ class SQLAlchemySymbolsStorage(SymbolsStorage):
             action=action,
         )
         await self._session.execute(stmt)
-        await self._session.commit()
         return

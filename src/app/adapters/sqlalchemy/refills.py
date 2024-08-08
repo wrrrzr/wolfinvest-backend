@@ -20,7 +20,6 @@ class SQLAlchemyRefillsStorage(RefillsStorage):
             user_id=user_id, amount=amount, created_at=created_at
         )
         await self._session.execute(stmt)
-        await self._session.commit()
         return
 
     async def get_all_user_refills(self, user_id: int) -> list[Refill]:
@@ -31,5 +30,4 @@ class SQLAlchemyRefillsStorage(RefillsStorage):
     async def delete_all_user_refills(self, user_id: int) -> None:
         stmt = delete(RefillModel).where(RefillModel.user_id == user_id)
         await self._session.execute(stmt)
-        await self._session.commit()
         return

@@ -23,6 +23,7 @@ from app.logic.abstract import (
     BalanceHistoryEditor,
     BalanceHistoryAllSelector,
 )
+from app.logic.abstract.transaction import Transaction
 from app.logic.abstract.symbols_getter import SymbolsManyPriceGetter
 from app.logic.abstract.currency_storage import (
     CurrencyUserAllSelector,
@@ -55,6 +56,7 @@ from app.adapters.sqlalchemy.balance_history import (
     SQLAlchemyBalanceHistoryStorage,
 )
 from app.adapters.sqlalchemy.currency import SQLAlchemyCurrencyStorage
+from app.adapters.sqlalchemy.transaction import SQLAlchemyTransaction
 from app.adapters.cache import (
     UsersCacheStorage,
     create_users_memory,
@@ -99,6 +101,10 @@ class AdaptersProvider(Provider):
         engine = create_async_engine(config.db_uri)
         async with AsyncSession(engine) as session:
             yield session
+
+    @provide
+    def sqlalchemy_transaction(self, session: AsyncSession) -> Transaction:
+        return SQLAlchemyTransaction(session)
 
     ticker_finder = provide(TickersFileTickerFinder, provides=TickerFinder)
     balance_history_editor = provide(
