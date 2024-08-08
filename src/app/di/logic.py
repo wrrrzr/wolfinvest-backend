@@ -17,7 +17,6 @@ from app.logic.use_cases.admin import (
     GetAllUsers,
     DeleteUser,
     ChangeUserPassword,
-    SetUserBalance,
 )
 from app.logic.use_cases.balance_history import GetMyBalanceHistory
 from app.logic.use_cases.currency import (
@@ -46,7 +45,6 @@ class LogicProvider(Provider):
         GetAllUsers,
         DeleteUser,
         ChangeUserPassword,
-        SetUserBalance,
         FindTicker,
         GetMyBalanceHistory,
         GetCurrencyPrice,

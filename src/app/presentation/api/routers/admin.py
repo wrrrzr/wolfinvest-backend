@@ -7,7 +7,6 @@ from app.logic.use_cases.admin import (
     GetAllUsers,
     DeleteUser,
     ChangeUserPassword,
-    SetUserBalance,
 )
 from app.logic.exceptions import PermissionDenied
 from ..di import UserId
@@ -56,21 +55,6 @@ async def change_user_password(
 ) -> str:
     try:
         await use_case(user_id, info.target, info.new_password)
-    except PermissionError:
-        raise HTTPException(status_code=403, detail="Permission denied")
-    return "ok"
-
-
-@router.post("/set-user-balance")
-@inject
-async def set_user_balance(
-    use_case: FromDishka[SetUserBalance],
-    user_id: FromDishka[UserId],
-    target: int,
-    new_balance: float,
-) -> str:
-    try:
-        await use_case(user_id, target, new_balance)
     except PermissionError:
         raise HTTPException(status_code=403, detail="Permission denied")
     return "ok"

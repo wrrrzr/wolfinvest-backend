@@ -79,14 +79,3 @@ class ChangeUserPassword:
         )
         await self._users_password.change_password(target, new_password_hash)
         await self._transaction.commit()
-
-
-class SetUserBalance:
-    def __init__(self, users: UsersOneSelector) -> None:
-        self._users = users
-
-    async def __call__(
-        self, user_id: int, target: int, new_balance: float
-    ) -> None:
-        await check_permissions(self._users, user_id)
-        return
