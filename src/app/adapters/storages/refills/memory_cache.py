@@ -10,14 +10,14 @@ class MemoryRefills:
     users_refills: dict[int, list[Refill]]
 
 
-def create_refills_memory() -> MemoryRefills:
-    return MemoryRefills({})
-
-
-class RefillsCacheStorage(RefillsStorage):
+class MemoryCacheRefillsStorage(RefillsStorage):
     def __init__(self, inner: RefillsStorage, memory: MemoryRefills) -> None:
         self._inner = inner
         self._memory = memory
+
+    @staticmethod
+    def create_memory() -> MemoryRefills:
+        return MemoryRefills({})
 
     async def insert(
         self, user_id: int, amount: int, created_at: datetime

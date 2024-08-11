@@ -9,14 +9,14 @@ class UsersMemory:
     data: list[User]
 
 
-def create_users_memory() -> UsersMemory:
-    return UsersMemory([])
-
-
-class UsersCacheStorage(UsersStorage):
+class MemoryCacheUsersStorage(UsersStorage):
     def __init__(self, inner: UsersStorage, memory: UsersMemory) -> None:
         self._inner = inner
         self._memory = memory
+
+    @staticmethod
+    def create_memory() -> UsersMemory:
+        return UsersMemory([])
 
     async def insert(self, user: User) -> None:
         if user.id in self._memory.data:

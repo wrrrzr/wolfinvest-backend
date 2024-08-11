@@ -11,14 +11,14 @@ class TickerFinderMemory:
     data_names: dict[str, str]
 
 
-def create_ticker_finder_memory() -> TickerFinderMemory:
-    return TickerFinderMemory({}, {})
-
-
-class TickerFinderCache(TickerFinder):
+class MemoryCacheTickerFinder(TickerFinder):
     def __init__(self, inner: TickerFinder, memory: TickerFinderMemory):
         self._inner = inner
         self._memory = memory
+
+    @staticmethod
+    def create_memory() -> TickerFinderMemory:
+        return TickerFinderMemory({}, {})
 
     async def find_ticker(self, name: str) -> list[SymbolTicker]:
         if name not in self._memory.data:

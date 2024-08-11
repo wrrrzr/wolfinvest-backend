@@ -6,7 +6,7 @@ from sqlalchemy import insert, select, delete
 from app.utils.dataclasses import objects_to_dataclasses
 from app.logic.abstract.storages.refills import RefillsStorage
 from app.logic.models import Refill
-from .models import RefillModel
+from app.adapters.sqlalchemy.models import RefillModel
 
 
 class SQLAlchemyRefillsStorage(RefillsStorage):

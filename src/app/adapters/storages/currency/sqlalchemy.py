@@ -7,7 +7,7 @@ from app.logic.abstract.storages.currency import CurrencyStorage
 from app.logic.models.currency import CurrencyAction, Action, UserCurrencyData
 from app.utils.funcs import get_current_time
 from app.utils.dataclasses import object_to_dataclass, objects_to_dataclasses
-from .models import CurrenciesActionModel
+from app.adapters.sqlalchemy.models import CurrenciesActionModel
 
 
 class SQLAlchemyCurrencyStorage(CurrencyStorage):

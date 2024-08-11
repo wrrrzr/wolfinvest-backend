@@ -30,11 +30,7 @@ class MemorySymbolsGetter:
     history: dict[str, CachedSymbolHistory]
 
 
-def create_symbols_getter_memory() -> MemorySymbolsGetter:
-    return MemorySymbolsGetter({}, {})
-
-
-class SymbolsGetterCache(SymbolsGetter):
+class MemoryCacheSymbolsGetter(SymbolsGetter):
     def __init__(
         self,
         inner: SymbolsGetter,
@@ -42,6 +38,10 @@ class SymbolsGetterCache(SymbolsGetter):
     ) -> None:
         self._inner = inner
         self._memory = memory
+
+    @staticmethod
+    def create_memory() -> MemorySymbolsGetter:
+        return MemorySymbolsGetter({}, {})
 
     async def get_price(self, symbol: str) -> SymbolPrice:
         if symbol not in self._memory.price:

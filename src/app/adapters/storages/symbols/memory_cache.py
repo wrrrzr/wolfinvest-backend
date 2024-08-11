@@ -10,14 +10,14 @@ class SymbolsMemory:
     owner: dict[int, dict[str, UserSymbolData]]
 
 
-def create_symbols_memory() -> SymbolsMemory:
-    return SymbolsMemory({}, {})
-
-
-class SymbolsCacheStorage(SymbolsStorage):
+class MemoryCacheSymbolsStorage(SymbolsStorage):
     def __init__(self, inner: SymbolsStorage, memory: SymbolsMemory) -> None:
         self._inner = inner
         self._memory = memory
+
+    @staticmethod
+    def create_memory() -> SymbolsMemory:
+        return SymbolsMemory({}, {})
 
     async def add(
         self, user_id: int, ticker: str, amount: int, price: float

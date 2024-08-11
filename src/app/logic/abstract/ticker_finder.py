@@ -14,7 +14,5 @@ class TickerFinder(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def get_names_by_tickers(
-        self, tickers: Iterable[str]
-    ) -> dict[str, str]:
+    async def get_names_by_tickers(self, tickers: Iterable[str]) -> list[str]:
         raise NotImplementedError

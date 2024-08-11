@@ -5,7 +5,7 @@ from sqlalchemy.sql.expression import func
 from app.utils.dataclasses import object_to_dataclass, objects_to_dataclasses
 from app.logic.abstract.storages.users import UsersStorage
 from app.logic.models import User
-from .models import UserModel
+from app.adapters.sqlalchemy.models import UserModel
 
 FIRST_ID = 1
 

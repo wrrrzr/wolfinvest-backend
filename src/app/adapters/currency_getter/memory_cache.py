@@ -18,16 +18,16 @@ class MemoryCurrencyGetter:
     price: dict[str, CachedCurrencyPrice]
 
 
-def create_currency_getter_memory() -> MemoryCurrencyGetter:
-    return MemoryCurrencyGetter({})
-
-
-class CacheCurrencyGetter(CurrencyGetter):
+class MemoryCacheCurrencyGetter(CurrencyGetter):
     def __init__(
         self, inner: CurrencyGetter, memory: MemoryCurrencyGetter
     ) -> None:
         self._inner = inner
         self._memory = memory
+
+    @staticmethod
+    def create_memory() -> MemoryCurrencyGetter:
+        return MemoryCurrencyGetter({})
 
     async def get_price(self, currency: str) -> float:
         if currency not in self._memory.price:

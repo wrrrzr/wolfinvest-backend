@@ -53,43 +53,45 @@ from app.logic.abstract.storages.refills import (
 from app.logic.abstract.auth_manager import TokenManager, PasswordManager
 from app.logic.abstract.currency_getter import CurrencyPriceGetter
 from app.logic.models import SQLAlchemyConfig
-from app.adapters.sqlalchemy.users import SQLAlchemyUsersStorage
-from app.adapters.sqlalchemy.symbols import SQLAlchemySymbolsStorage
-from app.adapters.sqlalchemy.refills import SQLAlchemyRefillsStorage
-from app.adapters.sqlalchemy.balance_history import (
-    SQLAlchemyBalanceHistoryStorage,
-)
-from app.adapters.sqlalchemy.currency import SQLAlchemyCurrencyStorage
 from app.adapters.sqlalchemy.transaction import SQLAlchemyTransaction
-from app.adapters.cache import (
-    UsersCacheStorage,
-    create_users_memory,
-    SymbolsCacheStorage,
-    create_symbols_memory,
-    RefillsCacheStorage,
-    create_refills_memory,
-    SymbolsGetterCache,
-    create_symbols_getter_memory,
-    TickerFinderCache,
-    create_ticker_finder_memory,
-    CacheCurrencyGetter,
-    create_currency_getter_memory,
-)
 from app.adapters.symbols_getter import (
     YahooSymbolsGetter,
     MoexSymbolsGetter,
     MultiSymbolsGetter,
+    MemoryCacheSymbolsGetter,
 )
 from app.adapters.auth import JWTTokenManager, PasslibPasswordManager
-from app.adapters.ticker_finder import TickersFileTickerFinder
-from app.adapters.currency_getter import ExchangerateApiGetter
+from app.adapters.ticker_finder import (
+    TickersFileTickerFinder,
+    MemoryCacheTickerFinder,
+)
+from app.adapters.currency_getter import (
+    ExchangerateApiGetter,
+    MemoryCacheCurrencyGetter,
+)
+from app.adapters.storages.users import (
+    SQLAlchemyUsersStorage,
+    MemoryCacheUsersStorage,
+)
+from app.adapters.storages.currency import SQLAlchemyCurrencyStorage
+from app.adapters.storages.symbols import (
+    SQLAlchemySymbolsStorage,
+    MemoryCacheSymbolsStorage,
+)
+from app.adapters.storages.refills import (
+    SQLAlchemyRefillsStorage,
+    MemoryCacheRefillsStorage,
+)
+from app.adapters.storages.balance_history import (
+    SQLAlchemyBalanceHistoryStorage,
+)
 
-_memory_users = create_users_memory()
-_memory_symbols = create_symbols_memory()
-_memory_refills = create_refills_memory()
-_memory_symbols_getter = create_symbols_getter_memory()
-_memory_ticker_finder = create_ticker_finder_memory()
-_memory_currency_getter = create_currency_getter_memory()
+_memory_users = MemoryCacheUsersStorage.create_memory()
+_memory_symbols = MemoryCacheSymbolsStorage.create_memory()
+_memory_refills = MemoryCacheRefillsStorage.create_memory()
+_memory_symbols_getter = MemoryCacheSymbolsGetter.create_memory()
+_memory_ticker_finder = MemoryCacheTickerFinder.create_memory()
+_memory_currency_getter = MemoryCacheCurrencyGetter.create_memory()
 
 
 class AdaptersProvider(Provider):
@@ -136,7 +138,7 @@ class AdaptersProvider(Provider):
 
     @provide
     def currency_getter(self) -> AnyOf[CurrencyPriceGetter]:
-        return CacheCurrencyGetter(
+        return MemoryCacheCurrencyGetter(
             ExchangerateApiGetter(), _memory_currency_getter
         )
 
@@ -149,7 +151,7 @@ class AdaptersProvider(Provider):
         SymbolsRemover,
         SymbolsUsersDeletor,
     ]:
-        return SymbolsCacheStorage(
+        return MemoryCacheSymbolsStorage(
             SQLAlchemySymbolsStorage(session), _memory_symbols
         )
 
@@ -157,7 +159,7 @@ class AdaptersProvider(Provider):
     def refills_storage(
         self, session: AsyncSession
     ) -> AnyOf[RefillsAdder, RefillsUsersSelector, RefillsUsersDeletor]:
-        return RefillsCacheStorage(
+        return MemoryCacheRefillsStorage(
             SQLAlchemyRefillsStorage(session), _memory_refills
         )
 
@@ -171,7 +173,7 @@ class AdaptersProvider(Provider):
         UsersDeleter,
         UsersIdGetter,
     ]:
-        return UsersCacheStorage(
+        return MemoryCacheUsersStorage(
             SQLAlchemyUsersStorage(session), _memory_users
         )
 
@@ -181,7 +183,7 @@ class AdaptersProvider(Provider):
     ) -> AnyOf[
         SymbolsPriceGetter, SymbolsManyPriceGetter, SymbolsHistoryGetter
     ]:
-        return SymbolsGetterCache(
+        return MemoryCacheSymbolsGetter(
             MultiSymbolsGetter(
                 YahooSymbolsGetter(),
                 MoexSymbolsGetter(),
@@ -191,4 +193,4 @@ class AdaptersProvider(Provider):
 
     @decorate
     def get_ticker_finder_cache(self, inner: TickerFinder) -> TickerFinder:
-        return TickerFinderCache(inner, _memory_ticker_finder)
+        return MemoryCacheTickerFinder(inner, _memory_ticker_finder)

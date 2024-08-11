@@ -13,7 +13,7 @@ from app.logic.models import (
     BalanceChange,
 )
 from app.utils.dataclasses import object_to_dataclass
-from .models import BalanceChangeModel
+from app.adapters.sqlalchemy.models import BalanceChangeModel
 
 
 class SQLAlchemyBalanceHistoryStorage(
