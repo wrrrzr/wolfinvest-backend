@@ -3,7 +3,7 @@ from sqlalchemy import insert, update, select, exists, delete
 from sqlalchemy.sql.expression import func
 
 from app.utils.dataclasses import object_to_dataclass, objects_to_dataclasses
-from app.logic.abstract.users_storage import UsersStorage
+from app.logic.abstract.storages.users import UsersStorage
 from app.logic.models import User
 from .models import UserModel
 

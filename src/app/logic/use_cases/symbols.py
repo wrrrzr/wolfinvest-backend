@@ -8,14 +8,14 @@ from app.logic.abstract.symbols_getter import (
     SymbolsPriceGetter,
     SymbolsHistoryGetter,
 )
-from app.logic.abstract.symbols_storage import (
+from app.logic.abstract.storages.symbols import (
     SymbolsAdder,
     SymbolsManySelector,
     SymbolsActionsManySelector,
     SymbolsRemover,
     SymbolsAmountSelector,
 )
-from app.logic.abstract.currency_storage import (
+from app.logic.abstract.storages.currency import (
     CurrencyRemover,
     CurrencyAmountSelector,
     CurrencyAdder,

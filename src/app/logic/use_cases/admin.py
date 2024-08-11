@@ -1,16 +1,16 @@
 from app.logic.models import User, Role
 from app.logic.exceptions import PermissionDenied
-from app.logic.abstract.users_storage import (
+from app.logic.abstract.storages.users import (
     UsersOneSelector,
     UsersAllSelector,
     UsersDeleter,
     UsersPasswordEditor,
 )
 from app.logic.abstract.transaction import Transaction
-from app.logic.abstract.symbols_storage import SymbolsUsersDeletor
+from app.logic.abstract.storages.symbols import SymbolsUsersDeletor
 from app.logic.abstract.auth_manager import PasswordManager
-from app.logic.abstract.refills_storage import RefillsUsersDeletor
-from app.logic.abstract.currency_storage import CurrencyUsersDeletor
+from app.logic.abstract.storages.refills import RefillsUsersDeletor
+from app.logic.abstract.storages.currency import CurrencyUsersDeletor
 
 
 async def check_permissions(users: UsersOneSelector, user_id: int) -> None:

@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import insert, select, delete, func, case
 
-from app.logic.abstract.symbols_storage import SymbolsStorage
+from app.logic.abstract.storages.symbols import SymbolsStorage
 from app.logic.models.symbol import SymbolAction, Action, UserSymbolData
 from app.utils.dataclasses import object_to_dataclass, objects_to_dataclasses
 from app.utils.funcs import get_current_time

@@ -3,12 +3,12 @@ from datetime import datetime
 
 from app.utils.funcs import get_current_time
 from app.utils.dataclasses import objects_to_dataclasses
-from app.logic.abstract.refills_storage import (
+from app.logic.abstract.storages.refills import (
     RefillsAdder,
     RefillsUsersSelector,
 )
 from app.logic.abstract.transaction import Transaction
-from app.logic.abstract.currency_storage import CurrencyAdder, MAIN_CURRENCY
+from app.logic.abstract.storages.currency import CurrencyAdder, MAIN_CURRENCY
 
 
 class TakeRefill:

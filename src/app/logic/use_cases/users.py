@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from app.logic.abstract.users_storage import UsersOneSelector
-from app.logic.abstract.currency_storage import (
+from app.logic.abstract.storages.users import UsersOneSelector
+from app.logic.abstract.storages.currency import (
     CurrencyAmountSelector,
     MAIN_CURRENCY,
 )

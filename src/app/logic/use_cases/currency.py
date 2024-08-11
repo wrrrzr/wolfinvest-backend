@@ -1,5 +1,5 @@
 from app.logic.abstract.currency_getter import CurrencyPriceGetter
-from app.logic.abstract.currency_storage import (
+from app.logic.abstract.storages.currency import (
     CurrencyUserAllSelector,
     CurrencyAdder,
     CurrencyRemover,

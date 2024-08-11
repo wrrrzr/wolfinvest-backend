@@ -1,4 +1,4 @@
-from app.logic.abstract.users_storage import (
+from app.logic.abstract.storages.users import (
     UsersChecker,
     UsersAdder,
     UsersOneSelector,

@@ -1,7 +1,7 @@
 import aiohttp
 
 from app.logic.abstract.currency_getter import CurrencyGetter
-from app.logic.abstract.currency_storage import MAIN_CURRENCY
+from app.logic.abstract.storages.currency import MAIN_CURRENCY
 from app.logic.exceptions import UnfoundCurrencyError
 
 

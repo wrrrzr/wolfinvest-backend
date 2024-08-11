@@ -9,7 +9,7 @@ from dishka import (
     decorate,
 )
 
-from app.logic.abstract.users_storage import (
+from app.logic.abstract.storages.users import (
     UsersAdder,
     UsersPasswordEditor,
     UsersOneSelector,
@@ -19,7 +19,7 @@ from app.logic.abstract.users_storage import (
     UsersIdGetter,
 )
 from app.logic.abstract.ticker_finder import TickerFinder
-from app.logic.abstract.balance_history_storage import (
+from app.logic.abstract.storages.balance_history import (
     BalanceHistoryEditor,
     BalanceHistoryAllSelector,
 )
@@ -29,7 +29,7 @@ from app.logic.abstract.symbols_getter import (
     SymbolsPriceGetter,
     SymbolsHistoryGetter,
 )
-from app.logic.abstract.currency_storage import (
+from app.logic.abstract.storages.currency import (
     CurrencyUserAllSelector,
     CurrencyAmountSelector,
     CurrencyAdder,
@@ -37,7 +37,7 @@ from app.logic.abstract.currency_storage import (
     CurrencyActionsManySelector,
     CurrencyUsersDeletor,
 )
-from app.logic.abstract.symbols_storage import (
+from app.logic.abstract.storages.symbols import (
     SymbolsAdder,
     SymbolsManySelector,
     SymbolsActionsManySelector,
@@ -45,7 +45,7 @@ from app.logic.abstract.symbols_storage import (
     SymbolsUsersDeletor,
     SymbolsAmountSelector,
 )
-from app.logic.abstract.refills_storage import (
+from app.logic.abstract.storages.refills import (
     RefillsAdder,
     RefillsUsersSelector,
     RefillsUsersDeletor,
