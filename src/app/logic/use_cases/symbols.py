@@ -139,11 +139,14 @@ class GetMySymbols:
         res = []
 
         prices = await self._symbols_getter.get_many_prices(symbols.keys())
+        names = await self._ticker_finder.get_names_by_tickers(symbols.keys())
 
-        for (ticker, symbol_data), price in zip(symbols.items(), prices):
+        for (ticker, symbol_data), price, name in zip(
+            symbols.items(), prices, names
+        ):
             res.append(
                 MySymbolDTO(
-                    name=await self._ticker_finder.get_name_by_ticker(ticker),
+                    name=name,
                     code=ticker,
                     amount=symbol_data.amount,
                     price=price,

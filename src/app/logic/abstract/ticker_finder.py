@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Iterable
 
 from app.logic.models import SymbolTicker
 
@@ -10,4 +11,10 @@ class TickerFinder(ABC):
 
     @abstractmethod
     async def get_name_by_ticker(self, ticker: str) -> str:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def get_names_by_tickers(
+        self, tickers: Iterable[str]
+    ) -> dict[str, str]:
         raise NotImplementedError

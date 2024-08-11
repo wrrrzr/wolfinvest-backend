@@ -1,4 +1,5 @@
 import json
+from typing import Iterable
 
 import aiofiles
 
@@ -17,8 +18,8 @@ class TickersFileTickerFinder(TickerFinder):
         res = []
         count = 0
         for k, v in tickers_kv.items():
-            if name in k:
-                res.append(SymbolTicker(name=k, ticker=v))
+            if name in v:
+                res.append(SymbolTicker(name=v, ticker=k))
                 count += 1
             if count >= 5:
                 break
@@ -26,12 +27,12 @@ class TickersFileTickerFinder(TickerFinder):
 
     async def get_name_by_ticker(self, ticker: str) -> str:
         tickers_kv = await self._get_tickers_kv()
-
         ticker = ticker.upper()
-        for k, v in tickers_kv.items():
-            if v == ticker:
-                return k
-        return "???"
+        return tickers_kv.get(ticker, "???")
+
+    async def get_names_by_tickers(self, tickers: Iterable[str]) -> list[str]:
+        tickers_kv = await self._get_tickers_kv()
+        return [tickers_kv[i] for i in tickers]
 
     async def _get_tickers_kv(self) -> dict[str, str]:
         file_path = self._config.file_path

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Iterable
 
 from app.logic.abstract.ticker_finder import TickerFinder
 from app.logic.models import SymbolTicker
@@ -28,6 +29,9 @@ class TickerFinderCache(TickerFinder):
         if ticker not in self._memory.data_names:
             await self._add_to_names_cache(ticker)
         return self._memory.data_names[ticker]
+
+    async def get_names_by_tickers(self, tickers: Iterable[str]) -> list[str]:
+        return await self._inner.get_names_by_tickers(tickers)
 
     async def _add_to_cache(self, name: str) -> None:
         self._memory.data[name] = await self._inner.find_ticker(name)
