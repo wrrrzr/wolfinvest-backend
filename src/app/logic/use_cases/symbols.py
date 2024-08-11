@@ -1,3 +1,4 @@
+import asyncio
 from dataclasses import dataclass
 
 from app.logic.abstract.ticker_finder import (
@@ -62,9 +63,13 @@ class GetSymbol:
 
     async def __call__(self, symbol: str) -> SymbolData:
         symbol = symbol.upper()
+        price, name = await asyncio.gather(
+            self._symbols_getter.get_price(symbol),
+            self._ticker_finder.get_name_by_ticker(symbol),
+        )
         return SymbolData(
-            price=await self._symbols_getter.get_price(symbol),
-            name=await self._ticker_finder.get_name_by_ticker(symbol),
+            price=price,
+            name=name,
         )
 
 
@@ -138,8 +143,10 @@ class GetMySymbols:
         symbols = {k: v for k, v in symbols_res.items() if v.amount > 0}
         res = []
 
-        prices = await self._symbols_getter.get_many_prices(symbols.keys())
-        names = await self._ticker_finder.get_names_by_tickers(symbols.keys())
+        prices, names = await asyncio.gather(
+            self._symbols_getter.get_many_prices(symbols.keys()),
+            self._ticker_finder.get_names_by_tickers(symbols.keys()),
+        )
 
         for (ticker, symbol_data), price, name in zip(
             symbols.items(), prices, names
