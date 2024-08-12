@@ -43,13 +43,13 @@ def from_date_interval(interval: timedelta) -> str:
 def calc_from_date(interval: SymbolHistoryInterval) -> str:
     match interval:
         case SymbolHistoryInterval.FIVE_MINUTES:
-            return from_date_interval(timedelta(minutes=1))
+            return from_date_interval(timedelta(days=31))
         case SymbolHistoryInterval.HOUR:
-            return from_date_interval(timedelta(hours=1))
+            return from_date_interval(timedelta(days=31))
         case SymbolHistoryInterval.DAY:
-            return from_date_interval(timedelta(days=1))
+            return from_date_interval(timedelta(days=31))
         case SymbolHistoryInterval.WEEK:
-            return from_date_interval(timedelta(weeks=1))
+            return from_date_interval(timedelta(days=31))
         case SymbolHistoryInterval.MONTH:
             return from_date_interval(timedelta(days=31))
         case SymbolHistoryInterval.THREE_MONTHS:
@@ -81,7 +81,8 @@ class MoexSymbolsGetter(SymbolsGetter):
             "https://iss.moex.com/"
             + "iss/engines/stock/markets/shares/securities/"
             + f"{symbol}/candles.json"
-            + f"?from={calc_from_date(interval)}&till={calc_till_date(interval)}"
+            + f"?from={calc_from_date(interval)}"
+            + f"&till={calc_till_date(interval)}"
             + f"&interval={history_data}"
         )
 
