@@ -18,12 +18,12 @@ from app.logic.use_cases.admin import (
     DeleteUser,
     ChangeUserPassword,
 )
-from app.logic.use_cases.balance_history import GetMyBalanceHistory
 from app.logic.use_cases.currency import (
     GetCurrencyPrice,
     BuyCurrency,
     GetUserCurrencies,
     SellCurrency,
+    GetCurrenciesHistory,
 )
 
 
@@ -46,10 +46,10 @@ class LogicProvider(Provider):
         DeleteUser,
         ChangeUserPassword,
         FindTicker,
-        GetMyBalanceHistory,
         GetCurrencyPrice,
         GetMySymbolsActions,
         BuyCurrency,
         GetUserCurrencies,
         SellCurrency,
+        GetCurrenciesHistory,
     )

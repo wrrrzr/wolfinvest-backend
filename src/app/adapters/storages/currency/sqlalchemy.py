@@ -4,9 +4,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, insert, delete, func, case
 
 from app.logic.abstract.storages.currency import CurrencyStorage
-from app.logic.models.currency import CurrencyAction, Action, UserCurrencyData
+from app.logic.models.currency import (
+    CurrencyAction,
+    Action,
+    UserCurrencyData,
+    CurrencyChange,
+)
 from app.utils.funcs import get_current_time
-from app.utils.dataclasses import object_to_dataclass, objects_to_dataclasses
+from app.utils.dataclasses import objects_to_dataclasses
 from app.adapters.sqlalchemy.models import CurrenciesActionModel
 
 
@@ -19,11 +24,11 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
             func.sum(
                 case(
                     (
-                        CurrenciesActionModel.action == Action.buy,
+                        CurrenciesActionModel.action == Action.add,
                         CurrenciesActionModel.amount,
                     ),
                     (
-                        CurrenciesActionModel.action == Action.sell,
+                        CurrenciesActionModel.action == Action.remove,
                         -CurrenciesActionModel.amount,
                     ),
                     else_=0,
@@ -55,11 +60,11 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
                 func.sum(
                     case(
                         (
-                            CurrenciesActionModel.action == Action.buy,
+                            CurrenciesActionModel.action == Action.add,
                             CurrenciesActionModel.amount,
                         ),
                         (
-                            CurrenciesActionModel.action == Action.sell,
+                            CurrenciesActionModel.action == Action.remove,
                             -CurrenciesActionModel.amount,
                         ),
                         else_=0,
@@ -96,9 +101,16 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
         ticker: str,
         amount: float,
         price: float,
+        reason: int,
     ) -> None:
         await self._insert(
-            user_id, ticker, amount, price, get_current_time(), Action.buy
+            user_id,
+            ticker,
+            amount,
+            price,
+            get_current_time(),
+            Action.add,
+            reason,
         )
 
     async def remove(
@@ -107,9 +119,16 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
         ticker: str,
         amount: float,
         price: float,
+        reason: int,
     ) -> None:
         await self._insert(
-            user_id, ticker, amount, price, get_current_time(), Action.sell
+            user_id,
+            ticker,
+            amount,
+            price,
+            get_current_time(),
+            Action.remove,
+            reason,
         )
 
     async def get_user_currencies_actions_by_currency(
@@ -120,9 +139,18 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
             CurrenciesActionModel.ticker == ticker,
         )
         res = await self._session.execute(stmt)
-        return [
-            object_to_dataclass(i, CurrencyAction) for i in res.scalars().all()
-        ]
+        return objects_to_dataclasses(res.scalars().all(), CurrencyAction)
+
+    async def get_all_user_currency_changes(
+        self, user_id: int
+    ) -> list[CurrencyChange]:
+        stmt = (
+            select(CurrenciesActionModel)
+            .where(CurrenciesActionModel.user_id == user_id)
+            .order_by(CurrenciesActionModel.created_at)
+        )
+        res = await self._session.execute(stmt)
+        return objects_to_dataclasses(res.scalars().all(), CurrencyChange)
 
     async def delete_all_user_currencies(self, user_id: int) -> None:
         stmt = delete(CurrenciesActionModel).where(
@@ -139,6 +167,7 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
         price: float,
         created_at: datetime,
         action: int,
+        reason: int,
     ) -> None:
         stmt = insert(CurrenciesActionModel).values(
             user_id=user_id,
@@ -147,6 +176,7 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
             price=price,
             created_at=created_at,
             action=action,
+            reason=reason,
         )
         await self._session.execute(stmt)
         return

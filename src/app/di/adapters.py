@@ -19,10 +19,6 @@ from app.logic.abstract.storages.users import (
     UsersIdGetter,
 )
 from app.logic.abstract.ticker_finder import TickerFinder
-from app.logic.abstract.storages.balance_history import (
-    BalanceHistoryEditor,
-    BalanceHistoryAllSelector,
-)
 from app.logic.abstract.transaction import Transaction
 from app.logic.abstract.symbols_getter import (
     SymbolsManyPriceGetter,
@@ -35,6 +31,7 @@ from app.logic.abstract.storages.currency import (
     CurrencyAdder,
     CurrencyRemover,
     CurrencyActionsManySelector,
+    CurrencyChangesSelector,
     CurrencyUsersDeletor,
 )
 from app.logic.abstract.storages.symbols import (
@@ -82,9 +79,6 @@ from app.adapters.storages.refills import (
     SQLAlchemyRefillsStorage,
     MemoryCacheRefillsStorage,
 )
-from app.adapters.storages.balance_history import (
-    SQLAlchemyBalanceHistoryStorage,
-)
 
 _memory_users = MemoryCacheUsersStorage.create_memory()
 _memory_symbols = MemoryCacheSymbolsStorage.create_memory()
@@ -113,12 +107,6 @@ class AdaptersProvider(Provider):
         return SQLAlchemyTransaction(session)
 
     ticker_finder = provide(TickersFileTickerFinder, provides=TickerFinder)
-    balance_history_editor = provide(
-        SQLAlchemyBalanceHistoryStorage, provides=BalanceHistoryEditor
-    )
-    balance_history_selector = provide(
-        SQLAlchemyBalanceHistoryStorage, provides=BalanceHistoryAllSelector
-    )
 
     token_manager = provide(JWTTokenManager, provides=TokenManager)
     password_manager = provide(
@@ -132,6 +120,7 @@ class AdaptersProvider(Provider):
         CurrencyAdder,
         CurrencyRemover,
         CurrencyActionsManySelector,
+        CurrencyChangesSelector,
         CurrencyUsersDeletor,
     ]:
         return SQLAlchemyCurrencyStorage(session)

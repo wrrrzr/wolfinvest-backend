@@ -30,6 +30,7 @@ from app.logic.models import (
     SymbolHistoryInterval,
     SymbolData,
 )
+from app.logic.models.currency import Reason
 from app.logic.models.symbol import SymbolAction, Action
 
 
@@ -108,7 +109,11 @@ class BuySymbol:
         if user_balance < price.buy * amount:
             raise NotEnoughBalanceError()
         await self._currency_remover.remove(
-            user_id, price.currency, price.buy * amount, 0.0
+            user_id,
+            price.currency,
+            price.buy * amount,
+            0.0,
+            Reason.buy_symbol,
         )
         await self._symbols_adder.add(user_id, symbol, amount, price.buy)
         await self._transaction.commit()
@@ -190,7 +195,11 @@ class SellSymbol:
         price = await self._symbols_getter.get_price(symbol)
         await self._symbols_remover.remove(user_id, symbol, amount, price.sell)
         await self._currency_adder.add(
-            user_id, price.currency, price.sell * amount, 0.0
+            user_id,
+            price.currency,
+            price.sell * amount,
+            0.0,
+            Reason.sell_symbol,
         )
         await self._transaction.commit()
 

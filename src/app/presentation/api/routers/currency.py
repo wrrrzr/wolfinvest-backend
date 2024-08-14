@@ -6,6 +6,7 @@ from app.logic.use_cases.currency import (
     BuyCurrency,
     GetUserCurrencies,
     SellCurrency,
+    GetCurrenciesHistory,
 )
 from app.logic.models.currency import MyCurrencyDTO
 from app.logic.exceptions import (
@@ -73,3 +74,11 @@ async def sell_currency(
         raise HTTPException(
             status_code=404, detail=f"Cannot find currency {currency}"
         )
+
+
+@router.get("/get-currencies-history")
+@inject
+async def get_currencies_history(
+    use_case: FromDishka[GetCurrenciesHistory], user_id: FromDishka[UserId]
+) -> None:
+    return await use_case(user_id)

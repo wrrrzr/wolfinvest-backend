@@ -11,7 +11,7 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 
-from app.logic.abstract.currency_storage import MAIN_CURRENCY
+from app.logic.abstract.storages.currency import MAIN_CURRENCY
 from app.logic.models.currency import Action
 
 # revision identifiers, used by Alembic.

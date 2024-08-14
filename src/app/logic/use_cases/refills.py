@@ -3,6 +3,7 @@ from datetime import datetime
 
 from app.utils.funcs import get_current_time
 from app.utils.dataclasses import objects_to_dataclasses
+from app.logic.models.currency import Reason
 from app.logic.abstract.storages.refills import (
     RefillsAdder,
     RefillsUsersSelector,
@@ -24,7 +25,9 @@ class TakeRefill:
 
     async def __call__(self, user_id: int, amount: int) -> None:
         await self._refills.insert(user_id, amount, get_current_time())
-        await self._users_balance.add(user_id, MAIN_CURRENCY, amount, 1.0)
+        await self._users_balance.add(
+            user_id, MAIN_CURRENCY, amount, 1.0, Reason.taken_refill
+        )
         await self._transaction.commit()
 
 

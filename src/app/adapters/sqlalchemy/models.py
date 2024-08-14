@@ -33,17 +33,6 @@ class RefillModel(Base):
     created_at = Column(DateTime(timezone=True), nullable=False)
 
 
-class BalanceChangeModel(Base):
-    __tablename__ = "balance_change"
-
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    change_type = Column(Integer, nullable=False)
-    reason = Column(Integer, nullable=False)
-    user_id = Column(BigInteger, ForeignKey(UserModel.id), nullable=False)
-    amount = Column(Float, nullable=False)
-    created_at = Column(DateTime(timezone=True), nullable=False)
-
-
 class SymbolActionModel(Base):
     __tablename__ = "symbol_action"
 
@@ -63,6 +52,7 @@ class CurrenciesActionModel(Base):
     user_id = Column(BigInteger, ForeignKey(UserModel.id), nullable=False)
     ticker = Column(String, nullable=False)
     action = Column(Integer, nullable=False)
+    reason = Column(Integer, nullable=False)
     amount = Column(Float, nullable=False)
     price = Column(Float, nullable=False)
     created_at = Column(DateTime(timezone=True), nullable=False)

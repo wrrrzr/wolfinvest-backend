@@ -6,7 +6,6 @@ from . import users
 from . import refills
 from . import settings
 from . import admin
-from . import balance_history
 from . import currency
 from . import symbols_actions
 
@@ -17,7 +16,6 @@ routers = (
     refills.router,
     settings.router,
     admin.router,
-    balance_history.router,
     currency.router,
     symbols_actions.router,
 )

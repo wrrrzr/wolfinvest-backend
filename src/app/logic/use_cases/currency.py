@@ -4,10 +4,11 @@ from app.logic.abstract.storages.currency import (
     CurrencyAdder,
     CurrencyRemover,
     CurrencyAmountSelector,
+    CurrencyChangesSelector,
     MAIN_CURRENCY,
 )
 from app.logic.abstract.transaction import Transaction
-from app.logic.models.currency import MyCurrencyDTO
+from app.logic.models.currency import MyCurrencyDTO, Reason, CurrencyChange
 from app.logic.exceptions import NotEnoughBalanceError, NotEnoughCurrencyError
 
 
@@ -71,9 +72,15 @@ class BuyCurrency:
             raise NotEnoughBalanceError()
 
         await self._currency_remover.remove(
-            user_id, MAIN_CURRENCY, price * amount, price
+            user_id,
+            MAIN_CURRENCY,
+            price * amount,
+            price,
+            Reason.sell,
         )
-        await self._currency_adder.add(user_id, ticker, amount, price)
+        await self._currency_adder.add(
+            user_id, ticker, amount, price, Reason.buy
+        )
         await self._transaction.commit()
 
 
@@ -105,7 +112,23 @@ class SellCurrency:
             raise NotEnoughCurrencyError()
 
         await self._currency_adder.add(
-            user_id, MAIN_CURRENCY, price * amount, price
+            user_id,
+            MAIN_CURRENCY,
+            price * amount,
+            price,
+            Reason.buy,
         )
-        await self._currency_remover.remove(user_id, ticker, amount, price)
+        await self._currency_remover.remove(
+            user_id, ticker, amount, price, Reason.sell
+        )
         await self._transaction.commit()
+
+
+class GetCurrenciesHistory:
+    def __init__(self, currency_changes: CurrencyChangesSelector) -> None:
+        self._currency_changes = currency_changes
+
+    async def __call__(self, user_id: int) -> list[CurrencyChange]:
+        return await self._currency_changes.get_all_user_currency_changes(
+            user_id
+        )
