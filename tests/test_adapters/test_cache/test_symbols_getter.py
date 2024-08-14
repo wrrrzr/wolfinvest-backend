@@ -1,8 +1,10 @@
+from typing import Iterable
+
 import pytest
 
-from app.logic.abstract import SymbolsGetter
+from app.logic.abstract.symbols_getter import SymbolsGetter
 from app.logic.models import SymbolHistory, SymbolPrice, SymbolHistoryInterval
-from app.adapters.cache import SymbolsGetterCache, create_symbols_getter_memory
+from app.adapters.symbols_getter.memory_cache import MemoryCacheSymbolsGetter
 from app.utils.funcs import get_current_time
 
 MOCK_CURRENCY = "USD"
@@ -40,6 +42,11 @@ class CounterSymbolsGetter(SymbolsGetter):
         self.count_price += 1
         return MOCK_SYMBOL_PRICE
 
+    async def get_many_prices(
+        self, symbols: Iterable[str]
+    ) -> list[SymbolPrice]:
+        return []
+
     async def get_history(
         self, interval: SymbolHistoryInterval, symbol: str
     ) -> list[SymbolHistory]:
@@ -48,9 +55,11 @@ class CounterSymbolsGetter(SymbolsGetter):
 
 
 @pytest.fixture
-def target() -> tuple[SymbolsGetterCache, CounterSymbolsGetter]:
+def target() -> tuple[MemoryCacheSymbolsGetter, CounterSymbolsGetter]:
     counter = CounterSymbolsGetter()
-    getter = SymbolsGetterCache(counter, create_symbols_getter_memory())
+    getter = MemoryCacheSymbolsGetter(
+        counter, MemoryCacheSymbolsGetter.create_memory()
+    )
     return getter, counter
 
 

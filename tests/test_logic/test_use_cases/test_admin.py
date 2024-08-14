@@ -1,9 +1,10 @@
 import pytest
 
-from app.logic.abstract import UsersOneSelector
+from app.logic.abstract.storages.users import UsersOneSelector
 from app.logic.models import User, Role
 from app.logic.exceptions import PermissionDenied
 from app.logic.use_cases.admin import check_permissions
+from app.utils.funcs import get_current_time
 
 
 class MockUsersOneSelector(UsersOneSelector):
@@ -24,10 +25,10 @@ async def test_check_permissions_for_owner() -> None:
             [
                 User(
                     id=user_id,
-                    balance=1.5,
                     username="abc",
                     password="def",
                     role=Role.OWNER,
+                    register_at=get_current_time(),
                 )
             ]
         ),
@@ -43,10 +44,10 @@ async def test_check_permissions_for_user() -> None:
                 [
                     User(
                         id=user_id,
-                        balance=0.3,
                         username="usr",
                         password="1234",
                         role=Role.USER,
+                        register_at=get_current_time(),
                     )
                 ]
             ),

@@ -1,9 +1,6 @@
 import pytest
 
-from app.adapters.cache import (
-    CacheCurrencyGetter,
-    create_currency_getter_memory,
-)
+from app.adapters.currency_getter import MemoryCacheCurrencyGetter
 from app.logic.abstract.currency_getter import CurrencyGetter
 
 MOCK_PRICE = 1.6
@@ -19,9 +16,11 @@ class CurrencyGetterCounter(CurrencyGetter):
 
 
 @pytest.fixture
-def target() -> tuple[CacheCurrencyGetter, CurrencyGetterCounter]:
+def target() -> tuple[MemoryCacheCurrencyGetter, CurrencyGetterCounter]:
     counter = CurrencyGetterCounter()
-    getter = CacheCurrencyGetter(counter, create_currency_getter_memory())
+    getter = MemoryCacheCurrencyGetter(
+        counter, MemoryCacheCurrencyGetter.create_memory()
+    )
     return getter, counter
 
 
