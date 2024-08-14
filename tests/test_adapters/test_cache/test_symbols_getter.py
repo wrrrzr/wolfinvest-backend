@@ -45,7 +45,9 @@ class CounterSymbolsGetter(SymbolsGetter):
     async def get_many_prices(
         self, symbols: Iterable[str]
     ) -> list[SymbolPrice]:
-        return []
+        raise AssertionError(
+            "MemoryCacheSymbolsGetter do not called inner get_many_prices"
+        )
 
     async def get_history(
         self, interval: SymbolHistoryInterval, symbol: str
@@ -105,3 +107,17 @@ async def test_get_history_caching_many(target) -> None:
     await getter.get_history(SymbolHistoryInterval.FIVE_MINUTES, "MSFT")
     await getter.get_history(SymbolHistoryInterval.FIVE_MINUTES, "AAPL")
     assert counter.count_history == 2
+
+
+async def test_get_many_prices(target) -> None:
+    getter, counter = target
+    await getter.get_many_prices(["AMZN", "AAPL", "MSFT"])
+    assert counter.count_price == 3
+
+
+async def test_cache_get_many_prices(target) -> None:
+    getter, counter = target
+    await getter.get_many_prices(["AMZN", "AAPL", "MSFT"])
+    await getter.get_many_prices(["AAPL", "MSFT", "GOOGL"])
+    await getter.get_price("AMZN")
+    assert counter.count_price == 4
