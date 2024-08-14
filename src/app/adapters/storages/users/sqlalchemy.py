@@ -1,25 +1,25 @@
+from datetime import datetime
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import insert, update, select, exists, delete
-from sqlalchemy.sql.expression import func
 
 from app.utils.dataclasses import object_to_dataclass, objects_to_dataclasses
 from app.logic.abstract.storages.users import UsersStorage
 from app.logic.models import User
 from app.adapters.sqlalchemy.models import UserModel
 
-FIRST_ID = 1
-
 
 class SQLAlchemyUsersStorage(UsersStorage):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    async def insert(self, user: User) -> None:
+    async def insert(
+        self, username: str, password: str, register_at: datetime
+    ) -> None:
         stmt = insert(UserModel).values(
-            id=user.id,
-            username=user.username,
-            password=user.password,
-            register_at=user.register_at,
+            username=username,
+            password=password,
+            register_at=register_at,
         )
         await self._session.execute(stmt)
         return
@@ -57,8 +57,3 @@ class SQLAlchemyUsersStorage(UsersStorage):
         stmt = delete(UserModel).where(UserModel.id == user_id)
         await self._session.execute(stmt)
         return
-
-    async def get_new_user_id(self) -> int:
-        stmt = select(func.max(UserModel.id))
-        res = await self._session.execute(stmt)
-        return (res.scalar_one_or_none() or FIRST_ID) + 1

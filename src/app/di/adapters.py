@@ -16,7 +16,6 @@ from app.logic.abstract.storages.users import (
     UsersAllSelector,
     UsersChecker,
     UsersDeleter,
-    UsersIdGetter,
 )
 from app.logic.abstract.ticker_finder import TickerFinder
 from app.logic.abstract.transaction import Transaction
@@ -160,7 +159,6 @@ class AdaptersProvider(Provider):
         UsersAllSelector,
         UsersChecker,
         UsersDeleter,
-        UsersIdGetter,
     ]:
         return MemoryCacheUsersStorage(
             SQLAlchemyUsersStorage(session), _memory_users

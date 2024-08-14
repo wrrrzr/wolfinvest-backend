@@ -9,6 +9,8 @@ from sqlalchemy import (
     String,
 )
 
+from app.logic.models.user import USER_DEFAULT_ROLE
+
 
 class Base(DeclarativeBase):
     pass
@@ -20,7 +22,7 @@ class UserModel(Base):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     username = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
-    role = Column(Integer, nullable=False)
+    role = Column(Integer, nullable=False, default=USER_DEFAULT_ROLE)
     register_at = Column(DateTime(timezone=True), nullable=False)
 
 

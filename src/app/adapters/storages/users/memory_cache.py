@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 from app.logic.abstract.storages.users import UsersStorage
 from app.logic.models import User
@@ -18,11 +19,11 @@ class MemoryCacheUsersStorage(UsersStorage):
     def create_memory() -> UsersMemory:
         return UsersMemory([])
 
-    async def insert(self, user: User) -> None:
-        if user.id in self._memory.data:
-            return
-        self._memory.data.append(user)
-        await self._inner.insert(user)
+    async def insert(
+        self, username: str, password: str, register_at: datetime
+    ) -> None:
+        await self._inner.insert(username, password, register_at)
+        self._memory.data = await self.select_all()
 
     async def change_password(self, user_id: int, password: str) -> None:
         await self._check_user_and_update(user_id)
@@ -52,9 +53,6 @@ class MemoryCacheUsersStorage(UsersStorage):
 
     async def delete_user(self, user_id: int) -> None:
         await self._inner.delete_user(user_id)
-
-    async def get_new_user_id(self) -> int:
-        return await self._inner.get_new_user_id()
 
     async def _check_user_and_update(self, user_id: int) -> None:
         if user_id not in self._memory.data:

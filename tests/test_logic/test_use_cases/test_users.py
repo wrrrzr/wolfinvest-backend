@@ -38,3 +38,4 @@ async def test_get_me(id: int) -> None:
     assert isinstance(res, UserGetMeDTO)
     assert res.id == id
     assert res.username == f"user{id}"
+    assert res.balance == 1.5

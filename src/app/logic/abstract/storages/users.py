@@ -1,11 +1,14 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
 
 from app.logic.models import User
 
 
 class UsersAdder(ABC):
     @abstractmethod
-    async def insert(self, user: User) -> None:
+    async def insert(
+        self, username: str, password: str, register_at: datetime
+    ) -> None:
         raise NotImplementedError
 
 
@@ -43,12 +46,6 @@ class UsersDeleter(ABC):
         raise NotImplementedError
 
 
-class UsersIdGetter(ABC):
-    @abstractmethod
-    async def get_new_user_id(self) -> int:
-        raise NotImplementedError
-
-
 class UsersStorage(
     UsersAdder,
     UsersPasswordEditor,
@@ -56,7 +53,6 @@ class UsersStorage(
     UsersAllSelector,
     UsersChecker,
     UsersDeleter,
-    UsersIdGetter,
     ABC,
 ):
     pass
