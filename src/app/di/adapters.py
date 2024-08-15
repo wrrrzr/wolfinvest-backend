@@ -48,6 +48,7 @@ from app.logic.abstract.storages.refills import (
 )
 from app.logic.abstract.auth_manager import TokenManager, PasswordManager
 from app.logic.abstract.currency_getter import CurrencyPriceGetter
+from app.logic.abstract.clock import ClockCurrentTimeGetter
 from app.logic.models import SQLAlchemyConfig
 from app.adapters.sqlalchemy.transaction import SQLAlchemyTransaction
 from app.adapters.symbols_getter import (
@@ -78,6 +79,7 @@ from app.adapters.storages.refills import (
     SQLAlchemyRefillsStorage,
     MemoryCacheRefillsStorage,
 )
+from app.adapters.clock import UTCClock
 
 _memory_users = MemoryCacheUsersStorage.create_memory()
 _memory_symbols = MemoryCacheSymbolsStorage.create_memory()
@@ -106,7 +108,6 @@ class AdaptersProvider(Provider):
         return SQLAlchemyTransaction(session)
 
     ticker_finder = provide(TickersFileTickerFinder, provides=TickerFinder)
-
     token_manager = provide(JWTTokenManager, provides=TokenManager)
     password_manager = provide(
         PasslibPasswordManager, provides=PasswordManager
@@ -123,6 +124,10 @@ class AdaptersProvider(Provider):
         CurrencyUsersDeletor,
     ]:
         return SQLAlchemyCurrencyStorage(session)
+
+    @provide
+    def clock(self) -> AnyOf[ClockCurrentTimeGetter]:
+        return UTCClock()
 
     @provide
     def currency_getter(self) -> AnyOf[CurrencyPriceGetter]:
