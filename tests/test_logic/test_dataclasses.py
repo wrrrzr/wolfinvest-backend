@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 import pytest
 
-from app.logic.dataclasses import object_to_dataclass
+from app.logic.dataclasses import object_to_dataclass, objects_to_dataclasses
 
 
 class SomeClass:
@@ -26,3 +26,11 @@ def test_object_to_dataclass(a: int, b: str, c: float) -> None:
     assert object_to_dataclass(some_object, SomeDataclass) == SomeDataclass(
         a=a, b=b
     )
+
+
+def test_objects_to_dataclasses() -> None:
+    some_objects = (SomeClass(3, "hjkl", 5.1), SomeClass(111, "111", 111.1))
+    assert objects_to_dataclasses(some_objects, SomeDataclass) == [
+        SomeDataclass(3, "hjkl"),
+        SomeDataclass(111, "111"),
+    ]
