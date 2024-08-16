@@ -22,7 +22,7 @@ async def test_take_refill() -> None:
     await use_case(USER_ID, AMOUNT)
     refills_adder.insert.assert_awaited_once_with(USER_ID, AMOUNT, mocktime)
     users_balance.add.assert_awaited_once_with(
-        USER_ID, MAIN_CURRENCY, AMOUNT, 1.0, Reason.taken_refill
+        USER_ID, MAIN_CURRENCY, AMOUNT, 1.0, mocktime, Reason.taken_refill
     )
     transaction.commit.assert_awaited_once()
 
