@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import insert, update, select, exists, delete
 
-from app.utils.dataclasses import object_to_dataclass, objects_to_dataclasses
+from app.logic.dataclasses import object_to_dataclass, objects_to_dataclasses
 from app.logic.abstract.storages.users import UsersStorage
 from app.logic.models import User
 from app.adapters.sqlalchemy.models import UserModel

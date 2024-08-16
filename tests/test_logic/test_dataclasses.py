@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 import pytest
 
-from app.utils.dataclasses import object_to_dataclass
+from app.logic.dataclasses import object_to_dataclass
 
 
 class SomeClass:

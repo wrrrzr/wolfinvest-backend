@@ -10,7 +10,7 @@ from app.logic.models.currency import (
     UserCurrencyData,
     CurrencyChange,
 )
-from app.utils.dataclasses import objects_to_dataclasses
+from app.logic.dataclasses import objects_to_dataclasses
 from app.adapters.sqlalchemy.models import CurrenciesActionModel
 
 

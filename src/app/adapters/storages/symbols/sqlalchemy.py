@@ -5,7 +5,7 @@ from sqlalchemy import insert, select, delete, func, case
 
 from app.logic.abstract.storages.symbols import SymbolsStorage
 from app.logic.models.symbol import SymbolAction, Action, UserSymbolData
-from app.utils.dataclasses import object_to_dataclass, objects_to_dataclasses
+from app.logic.dataclasses import objects_to_dataclasses
 from app.adapters.sqlalchemy.models import SymbolActionModel
 
 
@@ -117,9 +117,7 @@ class SQLAlchemySymbolsStorage(SymbolsStorage):
             SymbolActionModel.ticker == ticker,
         )
         res = await self._session.execute(stmt)
-        return [
-            object_to_dataclass(i, SymbolAction) for i in res.scalars().all()
-        ]
+        return objects_to_dataclasses(res.scalars().all(), SymbolAction)
 
     async def delete_all_user_symbols(self, user_id: int) -> None:
         stmt = delete(SymbolActionModel).where(

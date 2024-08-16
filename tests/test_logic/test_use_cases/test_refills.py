@@ -5,7 +5,7 @@ from app.logic.abstract.storages.currency import MAIN_CURRENCY
 from app.logic.models.currency import Reason
 from app.logic.models.refill import Refill
 from app.logic.use_cases.refills import TakeRefill, GetMyRefills, MyRefillDTO
-from app.utils.dataclasses import objects_to_dataclasses
+from app.logic.dataclasses import objects_to_dataclasses
 
 
 async def test_take_refill() -> None:

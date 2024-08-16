@@ -6,7 +6,7 @@ from app.logic.use_cases.symbols_actions import (
     MySymbolActionDTO,
 )
 from app.logic.models.symbol import SymbolAction, Action
-from app.utils.dataclasses import objects_to_dataclasses
+from app.logic.dataclasses import objects_to_dataclasses
 
 
 async def test_get_my_symbols_actions() -> None:

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from app.utils.dataclasses import objects_to_dataclasses
+from app.logic.dataclasses import objects_to_dataclasses
 from app.logic.models.currency import Reason
 from app.logic.abstract.storages.refills import (
     RefillsAdder,

@@ -3,8 +3,8 @@ from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import insert, select, delete
 
-from app.utils.dataclasses import objects_to_dataclasses
 from app.logic.abstract.storages.refills import RefillsStorage
+from app.logic.dataclasses import objects_to_dataclasses
 from app.logic.models import Refill
 from app.adapters.sqlalchemy.models import RefillModel
 
