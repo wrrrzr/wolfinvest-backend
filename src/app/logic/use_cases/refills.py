@@ -26,11 +26,15 @@ class TakeRefill:
         self._clock = clock
 
     async def __call__(self, user_id: int, amount: int) -> None:
-        await self._refills.insert(
-            user_id, amount, await self._clock.get_current_time()
-        )
+        current_time = await self._clock.get_current_time()
+        await self._refills.insert(user_id, amount, current_time)
         await self._users_balance.add(
-            user_id, MAIN_CURRENCY, amount, 1.0, Reason.taken_refill
+            user_id,
+            MAIN_CURRENCY,
+            amount,
+            1.0,
+            current_time,
+            Reason.taken_refill,
         )
         await self._transaction.commit()
 
