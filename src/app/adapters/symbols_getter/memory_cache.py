@@ -4,9 +4,9 @@ from datetime import timedelta, datetime
 from dataclasses import dataclass
 
 from app.logic.abstract.symbols_getter import SymbolsGetter
+from app.logic.abstract.clock import ClockCurrentTimeGetter
 from app.logic.exceptions import UnfoundSymbolError
 from app.logic.models import SymbolHistory, SymbolPrice, SymbolHistoryInterval
-from app.utils.funcs import get_current_time
 
 TIME_EXP_PRICE = timedelta(minutes=10)
 TIME_EXP_HISTORY = timedelta(minutes=30)
@@ -35,9 +35,11 @@ class MemoryCacheSymbolsGetter(SymbolsGetter):
         self,
         inner: SymbolsGetter,
         memory: MemorySymbolsGetter,
+        clock: ClockCurrentTimeGetter,
     ) -> None:
         self._inner = inner
         self._memory = memory
+        self._clock = clock
 
     @staticmethod
     def create_memory() -> MemorySymbolsGetter:
@@ -48,7 +50,10 @@ class MemoryCacheSymbolsGetter(SymbolsGetter):
             await self._set_price(symbol)
         if self._memory.price[symbol].price is None:
             raise UnfoundSymbolError(f"Cannot find symbol {symbol}")
-        if self._memory.price[symbol].time_exp_cache < get_current_time():
+        if (
+            self._memory.price[symbol].time_exp_cache
+            < await self._clock.get_current_time()
+        ):
             await self._set_price(symbol)
         return self._memory.price[symbol].price
 
@@ -68,7 +73,10 @@ class MemoryCacheSymbolsGetter(SymbolsGetter):
             await self._set_history(interval, symbol)
         if self._memory.history[symbol].history is None:
             raise UnfoundSymbolError(f"Cannot find symbol {symbol}")
-        if self._memory.history[symbol].time_exp_cache < get_current_time():
+        if (
+            self._memory.history[symbol].time_exp_cache
+            < await self._clock.get_current_time()
+        ):
             await self._set_history(interval, symbol)
         return self._memory.history[symbol].history[interval]
 
@@ -78,7 +86,7 @@ class MemoryCacheSymbolsGetter(SymbolsGetter):
         except UnfoundSymbolError:
             price = None
         self._memory.price[symbol] = CachedSymbolPrice(
-            price, get_current_time() + TIME_EXP_PRICE
+            price, await self._clock.get_current_time() + TIME_EXP_PRICE
         )
 
     async def _set_history(
@@ -90,11 +98,11 @@ class MemoryCacheSymbolsGetter(SymbolsGetter):
             history = None
         if history is None:
             self._memory.history[symbol] = CachedSymbolHistory(
-                None, get_current_time()
+                None, await self._clock.get_current_time()
             )
             return
         if symbol not in self._memory.history:
             self._memory.history[symbol] = CachedSymbolHistory(
-                {}, get_current_time() + TIME_EXP_HISTORY
+                {}, await self._clock.get_current_time() + TIME_EXP_HISTORY
             )
         self._memory.history[symbol].history[interval] = history

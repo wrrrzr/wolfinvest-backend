@@ -1,4 +1,5 @@
 from unittest.mock import AsyncMock
+from datetime import datetime
 
 import pytest
 
@@ -7,7 +8,6 @@ from app.logic.abstract.storages.users import UsersOneSelector
 from app.logic.abstract.auth_manager import PasswordManager
 from app.logic.exceptions import IncorrectPasswordError
 from app.logic.models.user import User, USER_DEFAULT_ROLE
-from app.utils.funcs import get_current_time
 
 
 class MockUsersStorage(UsersOneSelector):
@@ -20,7 +20,7 @@ class MockUsersStorage(UsersOneSelector):
             username=f"user{user_id}",
             password=f"hashed_{user_id}password",
             role=USER_DEFAULT_ROLE,
-            register_at=get_current_time(),
+            register_at=datetime.now(),
         )
 
 

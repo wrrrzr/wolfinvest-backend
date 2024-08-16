@@ -130,9 +130,11 @@ class AdaptersProvider(Provider):
         return UTCClock()
 
     @provide
-    def currency_getter(self) -> AnyOf[CurrencyPriceGetter]:
+    def currency_getter(
+        self, clock: ClockCurrentTimeGetter
+    ) -> AnyOf[CurrencyPriceGetter]:
         return MemoryCacheCurrencyGetter(
-            ExchangerateApiGetter(), _memory_currency_getter
+            ExchangerateApiGetter(), _memory_currency_getter, clock
         )
 
     @provide
@@ -171,16 +173,17 @@ class AdaptersProvider(Provider):
 
     @provide
     def symbols_getter(
-        self,
+        self, clock: ClockCurrentTimeGetter
     ) -> AnyOf[
         SymbolsPriceGetter, SymbolsManyPriceGetter, SymbolsHistoryGetter
     ]:
         return MemoryCacheSymbolsGetter(
             MultiSymbolsGetter(
                 YahooSymbolsGetter(),
-                MoexSymbolsGetter(),
+                MoexSymbolsGetter(clock),
             ),
             _memory_symbols_getter,
+            clock,
         )
 
     @decorate

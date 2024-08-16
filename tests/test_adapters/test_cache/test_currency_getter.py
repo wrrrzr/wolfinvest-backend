@@ -1,6 +1,7 @@
 import pytest
 
 from app.adapters.currency_getter import MemoryCacheCurrencyGetter
+from app.adapters.clock import UTCClock
 from app.logic.abstract.currency_getter import CurrencyGetter
 
 MOCK_PRICE = 1.6
@@ -19,7 +20,9 @@ class CurrencyGetterCounter(CurrencyGetter):
 def target() -> tuple[MemoryCacheCurrencyGetter, CurrencyGetterCounter]:
     counter = CurrencyGetterCounter()
     getter = MemoryCacheCurrencyGetter(
-        counter, MemoryCacheCurrencyGetter.create_memory()
+        counter,
+        MemoryCacheCurrencyGetter.create_memory(),
+        UTCClock(),
     )
     return getter, counter
 

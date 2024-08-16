@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
 
 from app.logic.models.symbol import SymbolAction, UserSymbolData
 
@@ -6,7 +7,12 @@ from app.logic.models.symbol import SymbolAction, UserSymbolData
 class SymbolsAdder(ABC):
     @abstractmethod
     async def add(
-        self, user_id: int, ticker: str, amount: int, price: float
+        self,
+        user_id: int,
+        ticker: str,
+        amount: int,
+        price: float,
+        current_time: datetime,
     ) -> None:
         raise NotImplementedError
 
@@ -36,7 +42,12 @@ class SymbolsActionsManySelector(ABC):
 class SymbolsRemover(ABC):
     @abstractmethod
     async def remove(
-        self, user_id: int, ticker: str, amount: int, price: float
+        self,
+        user_id: int,
+        ticker: str,
+        amount: int,
+        price: float,
+        current_time: datetime,
     ) -> None:
         raise NotImplementedError
 

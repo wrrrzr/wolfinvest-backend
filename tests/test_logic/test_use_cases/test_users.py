@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 
 from app.logic.abstract.storages.users import UsersOneSelector
@@ -7,7 +9,6 @@ from app.logic.abstract.storages.currency import (
 )
 from app.logic.models import User, USER_DEFAULT_ROLE
 from app.logic.use_cases.users import GetMe, UserGetMeDTO
-from app.utils.funcs import get_current_time
 
 
 class MockAmountSelector(CurrencyAmountSelector):
@@ -27,7 +28,7 @@ class MockUsersStorage(UsersOneSelector):
             username=f"user{user_id}",
             password=f"{user_id}password",
             role=USER_DEFAULT_ROLE,
-            register_at=get_current_time(),
+            register_at=datetime.now(),
         )
 
 

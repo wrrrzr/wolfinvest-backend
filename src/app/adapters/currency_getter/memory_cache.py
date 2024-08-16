@@ -2,7 +2,7 @@ from datetime import timedelta, datetime
 from dataclasses import dataclass
 
 from app.logic.abstract.currency_getter import CurrencyGetter
-from app.utils.funcs import get_current_time
+from app.logic.abstract.clock import ClockCurrentTimeGetter
 
 TIME_EXP_PRICE = timedelta(minutes=10)
 
@@ -20,10 +20,14 @@ class MemoryCurrencyGetter:
 
 class MemoryCacheCurrencyGetter(CurrencyGetter):
     def __init__(
-        self, inner: CurrencyGetter, memory: MemoryCurrencyGetter
+        self,
+        inner: CurrencyGetter,
+        memory: MemoryCurrencyGetter,
+        clock: ClockCurrentTimeGetter,
     ) -> None:
         self._inner = inner
         self._memory = memory
+        self._clock = clock
 
     @staticmethod
     def create_memory() -> MemoryCurrencyGetter:
@@ -32,12 +36,15 @@ class MemoryCacheCurrencyGetter(CurrencyGetter):
     async def get_price(self, currency: str) -> float:
         if currency not in self._memory.price:
             await self._add_to_cache(currency)
-        if self._memory.price[currency].time_exp_cache < get_current_time():
+        if (
+            self._memory.price[currency].time_exp_cache
+            < await self._clock.get_current_time()
+        ):
             await self._add_to_cache(currency)
         return self._memory.price[currency].price
 
     async def _add_to_cache(self, currency: str) -> None:
         self._memory.price[currency] = CachedCurrencyPrice(
             await self._inner.get_price(currency),
-            TIME_EXP_PRICE + get_current_time(),
+            TIME_EXP_PRICE + await self._clock.get_current_time(),
         )

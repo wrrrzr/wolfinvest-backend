@@ -7,6 +7,7 @@ from app.logic.abstract.storages.currency import (
     CurrencyChangesSelector,
     MAIN_CURRENCY,
 )
+from app.logic.abstract.clock import ClockCurrentTimeGetter
 from app.logic.abstract.transaction import Transaction
 from app.logic.models.currency import MyCurrencyDTO, Reason, CurrencyChange
 from app.logic.exceptions import NotEnoughBalanceError, NotEnoughCurrencyError
@@ -50,12 +51,14 @@ class BuyCurrency:
         currency_price: CurrencyPriceGetter,
         currency_amount: CurrencyAmountSelector,
         transaction: Transaction,
+        clock: ClockCurrentTimeGetter,
     ) -> None:
         self._currency_adder = currency_adder
         self._currency_remover = currency_remover
         self._currency_price = currency_price
         self._currency_amount = currency_amount
         self._transaction = transaction
+        self._clock = clock
 
     async def __call__(self, user_id: int, ticker: str, amount: float) -> None:
         ticker = ticker.upper()
@@ -71,15 +74,18 @@ class BuyCurrency:
         if user_balance < price * amount:
             raise NotEnoughBalanceError()
 
+        current_time = await self._clock.get_current_time()
+
         await self._currency_remover.remove(
             user_id,
             MAIN_CURRENCY,
             price * amount,
             price,
+            current_time,
             Reason.sell,
         )
         await self._currency_adder.add(
-            user_id, ticker, amount, price, Reason.buy
+            user_id, ticker, amount, price, current_time, Reason.buy
         )
         await self._transaction.commit()
 
@@ -92,12 +98,14 @@ class SellCurrency:
         currency_price: CurrencyPriceGetter,
         currency_amount: CurrencyAmountSelector,
         transaction: Transaction,
+        clock: ClockCurrentTimeGetter,
     ) -> None:
         self._currency_remover = currency_remover
         self._currency_adder = currency_adder
         self._currency_price = currency_price
         self._currency_amount = currency_amount
         self._transaction = transaction
+        self._clock = clock
 
     async def __call__(self, user_id: int, ticker: str, amount: float) -> None:
         ticker = ticker.upper()
@@ -111,15 +119,18 @@ class SellCurrency:
         if user_amount < amount:
             raise NotEnoughCurrencyError()
 
+        current_time = await self._clock.get_current_time()
+
         await self._currency_adder.add(
             user_id,
             MAIN_CURRENCY,
             price * amount,
             price,
+            current_time,
             Reason.buy,
         )
         await self._currency_remover.remove(
-            user_id, ticker, amount, price, Reason.sell
+            user_id, ticker, amount, price, current_time, Reason.sell
         )
         await self._transaction.commit()
 

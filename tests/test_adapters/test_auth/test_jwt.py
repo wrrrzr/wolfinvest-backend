@@ -1,18 +1,21 @@
 import pytest
 
 from app.adapters.auth import JWTTokenManager
+from app.adapters.clock import UTCClock
 from app.logic.models import JWTConfig
 from app.logic.exceptions import VerifyTokenError
 
 
 @pytest.fixture
 def manager() -> JWTTokenManager:
-    return JWTTokenManager(JWTConfig(auth_secret_key="SDFGHJKL"))
+    return JWTTokenManager(JWTConfig(auth_secret_key="SDFGHJKL"), UTCClock())
 
 
 @pytest.fixture
 def other_manager() -> JWTTokenManager:
-    return JWTTokenManager(JWTConfig(auth_secret_key="wfghjdkflgsjh"))
+    return JWTTokenManager(
+        JWTConfig(auth_secret_key="wfghjdkflgsjh"), UTCClock()
+    )
 
 
 async def test_create_token(manager: JWTTokenManager) -> None:

@@ -1,34 +1,23 @@
 from typing import Iterable
+from datetime import datetime
 
 import pytest
 
 from app.logic.abstract.symbols_getter import SymbolsGetter
 from app.logic.models import SymbolHistory, SymbolPrice, SymbolHistoryInterval
 from app.adapters.symbols_getter.memory_cache import MemoryCacheSymbolsGetter
-from app.utils.funcs import get_current_time
+from app.adapters.clock import UTCClock
 
 MOCK_CURRENCY = "USD"
 MOCK_SYMBOL_PRICE = SymbolPrice(1.2, 1.0, MOCK_CURRENCY)
 MOCK_SYMBOL_HISTORY = {
     SymbolHistoryInterval.FIVE_MINUTES: [
-        SymbolHistory(
-            SymbolPrice(1.2, 1.0, MOCK_CURRENCY), get_current_time()
-        ),
-        SymbolHistory(
-            SymbolPrice(1.1, 1.0, MOCK_CURRENCY), get_current_time()
-        ),
-        SymbolHistory(
-            SymbolPrice(1.1, 1.0, MOCK_CURRENCY), get_current_time()
-        ),
-        SymbolHistory(
-            SymbolPrice(1.0, 0.9, MOCK_CURRENCY), get_current_time()
-        ),
-        SymbolHistory(
-            SymbolPrice(1.1, 1.0, MOCK_CURRENCY), get_current_time()
-        ),
-        SymbolHistory(
-            SymbolPrice(0.9, 0.8, MOCK_CURRENCY), get_current_time()
-        ),
+        SymbolHistory(SymbolPrice(1.2, 1.0, MOCK_CURRENCY), datetime.now()),
+        SymbolHistory(SymbolPrice(1.1, 1.0, MOCK_CURRENCY), datetime.now()),
+        SymbolHistory(SymbolPrice(1.1, 1.0, MOCK_CURRENCY), datetime.now()),
+        SymbolHistory(SymbolPrice(1.0, 0.9, MOCK_CURRENCY), datetime.now()),
+        SymbolHistory(SymbolPrice(1.1, 1.0, MOCK_CURRENCY), datetime.now()),
+        SymbolHistory(SymbolPrice(0.9, 0.8, MOCK_CURRENCY), datetime.now()),
     ]
 }
 
@@ -60,7 +49,9 @@ class CounterSymbolsGetter(SymbolsGetter):
 def target() -> tuple[MemoryCacheSymbolsGetter, CounterSymbolsGetter]:
     counter = CounterSymbolsGetter()
     getter = MemoryCacheSymbolsGetter(
-        counter, MemoryCacheSymbolsGetter.create_memory()
+        counter,
+        MemoryCacheSymbolsGetter.create_memory(),
+        UTCClock(),
     )
     return getter, counter
 

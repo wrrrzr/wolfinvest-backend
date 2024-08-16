@@ -1,10 +1,11 @@
+from datetime import datetime
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import insert, select, delete, func, case
 
 from app.logic.abstract.storages.symbols import SymbolsStorage
 from app.logic.models.symbol import SymbolAction, Action, UserSymbolData
 from app.utils.dataclasses import object_to_dataclass, objects_to_dataclasses
-from app.utils.funcs import get_current_time
 from app.adapters.sqlalchemy.models import SymbolActionModel
 
 
@@ -13,15 +14,29 @@ class SQLAlchemySymbolsStorage(SymbolsStorage):
         self._session = session
 
     async def add(
-        self, user_id: int, ticker: str, amount: int, price: float
+        self,
+        user_id: int,
+        ticker: str,
+        amount: int,
+        price: float,
+        current_time: datetime,
     ) -> None:
-        await self._insert(user_id, ticker, amount, price, Action.buy)
+        await self._insert(
+            user_id, ticker, amount, price, current_time, Action.buy
+        )
         return
 
     async def remove(
-        self, user_id: int, ticker: str, amount: int, price: float
+        self,
+        user_id: int,
+        ticker: str,
+        amount: int,
+        price: float,
+        current_time: datetime,
     ) -> None:
-        await self._insert(user_id, ticker, amount, price, Action.sell)
+        await self._insert(
+            user_id, ticker, amount, price, current_time, Action.sell
+        )
         return
 
     async def get_amount(self, user_id: int, ticker: str) -> int:
@@ -119,9 +134,9 @@ class SQLAlchemySymbolsStorage(SymbolsStorage):
         ticker: str,
         amount: int,
         price: float,
+        created_at: datetime,
         action: int,
     ) -> None:
-        created_at = get_current_time()
         stmt = insert(SymbolActionModel).values(
             user_id=user_id,
             ticker=ticker,

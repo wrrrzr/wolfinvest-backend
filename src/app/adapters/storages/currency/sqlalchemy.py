@@ -10,7 +10,6 @@ from app.logic.models.currency import (
     UserCurrencyData,
     CurrencyChange,
 )
-from app.utils.funcs import get_current_time
 from app.utils.dataclasses import objects_to_dataclasses
 from app.adapters.sqlalchemy.models import CurrenciesActionModel
 
@@ -101,6 +100,7 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
         ticker: str,
         amount: float,
         price: float,
+        created_at: datetime,
         reason: int,
     ) -> None:
         await self._insert(
@@ -108,7 +108,7 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
             ticker,
             amount,
             price,
-            get_current_time(),
+            created_at,
             Action.add,
             reason,
         )
@@ -119,6 +119,7 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
         ticker: str,
         amount: float,
         price: float,
+        created_at: datetime,
         reason: int,
     ) -> None:
         await self._insert(
@@ -126,7 +127,7 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
             ticker,
             amount,
             price,
-            get_current_time(),
+            created_at,
             Action.remove,
             reason,
         )

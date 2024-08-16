@@ -21,6 +21,7 @@ from app.logic.abstract.storages.currency import (
     CurrencyAmountSelector,
     CurrencyAdder,
 )
+from app.logic.abstract.clock import ClockCurrentTimeGetter
 from app.logic.abstract.transaction import Transaction
 from app.logic.exceptions import NotEnoughBalanceError, NotEnoughSymbolsError
 from app.logic.models import (
@@ -93,12 +94,14 @@ class BuySymbol:
         currency_remover: CurrencyRemover,
         currency_amount: CurrencyAmountSelector,
         transaction: Transaction,
+        clock: ClockCurrentTimeGetter,
     ) -> None:
         self._symbols_getter = symbols_getter
         self._symbols_adder = symbols_adder
         self._currency_remover = currency_remover
         self._currency_amount = currency_amount
         self._transaction = transaction
+        self._clock = clock
 
     async def __call__(self, user_id: int, symbol: str, amount: int) -> None:
         symbol = symbol.upper()
@@ -108,14 +111,20 @@ class BuySymbol:
         )
         if user_balance < price.buy * amount:
             raise NotEnoughBalanceError()
+
+        current_time = await self._clock.get_current_time()
+
         await self._currency_remover.remove(
             user_id,
             price.currency,
             price.buy * amount,
             0.0,
+            current_time,
             Reason.buy_symbol,
         )
-        await self._symbols_adder.add(user_id, symbol, amount, price.buy)
+        await self._symbols_adder.add(
+            user_id, symbol, amount, price.buy, current_time
+        )
         await self._transaction.commit()
 
 
@@ -178,12 +187,14 @@ class SellSymbol:
         symbols_amount_selector: SymbolsAmountSelector,
         currency_adder: CurrencyAdder,
         transaction: Transaction,
+        clock: ClockCurrentTimeGetter,
     ) -> None:
         self._symbols_getter = symbols_getter
         self._symbols_remover = symbols_remover
         self._symbols_amount_selector = symbols_amount_selector
         self._currency_adder = currency_adder
         self._transaction = transaction
+        self._clock = clock
 
     async def __call__(self, user_id: int, symbol: str, amount: int) -> None:
         symbol = symbol.upper()
@@ -193,12 +204,16 @@ class SellSymbol:
         if user_amount < amount:
             raise NotEnoughSymbolsError()
         price = await self._symbols_getter.get_price(symbol)
-        await self._symbols_remover.remove(user_id, symbol, amount, price.sell)
+        current_time = await self._clock.get_current_time()
+        await self._symbols_remover.remove(
+            user_id, symbol, amount, price.sell, current_time
+        )
         await self._currency_adder.add(
             user_id,
             price.currency,
             price.sell * amount,
             0.0,
+            current_time,
             Reason.sell_symbol,
         )
         await self._transaction.commit()
