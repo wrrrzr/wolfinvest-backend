@@ -1,5 +1,6 @@
+import asyncio
 from typing import Iterable
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 import pytest
 
@@ -18,7 +19,12 @@ MOCK_SYMBOL_HISTORY = {
         SymbolHistory(SymbolPrice(1.0, 0.9, MOCK_CURRENCY), datetime.now()),
         SymbolHistory(SymbolPrice(1.1, 1.0, MOCK_CURRENCY), datetime.now()),
         SymbolHistory(SymbolPrice(0.9, 0.8, MOCK_CURRENCY), datetime.now()),
-    ]
+    ],
+    SymbolHistoryInterval.HOUR: [],
+    SymbolHistoryInterval.DAY: [],
+    SymbolHistoryInterval.WEEK: [],
+    SymbolHistoryInterval.MONTH: [],
+    SymbolHistoryInterval.THREE_MONTHS: [],
 }
 
 
@@ -34,9 +40,8 @@ class CounterSymbolsGetter(SymbolsGetter):
     async def get_many_prices(
         self, symbols: Iterable[str]
     ) -> list[SymbolPrice]:
-        raise AssertionError(
-            "MemoryCacheSymbolsGetter do not called inner get_many_prices"
-        )
+        price_tasks = [self.get_price(i) for i in symbols]
+        return await asyncio.gather(*price_tasks)
 
     async def get_history(
         self, interval: SymbolHistoryInterval, symbol: str
@@ -112,3 +117,114 @@ async def test_cache_get_many_prices(target) -> None:
     await getter.get_many_prices(["AAPL", "MSFT", "GOOGL"])
     await getter.get_price("AMZN")
     assert counter.count_price == 4
+
+
+class SlowCounter(SymbolsGetter):
+    def __init__(self) -> None:
+        self.count_price = 0
+        self.count_history = 0
+
+    async def get_price(self, symbol: str) -> SymbolPrice:
+        self.count_price += 1
+        await asyncio.sleep(0.25)
+        return MOCK_SYMBOL_PRICE
+
+    async def get_many_prices(
+        self, symbols: Iterable[str]
+    ) -> list[SymbolPrice]:
+        price_tasks = [self.get_price(i) for i in symbols]
+        return await asyncio.gather(*price_tasks)
+
+    async def get_history(
+        self, interval: SymbolHistoryInterval, symbol: str
+    ) -> list[SymbolHistory]:
+        self.count_history += 1
+        await asyncio.sleep(0.25)
+        return MOCK_SYMBOL_HISTORY[interval]
+
+
+async def test_get_price_slow_service() -> None:
+    slow_counter = SlowCounter()
+    getter = MemoryCacheSymbolsGetter(
+        slow_counter, MemoryCacheSymbolsGetter.create_memory(), UTCClock()
+    )
+
+    await asyncio.gather(
+        getter.get_price("AMZN"),
+        getter.get_price("AMZN"),
+        getter.get_price("MSFT"),
+        getter.get_price("AMZN"),
+    )
+    assert slow_counter.count_price == 2
+
+
+async def test_get_price_slow_service_speed() -> None:
+    slow_counter = SlowCounter()
+    getter = MemoryCacheSymbolsGetter(
+        slow_counter, MemoryCacheSymbolsGetter.create_memory(), UTCClock()
+    )
+
+    time = datetime.now(timezone.utc)
+    await asyncio.gather(
+        getter.get_price("AAPL"),
+        getter.get_price("MSFT"),
+        getter.get_price("GOOGL"),
+        getter.get_price("AMZN"),
+    )
+    assert time + timedelta(seconds=0.5) > datetime.now(timezone.utc)
+
+
+async def test_get_many_prices_slow_service() -> None:
+    slow_counter = SlowCounter()
+    getter = MemoryCacheSymbolsGetter(
+        slow_counter, MemoryCacheSymbolsGetter.create_memory(), UTCClock()
+    )
+
+    await asyncio.gather(
+        getter.get_many_prices(["AAPL", "AMZN", "AAPL", "AMZN"])
+    )
+    assert slow_counter.count_price == 2
+
+
+async def test_get_many_prices_slow_service_speed() -> None:
+    slow_counter = SlowCounter()
+    getter = MemoryCacheSymbolsGetter(
+        slow_counter, MemoryCacheSymbolsGetter.create_memory(), UTCClock()
+    )
+
+    time = datetime.now(timezone.utc)
+    await asyncio.gather(
+        getter.get_many_prices(["AAPL", "MSFT", "GOOGL", "AMZN"])
+    )
+    assert time + timedelta(seconds=0.5) > datetime.now(timezone.utc)
+
+
+async def test_get_history_slow_service() -> None:
+    slow_counter = SlowCounter()
+    getter = MemoryCacheSymbolsGetter(
+        slow_counter, MemoryCacheSymbolsGetter.create_memory(), UTCClock()
+    )
+
+    await asyncio.gather(
+        getter.get_history(SymbolHistoryInterval.FIVE_MINUTES, "AMZN"),
+        getter.get_history(SymbolHistoryInterval.FIVE_MINUTES, "AMZN"),
+        getter.get_history(SymbolHistoryInterval.FIVE_MINUTES, "MSFT"),
+        getter.get_history(SymbolHistoryInterval.MONTH, "AMZN"),
+    )
+    assert slow_counter.count_history == 3
+
+
+async def test_get_history_slow_service_speed() -> None:
+    slow_counter = SlowCounter()
+    getter = MemoryCacheSymbolsGetter(
+        slow_counter, MemoryCacheSymbolsGetter.create_memory(), UTCClock()
+    )
+
+    time = datetime.now(timezone.utc)
+    await asyncio.gather(
+        getter.get_history(SymbolHistoryInterval.FIVE_MINUTES, "AAPL"),
+        getter.get_history(SymbolHistoryInterval.MONTH, "MSFT"),
+        getter.get_history(SymbolHistoryInterval.WEEK, "GOOGL"),
+        getter.get_history(SymbolHistoryInterval.FIVE_MINUTES, "AMZN"),
+    )
+    assert time + timedelta(seconds=0.5) > datetime.now(timezone.utc)

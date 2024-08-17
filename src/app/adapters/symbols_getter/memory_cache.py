@@ -2,6 +2,7 @@ import asyncio
 from typing import Optional, Iterable
 from datetime import timedelta, datetime
 from dataclasses import dataclass
+from collections import defaultdict
 
 from app.logic.abstract.symbols_getter import SymbolsGetter
 from app.logic.abstract.clock import ClockCurrentTimeGetter
@@ -28,6 +29,8 @@ class CachedSymbolHistory:
 class MemorySymbolsGetter:
     price: dict[str, CachedSymbolPrice]
     history: dict[str, CachedSymbolHistory]
+    price_locks: dict[str, asyncio.Lock]
+    history_locks: dict[SymbolHistoryInterval, dict[str, asyncio.Lock]]
 
 
 class MemoryCacheSymbolsGetter(SymbolsGetter):
@@ -43,19 +46,25 @@ class MemoryCacheSymbolsGetter(SymbolsGetter):
 
     @staticmethod
     def create_memory() -> MemorySymbolsGetter:
-        return MemorySymbolsGetter({}, {})
+        return MemorySymbolsGetter(
+            {},
+            {},
+            defaultdict(asyncio.Lock),
+            defaultdict(lambda: defaultdict(asyncio.Lock)),
+        )
 
     async def get_price(self, symbol: str) -> SymbolPrice:
-        if symbol not in self._memory.price:
-            await self._set_price(symbol)
-        if self._memory.price[symbol].price is None:
-            raise UnfoundSymbolError(f"Cannot find symbol {symbol}")
-        if (
-            self._memory.price[symbol].time_exp_cache
-            < await self._clock.get_current_time()
-        ):
-            await self._set_price(symbol)
-        return self._memory.price[symbol].price
+        async with self._memory.price_locks[symbol]:
+            if symbol not in self._memory.price:
+                await self._set_price(symbol)
+            if self._memory.price[symbol].price is None:
+                raise UnfoundSymbolError(f"Cannot find symbol {symbol}")
+            if (
+                self._memory.price[symbol].time_exp_cache
+                < await self._clock.get_current_time()
+            ):
+                await self._set_price(symbol)
+            return self._memory.price[symbol].price
 
     async def get_many_prices(
         self, symbols: Iterable[str]
@@ -66,19 +75,20 @@ class MemoryCacheSymbolsGetter(SymbolsGetter):
     async def get_history(
         self, interval: SymbolHistoryInterval, symbol: str
     ) -> list[SymbolHistory]:
-        if (
-            symbol not in self._memory.history
-            or interval not in self._memory.history[symbol].history
-        ):
-            await self._set_history(interval, symbol)
-        if self._memory.history[symbol].history is None:
-            raise UnfoundSymbolError(f"Cannot find symbol {symbol}")
-        if (
-            self._memory.history[symbol].time_exp_cache
-            < await self._clock.get_current_time()
-        ):
-            await self._set_history(interval, symbol)
-        return self._memory.history[symbol].history[interval]
+        async with self._memory.history_locks[interval][symbol]:
+            if (
+                symbol not in self._memory.history
+                or interval not in self._memory.history[symbol].history
+            ):
+                await self._set_history(interval, symbol)
+            if self._memory.history[symbol].history is None:
+                raise UnfoundSymbolError(f"Cannot find symbol {symbol}")
+            if (
+                self._memory.history[symbol].time_exp_cache
+                < await self._clock.get_current_time()
+            ):
+                await self._set_history(interval, symbol)
+            return self._memory.history[symbol].history[interval]
 
     async def _set_price(self, symbol: str) -> None:
         try:
