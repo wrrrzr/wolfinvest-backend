@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 from app.logic.abstract.storages.symbols import SymbolsStorage
 from app.logic.models.symbol import SymbolAction, UserSymbolData
@@ -20,7 +21,12 @@ class MemoryCacheSymbolsStorage(SymbolsStorage):
         return SymbolsMemory({}, {})
 
     async def add(
-        self, user_id: int, ticker: str, amount: int, price: float
+        self,
+        user_id: int,
+        ticker: str,
+        amount: int,
+        price: float,
+        created_at: datetime,
     ) -> None:
         if user_id not in self._memory.amount:
             self._memory.amount[user_id] = {}
@@ -28,7 +34,7 @@ class MemoryCacheSymbolsStorage(SymbolsStorage):
             self._memory.amount[user_id][ticker] = (
                 await self._inner.get_amount(user_id, ticker)
             )
-        await self._inner.add(user_id, ticker, amount, price)
+        await self._inner.add(user_id, ticker, amount, price, created_at)
         await self._update_owner(user_id)
 
     async def get_amount(self, user_id: int, ticker: str) -> int:
@@ -53,9 +59,14 @@ class MemoryCacheSymbolsStorage(SymbolsStorage):
         )
 
     async def remove(
-        self, user_id: int, ticker: str, amount: int, price: float
+        self,
+        user_id: int,
+        ticker: str,
+        amount: int,
+        price: float,
+        created_at: datetime,
     ) -> None:
-        await self._inner.remove(user_id, ticker, amount, price)
+        await self._inner.remove(user_id, ticker, amount, price, created_at)
         await self._update_owner(user_id)
 
     async def delete_all_user_symbols(self, user_id: int) -> None:

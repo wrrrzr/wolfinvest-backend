@@ -44,9 +44,23 @@ class Earn:
 def count_earn_symbol(
     actions: list[SymbolAction], current_amount: int, current_price: float
 ) -> Earn:
+    actions.sort(key=lambda key: key.created_at)
+    new_actions: list[SymbolAction] = []
     total = 0.0
+    total_count = 0
 
     for i in actions:
+        if i.action == Action.buy:
+            total_count += i.amount
+            new_actions.append(i)
+        elif i.action == Action.sell:
+            total_count -= i.amount
+            new_actions.append(i)
+
+        if total_count == 0:
+            new_actions.clear()
+
+    for i in new_actions:
         if i.action == Action.buy:
             total -= i.price * i.amount
         elif i.action == Action.sell:
