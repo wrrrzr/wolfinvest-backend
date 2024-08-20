@@ -8,7 +8,7 @@ from app.logic.use_cases.currency import (
     SellCurrency,
     GetCurrenciesHistory,
 )
-from app.logic.models.currency import MyCurrencyDTO
+from app.logic.models.currency import MyCurrencyDTO, CurrencyChange
 from app.logic.exceptions import (
     NotEnoughBalanceError,
     NotEnoughCurrencyError,
@@ -80,5 +80,5 @@ async def sell_currency(
 @inject
 async def get_currencies_history(
     use_case: FromDishka[GetCurrenciesHistory], user_id: FromDishka[UserId]
-) -> None:
+) -> list[CurrencyChange]:
     return await use_case(user_id)

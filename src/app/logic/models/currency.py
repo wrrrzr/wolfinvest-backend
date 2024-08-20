@@ -51,6 +51,7 @@ class UserCurrencyData:
 
 @dataclass
 class CurrencyChange:
+    ticker: str
     amount: float
     reason: int
     created_at: datetime
