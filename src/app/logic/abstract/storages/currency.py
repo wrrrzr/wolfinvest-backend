@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
+from typing import Any
 
 from app.logic.models.currency import (
     CurrencyAction,
@@ -34,6 +35,7 @@ class CurrencyAdder(ABC):
         price: float,
         current_time: datetime,
         reason: int,
+        **additional_info: Any,
     ) -> None:
         raise NotImplementedError
 
@@ -48,6 +50,7 @@ class CurrencyRemover(ABC):
         price: float,
         current_time: datetime,
         reason: int,
+        **additional_info: Any,
     ) -> None:
         raise NotImplementedError
 

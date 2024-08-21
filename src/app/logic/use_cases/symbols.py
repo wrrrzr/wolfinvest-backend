@@ -31,7 +31,7 @@ from app.logic.models import (
     SymbolHistoryInterval,
     SymbolData,
 )
-from app.logic.models.currency import Reason
+from app.logic.models.currency import Reason, CurrencySymbolInfo
 from app.logic.models.symbol import SymbolAction, Action
 
 
@@ -135,6 +135,9 @@ class BuySymbol:
             0.0,
             current_time,
             Reason.buy_symbol,
+            symbol_info=CurrencySymbolInfo(
+                symbol_ticker=symbol, symbol_amount=amount
+            ),
         )
         await self._symbols_adder.add(
             user_id, symbol, amount, price.buy, current_time
@@ -229,6 +232,9 @@ class SellSymbol:
             0.0,
             current_time,
             Reason.sell_symbol,
+            symbol_info=CurrencySymbolInfo(
+                symbol_ticker=symbol, symbol_amount=amount
+            ),
         )
         await self._transaction.commit()
 

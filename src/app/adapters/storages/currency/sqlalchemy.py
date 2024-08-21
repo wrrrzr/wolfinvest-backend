@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, insert, delete, func, case
@@ -9,9 +10,14 @@ from app.logic.models.currency import (
     Action,
     UserCurrencyData,
     CurrencyChange,
+    Reason,
+    CurrencySymbolInfo,
 )
-from app.logic.dataclasses import objects_to_dataclasses
-from app.adapters.sqlalchemy.models import CurrenciesActionModel
+from app.logic.dataclasses import object_to_dataclass, objects_to_dataclasses
+from app.adapters.sqlalchemy.models import (
+    CurrenciesActionModel,
+    CurrencySymbolInfoModel,
+)
 
 
 class SQLAlchemyCurrencyStorage(CurrencyStorage):
@@ -102,6 +108,7 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
         price: float,
         created_at: datetime,
         reason: int,
+        **additional_info: Any,
     ) -> None:
         await self._insert(
             user_id,
@@ -111,6 +118,7 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
             created_at,
             Action.add,
             reason,
+            **additional_info,
         )
 
     async def remove(
@@ -121,6 +129,7 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
         price: float,
         created_at: datetime,
         reason: int,
+        **additional_info: Any,
     ) -> None:
         await self._insert(
             user_id,
@@ -130,6 +139,7 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
             created_at,
             Action.remove,
             reason,
+            **additional_info,
         )
 
     async def get_user_currencies_actions_by_currency(
@@ -146,12 +156,34 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
         self, user_id: int
     ) -> list[CurrencyChange]:
         stmt = (
-            select(CurrenciesActionModel)
+            select(CurrenciesActionModel, CurrencySymbolInfoModel)
             .where(CurrenciesActionModel.user_id == user_id)
             .order_by(CurrenciesActionModel.created_at)
+            .outerjoin(
+                CurrencySymbolInfoModel,
+                CurrencySymbolInfoModel.currency_action
+                == CurrenciesActionModel.id,
+            )
         )
-        res = await self._session.execute(stmt)
-        return objects_to_dataclasses(res.scalars().all(), CurrencyChange)
+        stmt_res = await self._session.execute(stmt)
+        res = []
+        for change, symbol_info in stmt_res:
+            additional_info = {}
+
+            if symbol_info is not None:
+                additional_info["symbol_info"] = object_to_dataclass(
+                    symbol_info, CurrencySymbolInfo
+                )
+
+            i = CurrencyChange(
+                ticker=change.ticker,
+                amount=change.amount,
+                reason=change.reason,
+                created_at=change.created_at,
+                additional_info=additional_info,
+            )
+            res.append(i)
+        return res
 
     async def delete_all_user_currencies(self, user_id: int) -> None:
         stmt = delete(CurrenciesActionModel).where(
@@ -169,15 +201,29 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
         created_at: datetime,
         action: int,
         reason: int,
+        **additional_info: Any,
     ) -> None:
-        stmt = insert(CurrenciesActionModel).values(
-            user_id=user_id,
-            ticker=ticker,
-            amount=amount,
-            price=price,
-            created_at=created_at,
-            action=action,
-            reason=reason,
+        stmt = (
+            insert(CurrenciesActionModel)
+            .values(
+                user_id=user_id,
+                ticker=ticker,
+                amount=amount,
+                price=price,
+                created_at=created_at,
+                action=action,
+                reason=reason,
+            )
+            .returning(CurrenciesActionModel.id)
         )
-        await self._session.execute(stmt)
+        res = await self._session.execute(stmt)
+
+        if reason in (Reason.buy_symbol, Reason.sell_symbol):
+            symbol_info: CurrencySymbolInfo = additional_info["symbol_info"]
+            symbol_info_stmt = insert(CurrencySymbolInfoModel).values(
+                currency_action=res.scalar(),
+                symbol_ticker=symbol_info.ticker,
+                symbol_amount=symbol_info.amount,
+            )
+            await self._session.execute(symbol_info_stmt)
         return

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from enum import IntEnum, auto
+from typing import Any
 
 
 class Action(IntEnum):
@@ -55,3 +56,10 @@ class CurrencyChange:
     amount: float
     reason: int
     created_at: datetime
+    additional_info: dict[str, Any]
+
+
+@dataclass
+class CurrencySymbolInfo:
+    symbol_ticker: str
+    symbol_amount: int

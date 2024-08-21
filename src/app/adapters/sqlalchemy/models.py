@@ -58,3 +58,14 @@ class CurrenciesActionModel(Base):
     amount = Column(Float, nullable=False)
     price = Column(Float, nullable=False)
     created_at = Column(DateTime(timezone=True), nullable=False)
+
+
+class CurrencySymbolInfoModel(Base):
+    __tablename__ = "currency_symbol_info"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    currency_action = Column(
+        BigInteger, ForeignKey(CurrenciesActionModel.id), nullable=False
+    )
+    symbol_ticker = Column(String, nullable=False)
+    symbol_amount = Column(BigInteger, nullable=False)
