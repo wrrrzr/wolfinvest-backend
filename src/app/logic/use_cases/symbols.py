@@ -182,6 +182,9 @@ class GetMySymbols:
         for (ticker, symbol_data), price, name in zip(
             symbols.items(), prices, names
         ):
+            if price is None:
+                price = SymbolPrice(0.0, 0.0, currency="USD")
+
             res.append(
                 MySymbolDTO(
                     name=name,
