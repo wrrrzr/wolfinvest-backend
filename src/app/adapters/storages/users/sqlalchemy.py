@@ -44,7 +44,7 @@ class SQLAlchemyUsersStorage(UsersStorage):
         return object_to_dataclass(res, User)
 
     async def select_all(self) -> list[User]:
-        stmt = select(UserModel)
+        stmt = select(UserModel).order_by(UserModel.id)
         res = await self._session.execute(stmt)
         return objects_to_dataclasses(res.scalars().all(), User)
 
