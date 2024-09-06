@@ -222,8 +222,8 @@ class SQLAlchemyCurrencyStorage(CurrencyStorage):
             symbol_info: CurrencySymbolInfo = additional_info["symbol_info"]
             symbol_info_stmt = insert(CurrencySymbolInfoModel).values(
                 currency_action=res.scalar(),
-                symbol_ticker=symbol_info.ticker,
-                symbol_amount=symbol_info.amount,
+                symbol_ticker=symbol_info.symbol_ticker,
+                symbol_amount=symbol_info.symbol_amount,
             )
             await self._session.execute(symbol_info_stmt)
         return
