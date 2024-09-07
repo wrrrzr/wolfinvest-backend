@@ -32,7 +32,7 @@ class TickersFileTickerFinder(TickerFinder):
 
     async def get_names_by_tickers(self, tickers: Iterable[str]) -> list[str]:
         tickers_kv = await self._get_tickers_kv()
-        return [tickers_kv[i] for i in tickers]
+        return [tickers_kv.get(i, "???") for i in tickers]
 
     async def _get_tickers_kv(self) -> dict[str, str]:
         file_path = self._config.file_path
