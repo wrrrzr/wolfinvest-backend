@@ -13,6 +13,11 @@ AUTH_SECRET_KEY=secret_key
 TICKERS_FILE_PATH=tickers.json
 ```
 
+Run migrations
+```bash
+alembic upgrade head
+```
+
 Run
 ```bash
 uvicorn app.presentation.api:app
